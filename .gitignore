@@ -1,0 +1,27 @@
+# Capturas locais de páginas autenticadas e conteúdo bruto de terceiros.
+/01_Fontes/Udemy/html do curso/
+/01_Fontes/Udemy/Descricao_Curso_Udemy.txt
+
+# Credenciais, chaves e configurações locais.
+.env
+.env.*
+*.pem
+*.ppk
+*.key
+credentials
+
+# Arquivos temporários de ferramentas e do sistema.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+Thumbs.db
+Desktop.ini
+~$*
+*.tmp
+
+# Configurações locais de editores.
+.idea/
+.vscode/

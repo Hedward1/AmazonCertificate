@@ -1,0 +1,426 @@
+﻿secao,titulo_secao,indice_item,numero_aula,titulo,tipo,duracao_minutos,concluido,aula_atual
+1,Introduction - AWS Certified Solutions Architect Associate,1,1,Course Introduction - AWS Certified Solutions Architect Associate,vídeo,4,sim,não
+1,Introduction - AWS Certified Solutions Architect Associate,2,2,PLEASE READ: Lectures you can skip if you took a course from me before,artigo,2,sim,não
+1,Introduction - AWS Certified Solutions Architect Associate,3,3,Creating an AWS Account,vídeo,3,sim,não
+1,Introduction - AWS Certified Solutions Architect Associate,4,4,AWS Account Activation Troubleshooting,artigo,2,sim,não
+1,Introduction - AWS Certified Solutions Architect Associate,5,5,Important Message,vídeo,1,sim,não
+1,Introduction - AWS Certified Solutions Architect Associate,6,6,About your instructor,vídeo,3,sim,não
+2,Code & Slides Download,7,7,Slides and Code Download,artigo,1,sim,não
+3,Getting started with AWS,8,8,AWS Cloud Overview - Regions & AZ,vídeo,8,sim,não
+3,Getting started with AWS,9,9,[Important] AWS Console UI Update,vídeo,1,sim,não
+3,Getting started with AWS,10,10,Tour of the AWS Console & Services in AWS,vídeo,4,sim,não
+4,IAM & AWS CLI,11,11,"IAM Introduction: Users, Groups, Policies",vídeo,3,sim,não
+4,IAM & AWS CLI,12,12,IAM Users & Groups Hands On,vídeo,6,sim,não
+4,IAM & AWS CLI,13,13,AWS Console Simultaneous Sign-in,vídeo,2,sim,não
+4,IAM & AWS CLI,14,14,IAM Policies,vídeo,3,não,sim
+4,IAM & AWS CLI,15,15,IAM Policies Hands On,vídeo,8,não,não
+4,IAM & AWS CLI,16,16,IAM MFA Overview,vídeo,4,não,não
+4,IAM & AWS CLI,17,17,IAM MFA Hands On,vídeo,4,não,não
+4,IAM & AWS CLI,18,18,"AWS Access Keys, CLI and SDK",vídeo,4,não,não
+4,IAM & AWS CLI,19,19,AWS CLI Setup on Windows,vídeo,2,não,não
+4,IAM & AWS CLI,20,20,AWS CLI Setup on Mac OS X,vídeo,1,não,não
+4,IAM & AWS CLI,21,21,AWS CLI Setup on Linux,vídeo,2,não,não
+4,IAM & AWS CLI,22,22,AWS CLI Hands On,vídeo,4,não,não
+4,IAM & AWS CLI,23,23,AWS CloudShell: Region Availability,artigo,1,não,não
+4,IAM & AWS CLI,24,24,AWS CloudShell,vídeo,4,não,não
+4,IAM & AWS CLI,25,25,IAM Roles for AWS Services,vídeo,2,não,não
+4,IAM & AWS CLI,26,26,IAM Roles Hands On,vídeo,2,não,não
+4,IAM & AWS CLI,27,27,IAM Security Tools,vídeo,1,não,não
+4,IAM & AWS CLI,28,28,IAM Security Tools Hands On,vídeo,2,não,não
+4,IAM & AWS CLI,29,29,IAM Best Practices,vídeo,1,não,não
+4,IAM & AWS CLI,30,30,IAM Summary,vídeo,1,não,não
+4,IAM & AWS CLI,31,,Teste 1: IAM & AWS CLI Quiz,quiz,,não,não
+5,EC2 Fundamentals,32,31,AWS Budget Setup,vídeo,5,não,não
+5,EC2 Fundamentals,33,32,EC2 Basics,vídeo,4,não,não
+5,EC2 Fundamentals,34,33,Create an EC2 Instance with EC2 User Data to have a Website Hands On,vídeo,14,não,não
+5,EC2 Fundamentals,35,34,EC2 Instance Types Basics,vídeo,6,não,não
+5,EC2 Fundamentals,36,35,Security Groups & Classic Ports Overview,vídeo,7,não,não
+5,EC2 Fundamentals,37,36,Security Groups Hands On,vídeo,5,não,não
+5,EC2 Fundamentals,38,37,SSH Overview,vídeo,3,não,não
+5,EC2 Fundamentals,39,38,How to SSH using Linux or Mac,vídeo,7,não,não
+5,EC2 Fundamentals,40,39,How to SSH using Windows,vídeo,6,não,não
+5,EC2 Fundamentals,41,40,How to SSH using Windows 10,vídeo,5,não,não
+5,EC2 Fundamentals,42,41,SSH Troubleshooting,artigo,1,não,não
+5,EC2 Fundamentals,43,42,EC2 Instance Connect,vídeo,3,não,não
+5,EC2 Fundamentals,44,43,EC2 Instance Roles Demo,vídeo,4,não,não
+5,EC2 Fundamentals,45,44,EC2 Instance Purchasing Options,vídeo,10,não,não
+5,EC2 Fundamentals,46,45,Spot Instances & Spot Fleet,vídeo,9,não,não
+5,EC2 Fundamentals,47,46,EC2 Instances Launch Types Hands On,vídeo,9,não,não
+5,EC2 Fundamentals,48,,Teste 2: EC2 Fundamentals Quiz,quiz,,não,não
+6,EC2 - Solutions Architect Associate Level,49,47,Private vs Public vs Elastic IP,vídeo,5,não,não
+6,EC2 - Solutions Architect Associate Level,50,48,Private vs Public vs Elastic IP Hands On,vídeo,6,não,não
+6,EC2 - Solutions Architect Associate Level,51,49,EC2 Placement Groups,vídeo,6,não,não
+6,EC2 - Solutions Architect Associate Level,52,50,EC2 Placement Groups - Hands On,vídeo,2,não,não
+6,EC2 - Solutions Architect Associate Level,53,51,Elastic Network Interfaces (ENI) - Overview,vídeo,2,não,não
+6,EC2 - Solutions Architect Associate Level,54,52,Elastic Network Interfaces (ENI) - Hands On,vídeo,5,não,não
+6,EC2 - Solutions Architect Associate Level,55,53,ENI - Extra Reading,artigo,1,não,não
+6,EC2 - Solutions Architect Associate Level,56,54,EC2 Hibernate,vídeo,3,não,não
+6,EC2 - Solutions Architect Associate Level,57,55,EC2 Hibernate - Hands On,vídeo,4,não,não
+6,EC2 - Solutions Architect Associate Level,58,,Teste 3: EC2 SAA Level Quiz,quiz,,não,não
+7,EC2 Instance Storage,59,56,EBS Overview,vídeo,5,não,não
+7,EC2 Instance Storage,60,57,EBS Hands On,vídeo,6,não,não
+7,EC2 Instance Storage,61,58,EBS Snapshots,vídeo,2,não,não
+7,EC2 Instance Storage,62,59,EBS Snapshots - Hands On,vídeo,4,não,não
+7,EC2 Instance Storage,63,60,AMI Overview,vídeo,3,não,não
+7,EC2 Instance Storage,64,61,AMI Hands On,vídeo,5,não,não
+7,EC2 Instance Storage,65,62,EC2 Instance Store,vídeo,3,não,não
+7,EC2 Instance Storage,66,63,EBS Volume Types,vídeo,5,não,não
+7,EC2 Instance Storage,67,64,EBS Multi-Attach,vídeo,2,não,não
+7,EC2 Instance Storage,68,65,EBS Encryption,vídeo,4,não,não
+7,EC2 Instance Storage,69,66,Amazon EFS,vídeo,5,não,não
+7,EC2 Instance Storage,70,67,Amazon EFS - Hands On,vídeo,13,não,não
+7,EC2 Instance Storage,71,68,EFS vs EBS,vídeo,2,não,não
+7,EC2 Instance Storage,72,69,EBS & EFS - Section Cleanup,vídeo,2,não,não
+7,EC2 Instance Storage,73,,Teste 4: EC2 Data Management Quiz,quiz,,não,não
+8,High Availability and Scalability: ELB & ASG,74,70,High Availability and Scalability,vídeo,5,não,não
+8,High Availability and Scalability: ELB & ASG,75,71,Elastic Load Balancing (ELB) Overview,vídeo,6,não,não
+8,High Availability and Scalability: ELB & ASG,76,72,Application Load Balancer (ALB),vídeo,6,não,não
+8,High Availability and Scalability: ELB & ASG,77,73,Application Load Balancer (ALB) - Hands On - Part 1,vídeo,9,não,não
+8,High Availability and Scalability: ELB & ASG,78,74,Application Load Balancer (ALB) - Hands On - Part 2,vídeo,6,não,não
+8,High Availability and Scalability: ELB & ASG,79,75,Network Load Balancer (NLB),vídeo,3,não,não
+8,High Availability and Scalability: ELB & ASG,80,76,Network Load Balancer (NLB) - Hands On,vídeo,6,não,não
+8,High Availability and Scalability: ELB & ASG,81,77,Gateway Load Balancer (GWLB),vídeo,4,não,não
+8,High Availability and Scalability: ELB & ASG,82,78,Elastic Load Balancer - Sticky Sessions,vídeo,6,não,não
+8,High Availability and Scalability: ELB & ASG,83,79,Elastic Load Balancer - Cross Zone Load Balancing,vídeo,6,não,não
+8,High Availability and Scalability: ELB & ASG,84,80,Elastic Load Balancer - SSL Certificates,vídeo,6,não,não
+8,High Availability and Scalability: ELB & ASG,85,81,Elastic Load Balancer - SSL Certificates - Hands On,vídeo,2,não,não
+8,High Availability and Scalability: ELB & ASG,86,82,Elastic Load Balancer - Connection Draining,vídeo,2,não,não
+8,High Availability and Scalability: ELB & ASG,87,83,Auto Scaling Groups (ASG) Overview,vídeo,5,não,não
+8,High Availability and Scalability: ELB & ASG,88,84,Auto Scaling Groups Hands On,vídeo,9,não,não
+8,High Availability and Scalability: ELB & ASG,89,85,Auto Scaling Groups - Scaling Policies,vídeo,4,não,não
+8,High Availability and Scalability: ELB & ASG,90,86,Auto Scaling Groups - Scaling Policies Hands On,vídeo,9,não,não
+8,High Availability and Scalability: ELB & ASG,91,,Teste 5: High Availability & Scalability Quiz,quiz,,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,92,87,Amazon RDS Overview,vídeo,4,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,93,88,RDS Read Replicas vs Multi AZ,vídeo,7,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,94,89,Amazon RDS Hands On,vídeo,9,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,95,90,RDS Custom for Oracle and Microsoft SQL Server,vídeo,2,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,96,91,Amazon Aurora,vídeo,6,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,97,92,Amazon Aurora - Hands On,vídeo,8,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,98,93,Amazon Aurora - Advanced Concepts,vídeo,8,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,99,94,RDS & Aurora - Backup and Monitoring,vídeo,6,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,100,95,RDS Security,vídeo,3,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,101,96,RDS Proxy,vídeo,5,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,102,97,ElastiCache Overview,vídeo,5,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,103,98,ElastiCache Hands On,vídeo,5,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,104,99,ElastiCache for Solution Architects,vídeo,3,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,105,100,List of Ports to be familiar with,artigo,1,não,não
+9,AWS Fundamentals: RDS + Aurora + ElastiCache,106,,"Teste 6: RDS, Aurora, & ElastiCache Quiz",quiz,,não,não
+10,Route 53,107,101,What is a DNS ?,vídeo,6,não,não
+10,Route 53,108,102,Route 53 Overview,vídeo,6,não,não
+10,Route 53,109,103,Route 53 - Registering a domain,vídeo,3,não,não
+10,Route 53,110,104,Route 53 - Creating our first records,vídeo,4,não,não
+10,Route 53,111,105,Route 53 - EC2 Setup,vídeo,6,não,não
+10,Route 53,112,106,Route 53 - TTL,vídeo,5,não,não
+10,Route 53,113,107,Route 53 CNAME vs Alias,vídeo,7,não,não
+10,Route 53,114,108,Routing Policy - Simple,vídeo,4,não,não
+10,Route 53,115,109,Routing Policy - Weighted,vídeo,5,não,não
+10,Route 53,116,110,Routing Policy - Latency,vídeo,5,não,não
+10,Route 53,117,111,Route 53 - Health Checks,vídeo,5,não,não
+10,Route 53,118,112,Route 53 - Health Checks Hands On,vídeo,5,não,não
+10,Route 53,119,113,Routing Policy - Failover,vídeo,4,não,não
+10,Route 53,120,114,Routing Policy - Geolocation,vídeo,4,não,não
+10,Route 53,121,115,Routing Policy - Geoproximity,vídeo,3,não,não
+10,Route 53,122,116,Routing Policy - IP-based,vídeo,2,não,não
+10,Route 53,123,117,Routing Policy - Multi Value,vídeo,4,não,não
+10,Route 53,124,118,3rd Party Domains & Route 53,vídeo,2,não,não
+10,Route 53,125,119,Route 53 Resolvers & Hybrid DNS,vídeo,3,não,não
+10,Route 53,126,120,Route 53 - Section Cleanup,vídeo,1,não,não
+10,Route 53,127,,Teste 7: Route 53 Quiz,quiz,,não,não
+11,Classic Solutions Architecture Discussions,128,121,Solutions Architecture Discussions Overview,vídeo,1,não,não
+11,Classic Solutions Architecture Discussions,129,122,WhatsTheTime.com,vídeo,11,não,não
+11,Classic Solutions Architecture Discussions,130,123,MyClothes.com,vídeo,10,não,não
+11,Classic Solutions Architecture Discussions,131,124,MyWordPress.com,vídeo,5,não,não
+11,Classic Solutions Architecture Discussions,132,125,Instantiating applications quickly,vídeo,3,não,não
+11,Classic Solutions Architecture Discussions,133,126,Beanstalk Overview,vídeo,5,não,não
+11,Classic Solutions Architecture Discussions,134,127,Beanstalk Hands On,vídeo,8,não,não
+11,Classic Solutions Architecture Discussions,135,,Teste 8: Classic Solutions Architecture Discussions Quiz,quiz,,não,não
+12,Amazon S3 Introduction,136,128,S3 Overview,vídeo,6,não,não
+12,Amazon S3 Introduction,137,129,S3 Hands On,vídeo,7,não,não
+12,Amazon S3 Introduction,138,130,S3 Security: Bucket Policy,vídeo,5,não,não
+12,Amazon S3 Introduction,139,131,S3 Security: Bucket Policy Hands On,vídeo,3,não,não
+12,Amazon S3 Introduction,140,132,S3 Website Overview,vídeo,1,não,não
+12,Amazon S3 Introduction,141,133,S3 Website Hands On,vídeo,2,não,não
+12,Amazon S3 Introduction,142,134,S3 Versioning,vídeo,1,não,não
+12,Amazon S3 Introduction,143,135,S3 Versioning - Hands On,vídeo,4,não,não
+12,Amazon S3 Introduction,144,136,S3 Replication,vídeo,1,não,não
+12,Amazon S3 Introduction,145,137,S3 Replication Notes,vídeo,1,não,não
+12,Amazon S3 Introduction,146,138,S3 Replication - Hands On,vídeo,6,não,não
+12,Amazon S3 Introduction,147,139,S3 Storage Classes Overview,vídeo,6,não,não
+12,Amazon S3 Introduction,148,140,S3 Storage Classes Hands On,vídeo,4,não,não
+12,Amazon S3 Introduction,149,141,S3 Express One Zone,vídeo,2,não,não
+12,Amazon S3 Introduction,150,,Teste 9: Amazon S3 Quiz,quiz,,não,não
+13,Advanced Amazon S3,151,142,S3 Lifecycle Rules (with S3 Analytics),vídeo,4,não,não
+13,Advanced Amazon S3,152,143,S3 Lifecycle Rules - Hands On,vídeo,2,não,não
+13,Advanced Amazon S3,153,144,S3 Requester Pays,vídeo,2,não,não
+13,Advanced Amazon S3,154,145,S3 Event Notifications,vídeo,4,não,não
+13,Advanced Amazon S3,155,146,S3 Event Notifications - Hands On,vídeo,6,não,não
+13,Advanced Amazon S3,156,147,S3 Performance,vídeo,5,não,não
+13,Advanced Amazon S3,157,148,S3 Batch Operations,vídeo,2,não,não
+13,Advanced Amazon S3,158,149,S3 Storage Lens,vídeo,6,não,não
+13,Advanced Amazon S3,159,,Teste 10: Amazon S3 Advanced Quiz,quiz,,não,não
+14,Amazon S3 Security,160,150,S3 Encryption,vídeo,8,não,não
+14,Amazon S3 Security,161,151,About DSSE-KMS,artigo,1,não,não
+14,Amazon S3 Security,162,152,S3 Encryption - Hands On,vídeo,5,não,não
+14,Amazon S3 Security,163,153,S3 Default Encryption,vídeo,1,não,não
+14,Amazon S3 Security,164,154,S3 CORS,vídeo,4,não,não
+14,Amazon S3 Security,165,155,S3 CORS Hands On,vídeo,7,não,não
+14,Amazon S3 Security,166,156,S3 MFA Delete,vídeo,1,não,não
+14,Amazon S3 Security,167,157,S3 MFA Delete Hands On,vídeo,6,não,não
+14,Amazon S3 Security,168,158,S3 Access Logs,vídeo,1,não,não
+14,Amazon S3 Security,169,159,S3 Access Logs - Hands On,vídeo,4,não,não
+14,Amazon S3 Security,170,160,S3 Pre-signed URLs,vídeo,2,não,não
+14,Amazon S3 Security,171,161,S3 Pre-signed URLs - Hands On,vídeo,2,não,não
+14,Amazon S3 Security,172,162,Glacier Vault Lock & S3 Object Lock,vídeo,4,não,não
+14,Amazon S3 Security,173,163,S3 Access Points,vídeo,4,não,não
+14,Amazon S3 Security,174,164,S3 Object Lambda,vídeo,3,não,não
+14,Amazon S3 Security,175,,Teste 11: Amazon S3 Security Quiz,quiz,,não,não
+15,CloudFront & AWS Global Accelerator,176,165,CloudFront Overview,vídeo,5,não,não
+15,CloudFront & AWS Global Accelerator,177,166,CloudFront with S3 - Hands On,vídeo,6,não,não
+15,CloudFront & AWS Global Accelerator,178,167,CloudFront - ALB/EC2 as an Origin,vídeo,3,não,não
+15,CloudFront & AWS Global Accelerator,179,168,CloudFront - Geo Restriction,vídeo,2,não,não
+15,CloudFront & AWS Global Accelerator,180,169,CloudFront - Cache Invalidation,vídeo,3,não,não
+15,CloudFront & AWS Global Accelerator,181,170,AWS Global Accelerator - Overview,vídeo,6,não,não
+15,CloudFront & AWS Global Accelerator,182,171,AWS Global Accelerator - Hands On,vídeo,9,não,não
+15,CloudFront & AWS Global Accelerator,183,,Teste 12: CloudFront & AWS Global Accelerator Quiz,quiz,,não,não
+16,AWS Storage Extras,184,172,AWS Snow Family Overview,vídeo,3,não,não
+16,AWS Storage Extras,185,173,AWS Snow Family Hands On,vídeo,2,não,não
+16,AWS Storage Extras,186,174,Architecture: Snowball into Glacier,vídeo,1,não,não
+16,AWS Storage Extras,187,175,Amazon FSx,vídeo,8,não,não
+16,AWS Storage Extras,188,176,Amazon FSx - Hands On,vídeo,3,não,não
+16,AWS Storage Extras,189,177,Storage Gateway Overview,vídeo,8,não,não
+16,AWS Storage Extras,190,178,Storage Gateway Hands On,vídeo,2,não,não
+16,AWS Storage Extras,191,179,AWS Transfer Family,vídeo,2,não,não
+16,AWS Storage Extras,192,180,DataSync - Overview,vídeo,4,não,não
+16,AWS Storage Extras,193,181,All AWS Storage Options Compared,vídeo,4,não,não
+16,AWS Storage Extras,194,,Teste 13: AWS Storage Extras Quiz,quiz,,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",195,182,Introduction to Messaging,vídeo,3,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",196,183,Amazon SQS - Standard Queues Overview,vídeo,11,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",197,184,SQS - Standard Queue Hands On,vídeo,6,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",198,185,SQS - Message Visibility Timeout,vídeo,5,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",199,186,SQS - Long Polling,vídeo,1,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",200,187,SQS - FIFO Queues,vídeo,3,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",201,188,SQS + Auto Scaling Group,vídeo,5,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",202,189,Amazon Simple Notification Service (AWS SNS),vídeo,4,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",203,190,SNS and SQS - Fan Out Pattern,vídeo,6,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",204,191,SNS - Hands On,vídeo,5,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",205,192,Amazon Kinesis Data Streams,vídeo,4,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",206,193,Amazon Kinesis Data Streams - Hands On,vídeo,10,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",207,194,Amazon Data Firehose,vídeo,4,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",208,195,Amazon Data Firehose - Hands On,vídeo,8,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",209,196,SQS vs SNS vs Kinesis,vídeo,3,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",210,197,Amazon MQ,vídeo,3,não,não
+17,"Decoupling applications: SQS, SNS, Kinesis, Active MQ",211,,Teste 14: Messaging & Integration Quiz,quiz,,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",212,198,Docker Introduction,vídeo,5,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",213,199,Amazon ECS,vídeo,7,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",214,200,Creating ECS Cluster - Hands On,vídeo,6,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",215,201,Creating ECS Service - Hands On,vídeo,10,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",216,202,Amazon ECS - Auto Scaling,vídeo,3,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",217,203,Amazon ECS - Solutions Architectures,vídeo,3,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",218,204,Amazon ECS - Clean Up - Hands On,vídeo,1,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",219,205,Amazon ECR,vídeo,2,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",220,206,Amazon EKS - Overview,vídeo,4,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",221,207,Amazon EKS - Hands On,vídeo,8,não,não
+18,"Containers on AWS: ECS, Fargate, ECR & EKS",222,,Teste 15: Containers on AWS Quiz,quiz,,não,não
+19,Serverless Overviews from a Solution Architect Perspective,223,208,About the Serverless Section,artigo,1,não,não
+19,Serverless Overviews from a Solution Architect Perspective,224,209,Serverless Introduction,vídeo,2,não,não
+19,Serverless Overviews from a Solution Architect Perspective,225,210,Lambda Overview,vídeo,7,não,não
+19,Serverless Overviews from a Solution Architect Perspective,226,211,Lambda Hands-On,vídeo,7,não,não
+19,Serverless Overviews from a Solution Architect Perspective,227,212,Lambda Limits,vídeo,2,não,não
+19,Serverless Overviews from a Solution Architect Perspective,228,213,Lambda Concurrency,vídeo,6,não,não
+19,Serverless Overviews from a Solution Architect Perspective,229,214,Lambda Concurrency - Hands On,vídeo,3,não,não
+19,Serverless Overviews from a Solution Architect Perspective,230,215,Lambda SnapStart,vídeo,1,não,não
+19,Serverless Overviews from a Solution Architect Perspective,231,216,Lambda@Edge & CloudFront Functions,vídeo,6,não,não
+19,Serverless Overviews from a Solution Architect Perspective,232,217,Lambda in VPC,vídeo,3,não,não
+19,Serverless Overviews from a Solution Architect Perspective,233,218,RDS - Invoking Lambda & Event Notifications,vídeo,3,não,não
+19,Serverless Overviews from a Solution Architect Perspective,234,219,Amazon DynamoDB,vídeo,5,não,não
+19,Serverless Overviews from a Solution Architect Perspective,235,220,Amazon DynamoDB - Hands-On,vídeo,5,não,não
+19,Serverless Overviews from a Solution Architect Perspective,236,221,Amazon DynamoDB - Advanced Features,vídeo,9,não,não
+19,Serverless Overviews from a Solution Architect Perspective,237,222,API Gateway Overview,vídeo,7,não,não
+19,Serverless Overviews from a Solution Architect Perspective,238,223,API Gateway Basics Hands-On,vídeo,10,não,não
+19,Serverless Overviews from a Solution Architect Perspective,239,224,Step Functions,vídeo,2,não,não
+19,Serverless Overviews from a Solution Architect Perspective,240,225,Amazon Cognito Overview,vídeo,7,não,não
+19,Serverless Overviews from a Solution Architect Perspective,241,,Teste 16: Serverless Overview Quiz,quiz,,não,não
+20,Serverless Solution Architecture Discussions,242,226,Mobile Application: MyTodoList,vídeo,5,não,não
+20,Serverless Solution Architecture Discussions,243,227,Serverless Website: MyBlog.com,vídeo,6,não,não
+20,Serverless Solution Architecture Discussions,244,228,MicroServices Architecture,vídeo,4,não,não
+20,Serverless Solution Architecture Discussions,245,229,Software updates distribution,vídeo,2,não,não
+20,Serverless Solution Architecture Discussions,246,,Teste 17: Serverless Solutions Architecture Discussions Quiz,quiz,,não,não
+21,Databases in AWS,247,230,Choosing the right database,vídeo,3,não,não
+21,Databases in AWS,248,231,RDS,vídeo,3,não,não
+21,Databases in AWS,249,232,Aurora,vídeo,3,não,não
+21,Databases in AWS,250,233,ElastiCache,vídeo,2,não,não
+21,Databases in AWS,251,234,DynamoDB,vídeo,4,não,não
+21,Databases in AWS,252,235,S3,vídeo,3,não,não
+21,Databases in AWS,253,236,DocumentDB,vídeo,1,não,não
+21,Databases in AWS,254,237,Neptune,vídeo,3,não,não
+21,Databases in AWS,255,238,Keyspaces (for Apache Cassandra),vídeo,1,não,não
+21,Databases in AWS,256,239,Timestream,vídeo,2,não,não
+21,Databases in AWS,257,,Teste 18: Databases in AWS Quiz,quiz,,não,não
+22,Data & Analytics,258,240,Athena,vídeo,5,não,não
+22,Data & Analytics,259,241,Athena Hands On,vídeo,6,não,não
+22,Data & Analytics,260,242,Redshift,vídeo,7,não,não
+22,Data & Analytics,261,243,OpenSearch (ex: ElasticSearch),vídeo,4,não,não
+22,Data & Analytics,262,244,EMR,vídeo,3,não,não
+22,Data & Analytics,263,245,QuickSight,vídeo,4,não,não
+22,Data & Analytics,264,246,Glue,vídeo,4,não,não
+22,Data & Analytics,265,247,Lake Formation,vídeo,4,não,não
+22,Data & Analytics,266,248,Amazon Managed Service for Apache Flink,vídeo,2,não,não
+22,Data & Analytics,267,249,Amazon Managed Service for Apache Flink - Hands On,vídeo,2,não,não
+22,Data & Analytics,268,250,MSK - Managed Streaming for Apache Kafka,vídeo,4,não,não
+22,Data & Analytics,269,251,Big Data Ingestion Pipeline,vídeo,4,não,não
+22,Data & Analytics,270,,Teste 19: Data & Analytics Quiz,quiz,,não,não
+23,Machine Learning,271,252,Rekognition Overview,vídeo,4,não,não
+23,Machine Learning,272,253,Transcribe Overview,vídeo,3,não,não
+23,Machine Learning,273,254,Polly Overview,vídeo,4,não,não
+23,Machine Learning,274,255,Translate Overview,vídeo,1,não,não
+23,Machine Learning,275,256,Lex + Connect Overview,vídeo,2,não,não
+23,Machine Learning,276,257,Comprehend Overview,vídeo,2,não,não
+23,Machine Learning,277,258,Comprehend Medical Overview,vídeo,2,não,não
+23,Machine Learning,278,259,SageMaker AI Overview,vídeo,3,não,não
+23,Machine Learning,279,260,Kendra Overview,vídeo,1,não,não
+23,Machine Learning,280,261,Personalize Overview,vídeo,2,não,não
+23,Machine Learning,281,262,Textract Overview,vídeo,1,não,não
+23,Machine Learning,282,263,Machine Learning Summary,vídeo,1,não,não
+23,Machine Learning,283,,Teste 20: Machine Learning Quiz,quiz,,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",284,264,AWS Monitoring - Section Introduction,vídeo,1,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",285,265,CloudWatch Metrics,vídeo,4,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",286,266,CloudWatch Logs,vídeo,6,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",287,267,CloudWatch Logs - Hands On,vídeo,9,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",288,268,CloudWatch Logs - Live Tail - Hands On,vídeo,2,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",289,269,CloudWatch Agent & CloudWatch Logs Agent,vídeo,3,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",290,270,CloudWatch Alarms,vídeo,4,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",291,271,CloudWatch Alarms Hands On,vídeo,5,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",292,272,CloudWatch Network Synthetic Monitor,vídeo,1,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",293,273,EventBridge Overview (formerly CloudWatch Events),vídeo,7,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",294,274,Amazon EventBridge - Hands On,vídeo,6,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",295,275,CloudWatch Insights and Operational Visibility,vídeo,6,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",296,276,CloudTrail Overview,vídeo,6,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",297,277,CloudTrail Hands On,vídeo,2,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",298,278,CloudTrail - EventBridge Integration,vídeo,2,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",299,279,AWS Config - Overview,vídeo,5,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",300,280,AWS Config - Hands On,vídeo,10,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",301,281,CloudTrail vs CloudWatch vs Config,vídeo,2,não,não
+24,"AWS Monitoring & Audit: CloudWatch, CloudTrail & Config",302,,Teste 21: Monitoring & Auditing Quiz,quiz,,não,não
+25,Identity and Access Management (IAM) - Advanced,303,282,Organizations - Overview,vídeo,7,não,não
+25,Identity and Access Management (IAM) - Advanced,304,283,Organizations - Hands On,vídeo,10,não,não
+25,Identity and Access Management (IAM) - Advanced,305,284,Organizations - Tag Policies,vídeo,1,não,não
+25,Identity and Access Management (IAM) - Advanced,306,285,IAM - Advanced Policies,vídeo,4,não,não
+25,Identity and Access Management (IAM) - Advanced,307,286,IAM - Resource-based Policies vs IAM Roles,vídeo,4,não,não
+25,Identity and Access Management (IAM) - Advanced,308,287,IAM - Policy Evaluation Logic,vídeo,7,não,não
+25,Identity and Access Management (IAM) - Advanced,309,288,AWS IAM Identity Center,vídeo,7,não,não
+25,Identity and Access Management (IAM) - Advanced,310,289,AWS Directory Services,vídeo,6,não,não
+25,Identity and Access Management (IAM) - Advanced,311,290,AWS Directory Services - Hands On,vídeo,1,não,não
+25,Identity and Access Management (IAM) - Advanced,312,291,AWS Control Tower,vídeo,3,não,não
+25,Identity and Access Management (IAM) - Advanced,313,,Teste 22: IAM Advanced Quiz,quiz,,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",314,292,AWS Security - Section Introduction,vídeo,1,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",315,293,Encryption 101,vídeo,4,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",316,294,KMS Overview,vídeo,7,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",317,295,KMS Hands On w/ CLI,vídeo,10,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",318,296,KMS - Multi-Region Keys,vídeo,6,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",319,297,S3 Replication with Encryption,vídeo,2,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",320,298,Encrypted AMI Sharing Process,vídeo,2,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",321,299,SSM Parameter Store Overview,vídeo,4,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",322,300,SSM Parameter Store Hands On (CLI),vídeo,7,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",323,301,AWS Secrets Manager - Overview,vídeo,2,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",324,302,AWS Secrets Manager - Hands On,vídeo,4,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",325,303,AWS Certificate Manager (ACM),vídeo,8,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",326,304,AWS CloudHSM,vídeo,5,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",327,305,Web Application Firewall (WAF),vídeo,3,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",328,306,Shield - DDoS Protection,vídeo,2,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",329,307,Firewall Manager,vídeo,3,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",330,308,WAF & Shield - Hands On,vídeo,6,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",331,309,DDoS Protection Best Practices,vídeo,6,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",332,310,Amazon GuardDuty,vídeo,3,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",333,311,Amazon Inspector,vídeo,2,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",334,312,Amazon Macie,vídeo,1,não,não
+26,"AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF",335,,Teste 23: AWS Security & Encryption Quiz,quiz,,não,não
+27,Networking - VPC,336,313,Section Introduction,vídeo,1,não,não
+27,Networking - VPC,337,314,"CIDR, Private vs Public IP",vídeo,7,não,não
+27,Networking - VPC,338,315,Default VPC Overview,vídeo,5,não,não
+27,Networking - VPC,339,316,VPC Overview,vídeo,1,não,não
+27,Networking - VPC,340,317,VPC Hands On,vídeo,2,não,não
+27,Networking - VPC,341,318,Subnet Overview,vídeo,2,não,não
+27,Networking - VPC,342,319,Subnet Hands On,vídeo,4,não,não
+27,Networking - VPC,343,320,Internet Gateways & Route Tables,vídeo,1,não,não
+27,Networking - VPC,344,321,Internet Gateways & Route Tables Hands On,vídeo,7,não,não
+27,Networking - VPC,345,322,Bastion Hosts,vídeo,3,não,não
+27,Networking - VPC,346,323,Bastion Hosts Hands On,vídeo,5,não,não
+27,Networking - VPC,347,324,NAT Instances,vídeo,4,não,não
+27,Networking - VPC,348,325,NAT Instances Hands On,vídeo,6,não,não
+27,Networking - VPC,349,326,NAT Gateways,vídeo,4,não,não
+27,Networking - VPC,350,327,NAT Gateways Hands On,vídeo,3,não,não
+27,Networking - VPC,351,328,Regional NAT Gateway,vídeo,1,não,não
+27,Networking - VPC,352,329,NACL & Security Groups,vídeo,11,não,não
+27,Networking - VPC,353,330,NACL & Security Groups Hands On,vídeo,7,não,não
+27,Networking - VPC,354,331,VPC Peering,vídeo,2,não,não
+27,Networking - VPC,355,332,VPC Peering Hands On,vídeo,6,não,não
+27,Networking - VPC,356,333,VPC Endpoints,vídeo,6,não,não
+27,Networking - VPC,357,334,VPC Endpoints Hands On,vídeo,7,não,não
+27,Networking - VPC,358,335,VPC Flow Logs,vídeo,4,não,não
+27,Networking - VPC,359,336,VPC Flow Logs Hands On + Athena,vídeo,10,não,não
+27,Networking - VPC,360,337,"Site to Site VPN, Virtual Private Gateway & Customer Gateway",vídeo,4,não,não
+27,Networking - VPC,361,338,"Site to Site VPN, Virtual Private Gateway & Customer Gateway Hands On",vídeo,2,não,não
+27,Networking - VPC,362,339,Direct Connect & Direct Connect Gateway,vídeo,6,não,não
+27,Networking - VPC,363,340,Direct Connect + Site to Site VPN,vídeo,1,não,não
+27,Networking - VPC,364,341,Transit Gateway,vídeo,5,não,não
+27,Networking - VPC,365,342,VPC Traffic Mirroring,vídeo,2,não,não
+27,Networking - VPC,366,343,IPv6 for VPC,vídeo,3,não,não
+27,Networking - VPC,367,344,IPv6 for VPC - Hands On,vídeo,4,não,não
+27,Networking - VPC,368,345,Egress Only Internet Gateway,vídeo,3,não,não
+27,Networking - VPC,369,346,Egress Only Internet Gateway Hands On,vídeo,1,não,não
+27,Networking - VPC,370,347,Section Cleanup,vídeo,2,não,não
+27,Networking - VPC,371,348,VPC Section Summary,vídeo,5,não,não
+27,Networking - VPC,372,349,Networking Costs in AWS,vídeo,9,não,não
+27,Networking - VPC,373,350,AWS Network Firewall,vídeo,3,não,não
+27,Networking - VPC,374,,Teste 24: VPC Quiz,quiz,,não,não
+28,Disaster Recovery & Migrations,375,351,Disaster Recovery in AWS,vídeo,11,não,não
+28,Disaster Recovery & Migrations,376,352,Elastic Disaster Recovery (DRS),vídeo,2,não,não
+28,Disaster Recovery & Migrations,377,353,Database Migration Service (DMS),vídeo,5,não,não
+28,Disaster Recovery & Migrations,378,354,Database Migration Service (DMS) - Hands On,vídeo,5,não,não
+28,Disaster Recovery & Migrations,379,355,RDS & Aurora Migrations,vídeo,3,não,não
+28,Disaster Recovery & Migrations,380,356,On-Premises Strategies with AWS,vídeo,3,não,não
+28,Disaster Recovery & Migrations,381,357,AWS Backup,vídeo,3,não,não
+28,Disaster Recovery & Migrations,382,358,AWS Backup - Hands On,vídeo,4,não,não
+28,Disaster Recovery & Migrations,383,359,Application Migration Service (MGN),vídeo,3,não,não
+28,Disaster Recovery & Migrations,384,360,Transferring Large Datasets into AWS,vídeo,3,não,não
+28,Disaster Recovery & Migrations,385,361,VMware Cloud on AWS,vídeo,2,não,não
+28,Disaster Recovery & Migrations,386,,Teste 25: Disaster Recovery & Migration Quiz,quiz,,não,não
+29,More Solution Architectures,387,362,Event Processing in AWS,vídeo,6,não,não
+29,More Solution Architectures,388,363,Caching Strategies in AWS,vídeo,3,não,não
+29,More Solution Architectures,389,364,Blocking an IP Address in AWS,vídeo,5,não,não
+29,More Solution Architectures,390,365,High Performance Computing (HPC) on AWS,vídeo,7,não,não
+29,More Solution Architectures,391,366,EC2 Instance High Availability,vídeo,7,não,não
+29,More Solution Architectures,392,,Teste 26: More Solution Architectures Quiz,quiz,,não,não
+30,Other Services,393,367,Other Services Section Introduction,vídeo,1,não,não
+30,Other Services,394,368,CloudFormation Intro,vídeo,4,não,não
+30,Other Services,395,369,CloudFormation - Hands On,vídeo,9,não,não
+30,Other Services,396,370,CloudFormation - Service Role,vídeo,3,não,não
+30,Other Services,397,371,Amazon SES,vídeo,1,não,não
+30,Other Services,398,372,Amazon Pinpoint,vídeo,2,não,não
+30,Other Services,399,373,SSM Session Manager,vídeo,6,não,não
+30,Other Services,400,374,SSM Other Services,vídeo,5,não,não
+30,Other Services,401,375,AWS Cost Explorer,vídeo,2,não,não
+30,Other Services,402,376,AWS Cost Anomaly Detection,vídeo,1,não,não
+30,Other Services,403,377,AWS Outposts,vídeo,3,não,não
+30,Other Services,404,378,AWS Batch,vídeo,3,não,não
+30,Other Services,405,379,Amazon AppFlow,vídeo,1,não,não
+30,Other Services,406,380,AWS Amplify,vídeo,2,não,não
+30,Other Services,407,381,Instance Scheduler on AWS,vídeo,6,não,não
+30,Other Services,408,,Teste 27: Other Services Quiz,quiz,,não,não
+31,WhitePapers and Architectures - AWS Certified Solutions Architect Associate,409,382,WhitePaper Section Introduction,vídeo,1,não,não
+31,WhitePapers and Architectures - AWS Certified Solutions Architect Associate,410,383,AWS Well-Architected Framework & Well-Architected Tool,vídeo,6,não,não
+31,WhitePapers and Architectures - AWS Certified Solutions Architect Associate,411,384,AWS Trusted Advisor Overview + Hands-On,vídeo,3,não,não
+31,WhitePapers and Architectures - AWS Certified Solutions Architect Associate,412,385,Examples of Architecture - AWS Certified Solutions Architect Associate,vídeo,4,não,não
+31,WhitePapers and Architectures - AWS Certified Solutions Architect Associate,413,,Teste 28: WhitePapers & Architectures Quiz,quiz,,não,não
+32,Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Assoc,414,386,Exam Preparation - Section Introduction,vídeo,1,não,não
+32,Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Assoc,415,387,State of Learning Checkpoint - AWS Certified Solutions Architect Associate,vídeo,4,não,não
+32,Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Assoc,416,388,Exam Tips - AWS Certified Solutions Architect Associate,vídeo,3,não,não
+32,Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Assoc,417,389,Links to Whitepapers,artigo,1,não,não
+32,Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Assoc,418,390,Exam Walkthrough and Signup,vídeo,5,não,não
+32,Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Assoc,419,391,Save 50% on your AWS Exam Cost!,vídeo,1,não,não
+32,Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Assoc,420,392,Get an Extra 30 Minutes on your AWS Exam - Non Native English Speakers only,vídeo,1,não,não
+32,Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Assoc,421,393,How does the exam work?,vídeo,2,não,não
+32,Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Assoc,422,,Simulado 1: Practice Exam - AWS Certified Solutions Architect Associate,simulado,,não,não
+33,Congratulations - AWS Certified Solutions Architect Associate,423,394,AWS Certification Paths,vídeo,6,não,não
+33,Congratulations - AWS Certified Solutions Architect Associate,424,395,Congratulations,vídeo,2,não,não
+33,Congratulations - AWS Certified Solutions Architect Associate,425,396,Bonus Lecture,artigo,1,não,não
