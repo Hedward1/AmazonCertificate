@@ -19,6 +19,10 @@ durante a rotina normal de estudo.
 
 ## Materiais disponíveis
 
+Antes de cada bloco, consulte o [Roteiro diário das aulas da
+Udemy](02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md). Ele informa o que
+assistir, consultar ou pular e mostra os títulos exatos dos 425 itens.
+
 | Bloco | Data | Teoria | Laboratório | Questões | Revisões |
 |---|---|---|---|---|---|
 | B01 | 25/07 | [Infraestrutura global, responsabilidade e IAM](03_Guia_do_Estudante/Capitulos/B01_Infraestrutura_Global_Responsabilidade_e_IAM.md) | [Segurança da conta](05_Laboratorios/LAB_B01_Seguranca_da_Conta_IAM.md) | [10 questões](04_Questoes_e_Revisoes/Blocos/B01_Questoes.md) | [D+2/D+7](06_Progresso/B01_Checklist_e_Revisoes.md) |
@@ -28,7 +32,8 @@ durante a rotina normal de estudo.
 
 ## Comece por aqui
 
-1. Consulte o [cronograma diário](02_Planejamento/Cronograma_Diario_SAA-C03.md).
+1. Consulte o [cronograma diário](02_Planejamento/Cronograma_Diario_SAA-C03.md);
+   cada dia começa com as aulas da Udemy correspondentes.
 2. Estude o bloco indicado no [Guia do Estudante](03_Guia_do_Estudante/Guia_do_Estudante_SAA-C03.md).
 3. Execute o laboratório correspondente em
    [Laboratórios](05_Laboratorios/README.md).

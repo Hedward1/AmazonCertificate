@@ -10,7 +10,7 @@ types e security groups
 
 | Atividade | Critério | Estado |
 |---|---|---|
-| Aulas 19–35 | executar Windows/CLI; acelerar macOS/Linux; pular CloudShell para a prova | [ ] |
+| [Aulas B02](../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md#b02) | executar Windows/CLI; acelerar macOS/Linux; pular CloudShell para a prova | [ ] |
 | Quiz da seção 4 | fazer na Udemy e registrar apenas resultado/erros | [ ] |
 | [Capítulo B02](../03_Guia_do_Estudante/Capitulos/B02_IAM_Aplicado_CLI_EC2_e_Security_Groups.md) | explicar os dez objetivos sem consulta | [ ] |
 | [Laboratório B02](../05_Laboratorios/LAB_B02_CLI_Roles_e_Auditoria_IAM.md) | validar identidade, role e auditoria; concluir logout | [ ] |

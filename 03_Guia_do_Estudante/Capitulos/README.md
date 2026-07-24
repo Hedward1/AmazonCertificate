@@ -3,6 +3,11 @@
 Os capítulos são produzidos na ordem dos blocos do cronograma. Cada arquivo liga
 teoria, comparações, cenários, laboratório, questões e revisões.
 
+Todo capítulo novo deve começar com um link para o bloco correspondente no
+[Roteiro diário das aulas da
+Udemy](../../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md), incluindo a
+seleção resumida de aulas antes dos objetivos de aprendizagem.
+
 | Bloco | Conteúdo | Estado |
 |---|---|---|
 | [B01](B01_Infraestrutura_Global_Responsabilidade_e_IAM.md) | Infraestrutura global, responsabilidade compartilhada e IAM | Pronto |

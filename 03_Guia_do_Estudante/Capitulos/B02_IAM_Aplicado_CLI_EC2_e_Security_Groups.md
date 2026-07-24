@@ -2,7 +2,9 @@
 
 **Data planejada:** 27/07/2026  
 **Nível:** iniciante absoluto  
-**Aulas relacionadas:** 19–35  
+**Comece pelas aulas da Udemy:** [roteiro B02 — aulas
+019–035](../../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md#b02);
+assista `019`, `022` e `025–035`, consulte `020–021` e pule `023–024`  
 **Domínios oficiais:** 1 — Design Secure Architectures; 3 — Design
 High-Performing Architectures; 4 — Design Cost-Optimized Architectures  
 **Tarefas principais:** 1.1 — Design secure access to AWS resources; 1.2 —

@@ -2,7 +2,9 @@
 
 **Data planejada:** 29/07/2026  
 **Nível:** iniciante absoluto  
-**Aulas relacionadas:** 47–60  
+**Comece pelas aulas da Udemy:** [roteiro B04 — aulas
+047–060](../../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md#b04);
+assista `047–060` antes deste capítulo  
 **Domínios oficiais:** 2 — Design Resilient Architectures; 3 — Design
 High-Performing Architectures; 4 — Design Cost-Optimized Architectures  
 **Tarefas principais:** 2.2 — Design highly available and/or fault-tolerant

@@ -10,7 +10,7 @@ IAM básico
 
 | Atividade | Critério | Estado |
 |---|---|---|
-| Aulas 1–18 | assistir/revisar, com foco técnico nas aulas 8–18 | [ ] |
+| [Aulas B01](../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md#b01) | recuperar ou assistir 8, 10–12 e 14–18; tratar os demais conforme o roteiro | [ ] |
 | [Capítulo B01](../03_Guia_do_Estudante/Capitulos/B01_Infraestrutura_Global_Responsabilidade_e_IAM.md) | explicar os oito objetivos sem consulta | [ ] |
 | [Laboratório B01](../05_Laboratorios/LAB_B01_Seguranca_da_Conta_IAM.md) | concluir validações e cleanup | [ ] |
 | [Questões B01](../04_Questoes_e_Revisoes/Blocos/B01_Questoes.md) | responder as 10 antes de abrir o gabarito | [ ] |

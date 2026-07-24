@@ -22,6 +22,8 @@ Arquivos de controle:
 - [Inventário do curso](../01_Fontes/Udemy/Inventario_Curso_Udemy_SAA-C03.csv)
 - [Matriz de cobertura](../02_Planejamento/Matriz_Cobertura_SAA-C03.csv)
 - [Cronograma diário](../02_Planejamento/Cronograma_Diario_SAA-C03.md)
+- [Roteiro diário das aulas da
+  Udemy](../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md)
 - [Apostila de questões](../04_Questoes_e_Revisoes/Apostila_de_Questoes_SAA-C03.md)
 - [Gabarito comentado](../04_Questoes_e_Revisoes/Gabarito_Comentado_SAA-C03.md)
 - [Caderno de erros](../04_Questoes_e_Revisoes/Caderno_de_Erros_SAA-C03.md)
