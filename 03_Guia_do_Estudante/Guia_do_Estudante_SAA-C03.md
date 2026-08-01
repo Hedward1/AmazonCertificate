@@ -1,13 +1,13 @@
 # Guia do Estudante - AWS SAA-C03
 
-**Estado:** produção iniciada; consulte os capítulos concluídos no controle abaixo.  
+**Estado:** B01–B25 completos; consulte o [índice dos capítulos](Capitulos/README.md).
 **Idioma:** português, com nomes oficiais, vocabulário de arquitetura e palavras decisivas em inglês.  
 **Perfil:** iniciante absoluto em AWS, com conta disponível para laboratórios.  
 **Exame-alvo:** AWS Certified Solutions Architect - Associate (SAA-C03).
 
-## Como este guia será usado
+## Como usar este guia
 
-Este guia será autossuficiente: o curso da Udemy fornece a sequência de aulas,
+Este guia é autossuficiente: o curso da Udemy fornece a sequência de aulas,
 mas a documentação oficial vigente da AWS determina comportamento, escopo e
 recomendações. Assistir a uma aula não significa dominar o tópico.
 
@@ -22,22 +22,17 @@ Arquivos de controle:
 - [Inventário do curso](../01_Fontes/Udemy/Inventario_Curso_Udemy_SAA-C03.csv)
 - [Matriz de cobertura](../02_Planejamento/Matriz_Cobertura_SAA-C03.csv)
 - [Cronograma diário](../02_Planejamento/Cronograma_Diario_SAA-C03.md)
+- [Roteiro diário das aulas da
+  Udemy](../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md)
 - [Apostila de questões](../04_Questoes_e_Revisoes/Apostila_de_Questoes_SAA-C03.md)
 - [Gabarito comentado](../04_Questoes_e_Revisoes/Gabarito_Comentado_SAA-C03.md)
 - [Caderno de erros](../04_Questoes_e_Revisoes/Caderno_de_Erros_SAA-C03.md)
 
 ## Sumário planejado
 
-**Blocos disponíveis:**
-
-- [B01 — Infraestrutura global, responsabilidade compartilhada e
-  IAM](Capitulos/B01_Infraestrutura_Global_Responsabilidade_e_IAM.md);
-- [B02 — IAM aplicado, AWS CLI, EC2 e security
-  groups](Capitulos/B02_IAM_Aplicado_CLI_EC2_e_Security_Groups.md);
-- [B03 — Conexão ao EC2, instance roles e modelos de
-  compra](Capitulos/B03_Conexao_EC2_Roles_e_Modelos_de_Compra.md);
-- [B04 — IPs, ENIs, placement groups, hibernação, EBS, snapshots e
-  AMIs](Capitulos/B04_IPs_ENI_Placement_Hibernation_EBS_Snapshots_e_AMI.md).
+**Blocos disponíveis:** [B01–B25 completos](Capitulos/README.md), na mesma
+ordem do cronograma. Comece pelo B01 e abra, no início de cada capítulo, as
+aulas correspondentes da Udemy.
 
 ### Parte I - Fundamentos, identidade e computação
 
@@ -84,7 +79,8 @@ Arquivos de controle:
 
 17. Escolha de bancos de dados purpose-built  
     Curso: seção 21.
-18. Analytics, ingestão, transformação e visualização  
+18. Analytics, ingestão, transformação e visualização, incluindo Amazon Quick
+    Sight (antigo QuickSight) dentro do Amazon Quick
     Curso: seção 22.
 19. Serviços gerenciados de Machine Learning relevantes ao exame  
     Curso: seção 23.
@@ -184,4 +180,4 @@ Cada capítulo deverá conter:
 | B02 — capítulos 2 e 3 (início) | Pronto | Pronto | 3 prontos | Pronto | 10 prontas | Pronto | Pronto |
 | B03 — capítulo 3 (continuação) | Pronto | Pronto | 4 prontos | Pronto | 10 prontas | Pronto | Pronto |
 | B04 — capítulos 3 e 4 (transição) | Pronto | Pronto | 6 prontos | Pronto | 10 prontas | Pronto | Pronto |
-| B05–B25 | Não iniciado | Não iniciado | Não iniciado | Não iniciado | Não iniciado | Não iniciado | Não iniciado |
+| B05–B25 | Pronto | Pronto | 3 ou mais por bloco | Pronto | 210 prontas | Pronto | Pronto |

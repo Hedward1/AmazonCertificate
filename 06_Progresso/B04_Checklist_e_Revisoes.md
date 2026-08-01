@@ -10,12 +10,12 @@ snapshots e AMIs
 
 | Atividade | Critério | Estado |
 |---|---|---|
-| Aulas 47–60 | concluir as aulas e usar o tratamento indicado no capítulo | [ ] |
+| [Aulas B04](../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md#b04) | concluir 47–60 e usar o tratamento indicado no capítulo | [ ] |
 | Quiz da seção 6 | fazer na Udemy e registrar somente resultado e erros | [ ] |
 | [Capítulo B04](../03_Guia_do_Estudante/Capitulos/B04_IPs_ENI_Placement_Hibernation_EBS_Snapshots_e_AMI.md) | explicar os objetivos sem consulta | [ ] |
 | [Laboratório B04](../05_Laboratorios/LAB_B04_Inventario_EC2_ENI_EBS_e_AMI.md) | concluir o inventário read-only e confirmar zero mudanças | [ ] |
 | [Questões B04](../04_Questoes_e_Revisoes/Blocos/B04_Questoes.md) | responder as 10 antes de abrir o gabarito | [ ] |
-| Correção | justificar por que cada alternativa está certa ou errada | [ ] |
+| [Gabarito B04](../04_Questoes_e_Revisoes/Blocos/B04_Gabarito.md) | justificar por que cada alternativa está certa ou errada | [ ] |
 | Caderno de Erros | registrar erros e acertos de baixa confiança | [ ] |
 | Auditoria | confirmar que nenhuma operação de criação ou exclusão foi executada | [ ] |
 

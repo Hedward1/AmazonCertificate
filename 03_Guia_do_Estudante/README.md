@@ -4,4 +4,4 @@
 - [Capítulos](Capitulos/README.md)
 
 O conteúdo é escrito em português e mantém os termos decisivos do exame em
-inglês.
+inglês. Os 25 capítulos de conteúdo, B01–B25, estão prontos.

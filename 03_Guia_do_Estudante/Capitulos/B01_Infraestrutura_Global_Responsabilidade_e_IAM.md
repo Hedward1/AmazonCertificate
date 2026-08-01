@@ -2,8 +2,9 @@
 
 **Data planejada:** 25/07/2026  
 **Nível:** iniciante absoluto  
-**Aulas relacionadas:** 1–18; o conteúdo técnico começa principalmente nas
-aulas 8–18  
+**Comece pelas aulas da Udemy:** [roteiro B01 — aulas
+001–018](../../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md#b01);
+recupere ou assista `008`, `010–012` e `014–018`  
 **Domínios oficiais:** 1 — Design Secure Architectures; 2 — Design Resilient
 Architectures  
 **Tarefas principais:** 1.1 — Design secure access to AWS resources; 2.2 —

@@ -1,5 +1,6 @@
 # LAB B01 — Segurança da conta, orçamento e acesso temporário
 
+**Capítulo:** [B01 — infraestrutura global, responsabilidade e IAM](../03_Guia_do_Estudante/Capitulos/B01_Infraestrutura_Global_Responsabilidade_e_IAM.md)
 **Nível:** iniciante  
 **Tarefa oficial:** 1.1 — Design secure access to AWS resources  
 **Parte principal:** 35–50 minutos  

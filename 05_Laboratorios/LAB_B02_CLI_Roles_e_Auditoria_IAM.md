@@ -1,5 +1,6 @@
 # LAB B02 — AWS CLI v2, credenciais temporárias e role para EC2
 
+**Capítulo:** [B02 — IAM aplicado, CLI, EC2 e security groups](../03_Guia_do_Estudante/Capitulos/B02_IAM_Aplicado_CLI_EC2_e_Security_Groups.md)
 **Nível:** iniciante  
 **Sistema:** Windows 64-bit com PowerShell  
 **Tarefas oficiais:** 1.1 — Design secure access to AWS resources; 1.2 — Design

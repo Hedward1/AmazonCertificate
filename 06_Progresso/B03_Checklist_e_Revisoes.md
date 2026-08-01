@@ -10,12 +10,12 @@ instance roles, IMDSv2 e modelos de compra
 
 | Atividade | Critério | Estado |
 |---|---|---|
-| Aulas 36–46 | concluir as aulas e acelerar apenas a repetição de sistema operacional | [ ] |
+| [Aulas B03](../02_Planejamento/Roteiro_de_Aulas_por_Dia_SAA-C03.md#b03) | assistir 36–37, 40 e 42–46; consultar as alternativas de sistema operacional e troubleshooting | [ ] |
 | Quiz da seção 5 | fazer na Udemy e registrar somente resultado e erros | [ ] |
 | [Capítulo B03](../03_Guia_do_Estudante/Capitulos/B03_Conexao_EC2_Roles_e_Modelos_de_Compra.md) | explicar os dez objetivos sem consulta | [ ] |
 | [Laboratório B03](../05_Laboratorios/LAB_B03_EC2_Web_Role_e_Cleanup.md) | lançar uma instância, validar e provar o cleanup | [ ] |
 | [Questões B03](../04_Questoes_e_Revisoes/Blocos/B03_Questoes.md) | responder as 10 antes de abrir o gabarito | [ ] |
-| Correção | justificar por que cada alternativa está certa ou errada | [ ] |
+| [Gabarito B03](../04_Questoes_e_Revisoes/Blocos/B03_Gabarito.md) | justificar por que cada alternativa está certa ou errada | [ ] |
 | Caderno de Erros | registrar erros e acertos de baixa confiança | [ ] |
 | Auditoria de custos | confirmar instância, volume, SG, role e IP removidos | [ ] |
 
