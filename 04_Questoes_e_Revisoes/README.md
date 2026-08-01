@@ -6,4 +6,5 @@
 - [Blocos de questões e gabaritos](Blocos/README.md)
 
 Resolva cada bloco sem abrir o gabarito. Registre tanto respostas erradas quanto
-respostas corretas dadas com baixa confiança.
+respostas corretas dadas com baixa confiança. B01–B25 somam 250 questões e 250
+respostas comentadas; os simulados serão preenchidos quando forem realizados.

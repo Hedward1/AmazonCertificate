@@ -6,8 +6,9 @@
 - [Análise inicial de cobertura](Analise_Inicial_Cobertura_SAA-C03.md)
 - [Lacunas e excessos](Lacunas_e_Excessos_SAA-C03.md)
 
-A matriz é refinada à medida que cada capítulo é produzido; ela não deve ser
-interpretada como previsão da frequência de questões no exame.
+A matriz foi refinada durante a produção dos capítulos B01–B25 e continuará
+sendo ajustada somente quando o estudo real revelar uma lacuna. Ela não deve
+ser interpretada como previsão da frequência de questões no exame.
 
 O roteiro diário é gerado a partir do inventário e cobre 396 aulas numeradas,
 28 quizzes e o practice exam. Use os números de aula para localizar o conteúdo

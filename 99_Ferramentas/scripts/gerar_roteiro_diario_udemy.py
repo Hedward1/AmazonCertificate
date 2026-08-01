@@ -257,6 +257,8 @@ BLOCKS = (
         "`245–260` e `262–263`",
         skip="`261`, pois Amazon Personalize está explicitamente fora do escopo",
         notes=(
+            "A aula 245 usa o nome histórico QuickSight. Na nomenclatura oficial "
+            "vigente, estude Amazon Quick Sight como o componente de BI do Amazon Quick.",
             "O quiz de Machine Learning continua útil; desconsidere somente uma "
             "eventual questão exclusivamente sobre Personalize.",
             "Transfira os 2 minutos economizados para recuperação ativa ou questões.",

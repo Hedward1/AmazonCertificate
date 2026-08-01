@@ -771,9 +771,9 @@ estruturadas.
 | Análise de cobertura | [Analise_Inicial_Cobertura_SAA-C03.md](../02_Planejamento/Analise_Inicial_Cobertura_SAA-C03.md) | Pronta |
 | Lacunas e excessos | [Lacunas_e_Excessos_SAA-C03.md](../02_Planejamento/Lacunas_e_Excessos_SAA-C03.md) | Auditoria inicial pronta |
 | Cronograma diário | [Cronograma_Diario_SAA-C03.md](../02_Planejamento/Cronograma_Diario_SAA-C03.md) | 32 dias e 96 horas validados |
-| Guia do Estudante | [Guia_do_Estudante_SAA-C03.md](../03_Guia_do_Estudante/Guia_do_Estudante_SAA-C03.md) | B01–B04 prontos |
-| Apostila de Questões | [Apostila_de_Questoes_SAA-C03.md](../04_Questoes_e_Revisoes/Apostila_de_Questoes_SAA-C03.md) | B01–B04 com 40 questões |
-| Gabarito comentado | [Gabarito_Comentado_SAA-C03.md](../04_Questoes_e_Revisoes/Gabarito_Comentado_SAA-C03.md) | B01–B04 comentados |
+| Guia do Estudante | [Guia_do_Estudante_SAA-C03.md](../03_Guia_do_Estudante/Guia_do_Estudante_SAA-C03.md) | B01–B25 prontos |
+| Apostila de Questões | [Apostila_de_Questoes_SAA-C03.md](../04_Questoes_e_Revisoes/Apostila_de_Questoes_SAA-C03.md) | B01–B25 com 250 questões |
+| Gabarito comentado | [Gabarito_Comentado_SAA-C03.md](../04_Questoes_e_Revisoes/Gabarito_Comentado_SAA-C03.md) | B01–B25 com 250 respostas comentadas |
 | Caderno de Erros | [Caderno_de_Erros_SAA-C03.md](../04_Questoes_e_Revisoes/Caderno_de_Erros_SAA-C03.md) | Pronto para uso |
 
 ### Integridade do inventário
@@ -789,15 +789,16 @@ estruturadas.
 
 ### Pendências atuais
 
-1. produzir os capítulos do Guia na ordem do cronograma;
-2. revisar o mapeamento da matriz durante a produção de cada capítulo;
-3. criar questões autorais somente após a teoria correspondente;
-4. registrar resultados dos quizzes e simulados quando forem realizados;
-5. definir o teto monetário mensal dos laboratórios;
-6. definir a data da prova;
-7. usar o desempenho real para ajustar o cronograma semanalmente.
+1. iniciar o estudo pelo B01 e avançar na ordem do cronograma;
+2. registrar resultados dos quizzes e simulados quando forem realizados;
+3. preencher o Caderno de Erros com erros e acertos de baixa confiança;
+4. definir o teto monetário mensal dos laboratórios;
+5. definir a data da prova;
+6. usar o desempenho real para ajustar o cronograma semanalmente;
+7. adicionar as questões e os resultados dos simulados na fase final.
 
-**Novo estado do documento:** especificação validada e fase de produção iniciada.
+**Novo estado do documento:** produção de B01–B25 concluída; material pronto
+para execução e acompanhamento do desempenho real.
 
 ---
 
@@ -885,8 +886,32 @@ O bloco B04 foi produzido para as aulas 47–60:
 - 10 questões autorais, sendo 6 em português e 4 em inglês;
 - gabarito comentado, revisões D+2/D+7, README, índices e cronograma atualizados.
 
-O projeto possui 25 blocos de conteúdo. Com B01–B04 produzidos, restam B05–B25.
-Depois deles, o cronograma mantém sete dias de consolidação e três simulados.
+O projeto possui 25 blocos de conteúdo. Naquela etapa, B05–B25 ainda restavam;
+a produção completa está registrada na seção 23. O cronograma mantém sete dias
+de consolidação e três simulados depois dos blocos de conteúdo.
 
-**Próxima entrega:** B05 — AMIs, instance store, tipos e criptografia de EBS,
-EFS e introdução à alta disponibilidade.
+---
+
+## 23. Entrega B05–B25 em 01/08/2026
+
+Os 21 blocos restantes foram produzidos no mesmo pacote editorial usado nos
+quatro primeiros. Cada bloco agora contém:
+
+- capítulo ligado às aulas correspondentes da Udemy;
+- laboratório com preflight, custo, validação e cleanup;
+- 10 questões autorais sem exposição do gabarito;
+- 10 respostas comentadas com análise de A–D;
+- checklist de estudo inicial e revisões D+2/D+7.
+
+O conjunto final contém 25 capítulos, 25 laboratórios, 250 questões, 250
+respostas e 25 checklists. A progressão de idioma termina com B20–B25 totalmente
+em inglês. O escopo SAA-C03, as listas de serviços e a nomenclatura Amazon Quick
+Sight/Amazon Quick foram revalidados em 01/08/2026.
+
+Um validador editorial passou sobre os 25 blocos, cobrindo estrutura, densidade,
+idiomas, distribuição de respostas, datas, referências oficiais, navegação,
+UTF-8 e links locais. Os simulados permanecem intencionalmente sem questões até
+o momento de execução, conforme a decisão do estudante.
+
+**Próximo passo:** começar pelo B01, registrar desempenho real e ajustar somente
+as lacunas demonstradas pelos quizzes, questões, revisões e simulados.

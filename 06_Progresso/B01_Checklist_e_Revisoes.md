@@ -14,7 +14,7 @@ IAM básico
 | [Capítulo B01](../03_Guia_do_Estudante/Capitulos/B01_Infraestrutura_Global_Responsabilidade_e_IAM.md) | explicar os oito objetivos sem consulta | [ ] |
 | [Laboratório B01](../05_Laboratorios/LAB_B01_Seguranca_da_Conta_IAM.md) | concluir validações e cleanup | [ ] |
 | [Questões B01](../04_Questoes_e_Revisoes/Blocos/B01_Questoes.md) | responder as 10 antes de abrir o gabarito | [ ] |
-| Correção | revisar todas as alternativas | [ ] |
+| [Gabarito B01](../04_Questoes_e_Revisoes/Blocos/B01_Gabarito.md) | revisar todas as alternativas | [ ] |
 | Caderno de Erros | registrar erros e acertos de baixa confiança | [ ] |
 
 ### Resultado inicial

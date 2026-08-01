@@ -387,7 +387,7 @@ Se D+2 cair no domingo, a revisão passa para a segunda-feira seguinte. Isso oco
 > faça os quizzes `Q19` e `Q20` no tempo **Q**.  
 > [Títulos e tratamento item a item — B19](Roteiro_de_Aulas_por_Dia_SAA-C03.md#b19).
 
-- **V — 49 min:** seção 22, aulas 245–251; seção 23, aulas 252–263. QuickSight, Glue, Lake Formation, Flink, MSK, pipeline de dados e visão geral de ML.
+- **V — 49 min:** seção 22, aulas 245–251; seção 23, aulas 252–263. Amazon Quick Sight (nome histórico no curso: QuickSight), Glue, Lake Formation, Flink, MSK, pipeline de dados e visão geral de ML.
 - **T — 45 min:** pipeline analítico ponta a ponta; ML apenas em nível de reconhecimento de caso de uso; revisão semanal.
 - **L — 20 min:** desenhar ingestão batch e streaming com S3/Glue/Athena/Redshift e Kinesis/Firehose. Não criar MSK, Redshift, OpenSearch ou SageMaker.
 - **Q — 66 min:** quizzes das seções 22 e 23 e mini-simulado de aproximadamente 15 questões.
@@ -699,4 +699,7 @@ Se o critério não for atendido, adiar a prova é a decisão correta. Usar os r
 ---
 
 **Estado:** cronograma executável, fechado em 96 horas e compatível com o inventário completo do HTML do curso.  
-**Próxima dependência:** produzir a matriz oficial de cobertura e ligar cada bloco B01–B25 aos domínios e tarefas da SAA-C03.
+**Materiais ligados:** matriz oficial, roteiro das 425 aulas/itens e pacotes de
+estudo B01–B25 concluídos.
+**Próxima dependência:** executar o B01, registrar o desempenho real e ajustar o
+cronograma apenas com base nos resultados das questões, revisões e simulados.

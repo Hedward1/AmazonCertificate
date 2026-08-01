@@ -1,7 +1,7 @@
 # Mapa oficial de conteúdo — AWS Certified Solutions Architect – Associate (SAA-C03)
 
 **Finalidade:** referência oficial para mapear as 425 aulas/itens do curso, planejar o estudo e verificar lacunas de cobertura.  
-**Data de consulta:** 24/07/2026.  
+**Data de consulta:** 01/08/2026.
 **Idioma deste mapa:** português, com nomes de serviços e termos importantes em inglês preservados para a realização da prova em inglês.
 
 > Este documento traduz e organiza o guia oficial da AWS. As listas oficiais de serviços em escopo e fora do escopo são **não exaustivas** e estão sujeitas a alteração. Portanto, a ausência de um serviço nas duas listas não prova, sozinha, que ele esteja fora do exame. Para classificar uma aula, a correspondência com os conhecimentos e habilidades das 14 tarefas é o critério principal.
@@ -406,7 +406,7 @@ Fonte: [Technologies and Concepts](https://docs.aws.amazon.com/aws-certification
 
 ## Serviços AWS atualmente em escopo
 
-Esta é a lista oficial consultada em 24/07/2026. Ela é **não exaustiva**, está sujeita a mudanças e agrupa os serviços por sua função principal.
+Esta é a lista oficial consultada em 01/08/2026. Ela é **não exaustiva**, está sujeita a mudanças e agrupa os serviços por sua função principal.
 
 ### Analytics
 
@@ -583,7 +583,7 @@ Fonte: [In-Scope AWS Services](https://docs.aws.amazon.com/aws-certification/lat
 
 ## Serviços AWS atualmente fora do escopo
 
-Esta é a lista oficial consultada em 24/07/2026. Ela é **não exaustiva** e está sujeita a mudanças. Serviços completamente alheios ao papel-alvo podem nem aparecer nesta lista.
+Esta é a lista oficial consultada em 01/08/2026. Ela é **não exaustiva** e está sujeita a mudanças. Serviços completamente alheios ao papel-alvo podem nem aparecer nesta lista.
 
 ### Application Integration
 
@@ -784,4 +784,3 @@ Aplicar esta sequência a cada aula:
 - Domínio 4: tarefas 4.1, 4.2, 4.3 e 4.4 = **4**.
 - Total: **3 + 2 + 5 + 4 = 14 tarefas**.
 - Pesos: **30% + 26% + 24% + 20% = 100%** do conteúdo pontuado.
-

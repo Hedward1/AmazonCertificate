@@ -15,7 +15,7 @@ instance roles, IMDSv2 e modelos de compra
 | [Capítulo B03](../03_Guia_do_Estudante/Capitulos/B03_Conexao_EC2_Roles_e_Modelos_de_Compra.md) | explicar os dez objetivos sem consulta | [ ] |
 | [Laboratório B03](../05_Laboratorios/LAB_B03_EC2_Web_Role_e_Cleanup.md) | lançar uma instância, validar e provar o cleanup | [ ] |
 | [Questões B03](../04_Questoes_e_Revisoes/Blocos/B03_Questoes.md) | responder as 10 antes de abrir o gabarito | [ ] |
-| Correção | justificar por que cada alternativa está certa ou errada | [ ] |
+| [Gabarito B03](../04_Questoes_e_Revisoes/Blocos/B03_Gabarito.md) | justificar por que cada alternativa está certa ou errada | [ ] |
 | Caderno de Erros | registrar erros e acertos de baixa confiança | [ ] |
 | Auditoria de custos | confirmar instância, volume, SG, role e IP removidos | [ ] |
 
