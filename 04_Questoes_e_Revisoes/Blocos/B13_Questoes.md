@@ -1,24 +1,24 @@
 # B13 — Questões
 
-**Formato:** 10 questões autorais, uma resposta correta<br>
+**Formato:** 10 questões autorais, com itens single-answer e multi-answer; siga a instrução de cada questão<br>
 **Idioma:** 4 em português e 6 em inglês<br>
 **Aulas:** 172–181<br>
 **Tarefas:** 3.1 e 3.5
 
 ## Metadados das questões
 
-| ID | Domínio | Tarefa | Aulas | Idioma |
-|---|---:|---:|---|---|
-| B13-01 | 3 | 3.1 | 175–176 | Português |
-| B13-02 | 3 | 3.1 | 175–176 | Português |
-| B13-03 | 3 | 3.5 | 180 | Português |
-| B13-04 | 3 | 3.5 | 172–174 | Português |
-| B13-05 | 3 | 3.1 | 177–178 | Inglês |
-| B13-06 | 3 | 3.5 | 179 | Inglês |
-| B13-07 | 3 | 3.1 | 177–178 | Inglês |
-| B13-08 | 3 | 3.1 | 175–176 | Inglês |
-| B13-09 | 3 | 3.1 | 181 | Inglês |
-| B13-10 | 3 | 3.5 | 177–180 | Inglês |
+| ID | Domínio | Tarefa | Aulas | Formato | Tipo | Dificuldade | Idioma |
+|---|---:|---:|---|---|---|---|---|
+| B13-01 | 3 | 3.1 | 175–176 | single | fundamental | básica | Português |
+| B13-02 | 3 | 3.1 | 175–176 | single | fundamental | básica | Português |
+| B13-03 | 3 | 3.5 | 180 | multi-2 | integrada | avançada | Português |
+| B13-04 | 3 | 3.5 | 172–174 | single | situacional | intermediária | Português |
+| B13-05 | 3 | 3.1 | 177–178 | single | situacional | intermediária | Inglês |
+| B13-06 | 3 | 3.5 | 179 | single | situacional | intermediária | Inglês |
+| B13-07 | 3 | 3.1 | 177–178 | single | situacional | intermediária | Inglês |
+| B13-08 | 3 | 3.1 | 175–176 | multi-2 | integrada | avançada | Inglês |
+| B13-09 | 3 | 3.1 | 181 | single | situacional | intermediária | Inglês |
+| B13-10 | 3 | 3.5 | 177–180 | single | situacional | intermediária | Inglês |
 
 ### B13-01
 
@@ -43,12 +43,18 @@ gravar o resultado de volta com throughput muito alto. Qual escolha é adequada?
 ### B13-03
 
 Uma empresa quer copiar milhões de arquivos de NFS on-premises para S3 pela
-rede, com agendamento, verificação e automação. Qual serviço usar?
+rede, com agendamento, verificação e automação. Quais componentes devem ser
+configurados?
 
-- A. AWS Direct Connect sem software de transferência
-- B. S3 File Gateway como única tarefa de cópia
-- C. AWS DataSync
-- D. Amazon SNS
+**Choose TWO.**
+
+- A. Usar apenas AWS Direct Connect, sem um serviço de transferência.
+- B. Configurar um AWS DataSync agent com acesso ao NFS on-premises e criar as
+  locations de origem e destino.
+- C. Usar S3 File Gateway como uma tarefa única que verifica toda a migração.
+- D. Criar uma DataSync task com agendamento, opções de verificação e a IAM role
+  necessária para o destino S3.
+- E. Publicar os caminhos dos arquivos em um tópico do Amazon SNS.
 
 Considere que o link de rede já existe e que a empresa procura o serviço que
 executa a movimentação, não apenas conectividade.
@@ -100,30 +106,54 @@ appropriate?
 A company migrating NetApp workloads requires NFS, SMB, iSCSI, snapshots,
 clones, and familiar ONTAP features. Which file system should it choose?
 
-- A. Amazon EFS One Zone
-- B. Amazon FSx for NetApp ONTAP
-- C. Amazon FSx for Lustre scratch
-- D. Amazon S3 Standard
+**Choose TWO.**
+
+- A. Amazon EFS One Zone supplies the requested ONTAP administration model and
+  iSCSI.
+- B. Amazon FSx for NetApp ONTAP supports NFS, SMB, and iSCSI access.
+- C. Amazon FSx for Lustre scratch preserves ONTAP volumes and multiprotocol
+  access.
+- D. FSx for ONTAP provides familiar ONTAP features such as snapshots and
+  clones.
+- E. Amazon S3 Standard exposes the required ONTAP block and file protocols.
 
 ### B13-09
 
-An application needs a shared, elastic NFS file system for Linux instances
-across multiple Availability Zones. It has no specialized Lustre or ZFS
-requirements. Which service is the simplest fit?
+A fleet of Linux EC2 instances scales across three Availability Zones and must
+mount the same POSIX file hierarchy. Instances are replaced frequently, capacity
+must grow and shrink without pre-provisioning, and the team does not need Lustre,
+ONTAP, OpenZFS, SMB, or application changes to an object API.
 
-- A. Amazon EFS
-- B. Amazon EBS
-- C. Amazon S3 Glacier Flexible Retrieval
-- D. AWS Transfer Family
+Which storage design is the simplest operational fit?
+
+- A. Mount a Regional Amazon EFS file system from the instances in each
+  Availability Zone, using appropriate mount targets and network controls.
+- B. Attach one zonal Amazon EBS volume simultaneously to arbitrary instances in
+  all three Availability Zones as a general-purpose NFS service.
+- C. Mount S3 Glacier Flexible Retrieval directly as a low-latency POSIX file
+  system for active application writes.
+- D. Use AWS Transfer Family as the shared kernel-mounted NFS storage layer for
+  the EC2 fleet.
 
 ### B13-10
 
-Which statement correctly distinguishes DataSync from Storage Gateway?
+A company has two hybrid requirements. First, it must perform scheduled,
+verified transfers of millions of files from on premises to Amazon S3 with
+incremental runs and managed task reporting. Second, a legacy application must
+continue using a familiar NFS or iSCSI interface while data is integrated with
+AWS storage. The architect must select different services according to movement
+versus persistent interface semantics.
 
-- A. DataSync provides a persistent iSCSI interface; Storage Gateway only copies files once.
-- B. DataSync automates data transfer tasks; Storage Gateway exposes hybrid storage interfaces to applications.
-- C. Both services require a physical Snow device.
-- D. Storage Gateway is used only for SFTP partner endpoints.
+Which statement maps the services correctly?
+
+- A. AWS DataSync provides the persistent iSCSI application interface, while
+  Storage Gateway only performs one-time file-copy tasks.
+- B. AWS DataSync automates and verifies data-transfer tasks, while AWS Storage
+  Gateway exposes supported hybrid storage interfaces to applications.
+- C. Both services require a physical Snow device to operate, even when the
+  network path has sufficient capacity.
+- D. Storage Gateway is only an SFTP partner endpoint and cannot expose file or
+  volume storage interfaces.
 
 ## Registro
 

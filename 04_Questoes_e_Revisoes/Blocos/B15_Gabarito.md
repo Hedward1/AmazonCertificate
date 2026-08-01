@@ -9,12 +9,12 @@ Abra após responder às [questões B15](B15_Questoes.md).
 | B15-01 | A | 3.5 |
 | B15-02 | B | 3.5 |
 | B15-03 | C | 3.5 |
-| B15-04 | D | 2.1 |
+| B15-04 | A,D | 2.1 |
 | B15-05 | A | 3.2 |
 | B15-06 | C | 3.2 |
-| B15-07 | B | 3.2 |
-| B15-08 | D | 3.2 |
-| B15-09 | A | 3.5 |
+| B15-07 | B,D | 3.2 |
+| B15-08 | D | 2.1 |
+| B15-09 | A,C,E | 3.5 |
 | B15-10 | B | 1.2 |
 
 ## B15-01 — Resposta A
@@ -56,18 +56,18 @@ Abra após responder às [questões B15](B15_Questoes.md).
 - **Reference:** [Kinesis partition keys](https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html).
 - **Common trap:** adding shards while a single low-cardinality key remains hot.
 
-## B15-04 — Answer D
+## B15-04 — Answer A,D
 
-- **Central requirement:** migrate JMS/ActiveMQ behavior with minimal code changes.
-- **Decisive words:** *JMS*, *ActiveMQ-specific*, *managed broker*.
-- **A:** SQS has its own API and semantics.
-- **B:** SNS is managed pub/sub, not an ActiveMQ-compatible broker.
-- **C:** KDS is a streaming log rather than JMS middleware.
-- **D:** correct; Amazon MQ for ActiveMQ preserves supported broker protocols/APIs.
-- **Reusable rule:** legacy broker protocol compatibility → Amazon MQ.
+- **Central requirement:** preserve ActiveMQ/JMS behavior with managed, multi-AZ broker availability.
+- **Decisive words:** *ActiveMQ-specific*, *minimal code changes*, *across Availability Zones*.
+- **A:** correct; Amazon MQ for ActiveMQ provides managed compatibility with the existing broker protocols and APIs.
+- **B:** incorrect; SQS semantics are not a drop-in replacement for ActiveMQ/JMS-specific features.
+- **C:** incorrect; one Spot-hosted broker is self-managed and interruption-prone.
+- **D:** correct; active/standby deployment provides managed failover across Availability Zones.
+- **E:** incorrect; SNS does not accept JMS frames as an ActiveMQ broker.
+- **Reusable rule:** broker compatibility plus minimal refactoring points to Amazon MQ; add active/standby when broker HA is required.
 - **Lessons:** 197.
-- **Reference:** [Amazon MQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html).
-- **Common trap:** selecting MQ for a new cloud-native queue without compatibility needs.
+- **Reference:** [Amazon MQ broker architecture](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/activemq-broker-architecture.html).
 
 ## B15-05 — Answer A
 
@@ -95,54 +95,67 @@ Abra após responder às [questões B15](B15_Questoes.md).
 - **Reference:** [ECS task IAM role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html).
 - **Common trap:** adding every permission to the execution role.
 
-## B15-07 — Answer B
+## B15-07 — Answer B,D
 
-- **Central requirement:** provide compute capacity for additional ECS tasks on EC2.
-- **Decisive words:** *desired count increased*, *PENDING*, *no free CPU*.
-- **A:** caching is unrelated to cluster slots.
-- **B:** correct; the capacity provider/ASG must add suitable EC2 capacity.
-- **C:** stream retention is unrelated.
-- **D:** a revision number cannot create CPU.
-- **Reusable rule:** ECS on EC2 has service scaling and cluster capacity scaling layers.
+- **Central requirement:** scale both ECS tasks and the EC2 capacity that can place them, with managed coordination.
+- **Decisive words:** *tasks remain PENDING*, *no free CPU*, *minimal custom automation*.
+- **A:** incorrect; repository count does not create cluster CPU or memory.
+- **B:** correct; the Auto Scaling group capacity provider connects ECS placement demand to EC2 capacity.
+- **C:** incorrect; the task execution role pulls images and logs; it should not launch cluster instances.
+- **D:** correct; managed scaling adjusts the backing Auto Scaling group from capacity-provider reservation signals.
+- **E:** incorrect; DNS zones do not provide task placement capacity.
+- **Reusable rule:** ECS-on-EC2 service scaling changes desired tasks; a capacity provider with managed scaling changes the underlying hosts.
 - **Lessons:** 199–202.
-- **Reference:** [ECS capacity providers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-capacity-providers.html).
-- **Common trap:** assuming desired tasks automatically create hosts.
+- **Reference:** [ECS capacity provider managed scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-scaling-behavior.html).
 
 ## B15-08 — Answer D
 
-- **Central requirement:** identify the declarative, versioned ECS blueprint.
-- **Decisive words:** *images*, *CPU*, *roles*, *versioned blueprint*.
-- **A:** cluster groups tasks and capacity.
-- **B:** service maintains a desired task count and deployments.
-- **C:** a running task is an instantiation.
-- **D:** correct; a task definition revision declares these settings.
-- **Reusable rule:** blueprint → task definition; instance → task; controller → service.
+- **Central requirement:** migrate an existing stateful application to a managed
+  container runtime without carrying local state, static credentials, or a
+  single-host dependency into the target architecture.
+- **Decisive words:** *stateful API*, *minimal host management*, *multiple AZs*,
+  *rollback*, *no Kubernetes requirement*.
+- **A:** MGN is a valid rehost path when containerization is not yet justified,
+  but the result remains an EC2 workload and does not satisfy this migration goal.
+- **B:** ECS on EC2 is technically possible, but keeping state on one host and
+  access keys in the task preserves the original availability and security risks.
+- **C:** EKS can run the container, but it adds an unnecessary Kubernetes control
+  model while hostPath, `latest`, and manual replacement undermine resilience
+  and repeatable rollback.
+- **D:** correct; it covers assessment, externalized state/configuration,
+  short-lived task credentials, immutable image delivery, managed orchestration,
+  health validation, multi-AZ scaling, cutover, and rollback.
+- **Reusable rule:** container migration is a lifecycle—assess, externalize,
+  build/test, select the orchestrator, deploy, observe, cut over, and retain a
+  rollback—not a VM filesystem copied into an image.
 - **Lessons:** 199–201.
-- **Reference:** [Task definitions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definitions.html).
-- **Common trap:** treating a service as the container specification.
+- **Reference:** [Containerizing and migrating applications with AWS App2Container](https://docs.aws.amazon.com/prescriptive-guidance/latest/containerize-java-a2c/introduction.html).
+- **Common trap:** assuming a container is automatically stateless, secure, or
+  highly available.
 
-## B15-09 — Answer A
+## B15-09 — Answer A,C,E
 
-- **Central requirement:** dedicated Kinesis read throughput per low-latency consumer.
-- **Decisive words:** *same shards*, *without sharing*, *low latency*.
-- **A:** correct; enhanced fan-out provides registered consumers dedicated throughput per shard.
-- **B:** short polling is an SQS receive mode.
-- **C:** Firehose buffering increases delivery efficiency but is not consumer read capacity.
-- **D:** bin packing places containers.
-- **Reusable rule:** multiple KDS consumers contending for reads → evaluate enhanced fan-out.
-- **Lessons:** 192–193.
-- **Reference:** [Enhanced fan-out](https://docs.aws.amazon.com/streams/latest/dev/enhanced-consumers.html).
-- **Common trap:** ignoring the additional cost.
+- **Central requirement:** isolate consumer throughput, remove hot-shard pressure, and retain replay history.
+- **Decisive words:** *independent consumers*, *replay*, *hot shard*, *low-cardinality partition key*.
+- **A:** correct; enhanced fan-out gives registered consumers dedicated read throughput and low-latency delivery.
+- **B:** incorrect; one competing-consumer SQS queue would not give every consumer the full ordered stream and replay model.
+- **C:** correct; higher-cardinality keys distribute writes; resharding adds capacity where the key distribution can use it.
+- **D:** incorrect; Firehose delivery does not replace independent stream consumption, and disabling retention violates replay.
+- **E:** correct; retention must cover the incident recovery replay window.
+- **F:** incorrect; EBS Multi-Attach is unrelated to Kinesis consumer throughput or checkpoints.
+- **Reusable rule:** stream design separates write partitioning, per-consumer read capacity, and retention/replay requirements.
+- **Lessons:** 192–196.
+- **Reference:** [Kinesis enhanced fan-out](https://docs.aws.amazon.com/streams/latest/dev/enhanced-consumers.html).
 
 ## B15-10 — Answer B
 
-- **Central requirement:** remove plaintext secrets from a container image.
-- **Decisive words:** *password*, *embedded in image*.
-- **A:** publishing makes exposure worse.
-- **B:** correct; reference a secrets service and grant least-privilege retrieval.
-- **C:** a container name is metadata and not secret storage.
-- **D:** memory does not protect the credential.
-- **Reusable rule:** runtime secret → secrets service reference, role, rotation, and no logging.
+- **Central requirement:** decouple credential lifecycle from immutable images while using a dedicated ECS task execution role for least-privilege native secret injection and rotation.
+- **Decisive words:** *image layer*, *independent rotation*, *no plaintext*, *only this workload*.
+- **A:** embedding ciphertext avoids plaintext at rest in the layer but couples rotation to image delivery and broad KMS decrypt permission; native secret references provide cleaner lifecycle and scope.
+- **B:** correct; for native ECS secret injection, the ECS task execution role retrieves the referenced value and needs `secretsmanager:GetSecretValue` or `ssm:GetParameters`, plus `kms:Decrypt` when a customer managed KMS key protects it. A new task launch consumes the rotated value.
+- **C:** task definitions and `DescribeTaskDefinition` output can expose plain environment values; update permission alone is not confidentiality.
+- **D:** encrypted S3 can be engineered, but a shared broad role and custom fetch/rotation logic violate least privilege and add operations compared with native integration.
+- **Reusable rule:** for native ECS secret injection, scope retrieval and any KMS decrypt permissions on the task execution role; use the task role only for AWS API calls made by application code, avoid logs, and redeploy tasks after rotation.
 - **Lessons:** 199–202.
 - **Reference:** [Pass secrets to ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
 - **Common trap:** using plain environment variables committed in task JSON or image layers.

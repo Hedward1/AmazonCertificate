@@ -9,13 +9,13 @@ Abra somente depois das [questões B16](B16_Questoes.md).
 | B16-01 | A | 3.2 |
 | B16-02 | C | 3.2 |
 | B16-03 | B | 3.2 |
-| B16-04 | D | 3.2 |
+| B16-04 | B,D | 3.2 |
 | B16-05 | A | 3.2 |
 | B16-06 | C | 3.2 |
-| B16-07 | B | 3.2 |
+| B16-07 | A,D | 3.2 |
 | B16-08 | D | 3.2 |
-| B16-09 | A | 1.2 |
-| B16-10 | C | 4.2 |
+| B16-09 | B,C,E | 1.2 |
+| B16-10 | C | 2.2 |
 
 ## B16-01 — Resposta A
 
@@ -56,18 +56,18 @@ Abra somente depois das [questões B16](B16_Questoes.md).
 - **Reference:** [Lambda quotas](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html).
 - **Common trap:** treating timeout as an adjustable quota beyond the maximum.
 
-## B16-04 — Answer D
+## B16-04 — Answer B,D
 
-- **Central requirement:** prevent Lambda scale from exhausting database connections.
-- **Decisive words:** *80 connections*, *bursts*, *far beyond*.
-- **A:** memory may change speed but does not directly cap concurrency.
-- **B:** a public URL adds exposure and no connection protection.
-- **C:** cache behaviors do not cap Lambda database use in this scenario.
-- **D:** correct; cap concurrency, buffer bursts, and pool through RDS Proxy where suitable.
-- **Reusable rule:** fragile downstream → bound concurrency and decouple/buffer.
-- **Lessons:** 213–214.
-- **Reference:** [Reserved concurrency](https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html).
-- **Common trap:** using provisioned concurrency as a maximum.
+- **Central requirement:** pool database connections and cap Lambda pressure below the database limit.
+- **Decisive words:** *80 concurrent connections*, *reuse connections*, *avoid unbounded scaling*.
+- **A:** incorrect; execution duration does not pool connections or cap concurrency.
+- **B:** correct; RDS Proxy pools and reuses database connections across invocations.
+- **C:** incorrect; VPC-connected Lambda functions do not receive public IPs, and public placement would not protect the database.
+- **D:** correct; reserved concurrency limits how many invocations can pressure the downstream database.
+- **E:** incorrect; caching might reduce some calls but does not enforce a safe concurrency ceiling.
+- **Reusable rule:** protect relational databases from serverless bursts with connection pooling plus an explicit concurrency budget.
+- **Lessons:** 210–214.
+- **Reference:** [Using Lambda with RDS databases](https://docs.aws.amazon.com/lambda/latest/dg/services-rds.html).
 
 ## B16-05 — Answer A
 
@@ -95,57 +95,58 @@ Abra somente depois das [questões B16](B16_Questoes.md).
 - **Reference:** [Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html).
 - **Common trap:** assuming every runtime and Region is supported.
 
-## B16-07 — Answer B
+## B16-07 — Answer A,D
 
-- **Central requirement:** extremely lightweight viewer-request manipulation without network access.
-- **Decisive words:** *URL rewrite*, *header*, *no network call*.
-- **A:** MQ is a broker.
-- **B:** correct; CloudFront Functions is optimized for lightweight viewer logic.
-- **C:** ECS is unnecessary and not executed at CloudFront edge events.
-- **D:** regional Lambda with NAT adds cost and latency and is not the direct edge option.
-- **Reusable rule:** simple high-scale viewer logic → CloudFront Functions.
+- **Central requirement:** match lightweight viewer logic and more capable origin logic to the appropriate edge runtime.
+- **Decisive words:** *submillisecond rewrite*, *every viewer request*, *AWS SDK calls*, *longer execution*.
+- **A:** correct; CloudFront Functions is optimized for high-scale, short viewer event transformations.
+- **B:** incorrect; EC2 adds latency and operations and is not a CloudFront viewer-event runtime.
+- **C:** incorrect; Step Functions cannot be attached as a CloudFront event function.
+- **D:** correct; Lambda@Edge supports the more capable origin-event code beyond CloudFront Functions limits.
+- **E:** incorrect; an asynchronous queue consumer cannot synchronously modify a viewer request.
+- **Reusable rule:** use CloudFront Functions for very short viewer transformations and Lambda@Edge when richer runtime capabilities are required.
 - **Lessons:** 216.
-- **Reference:** [Edge functions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions.html).
-- **Common trap:** choosing Lambda@Edge for a simple rewrite.
+- **Reference:** [Choosing between CloudFront Functions and Lambda@Edge](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html).
 
 ## B16-08 — Answer D
 
-- **Central requirement:** a managed Kubernetes control plane.
-- **Decisive words:** *Kubernetes APIs*, *tooling*, *managed control plane*.
-- **A:** ECS is AWS container orchestration without Kubernetes API.
-- **B:** Lambda is function compute.
-- **C:** ECR is an image registry.
-- **D:** correct; EKS provides managed Kubernetes.
-- **Reusable rule:** explicit Kubernetes requirement → EKS.
+- **Central requirement:** preserve the Kubernetes operating model while outsourcing control-plane availability and retaining flexible worker choices and AWS identity integration.
+- **Decisive words:** *Helm*, *admission policies*, *controllers*, *least rewrite*, *EC2 or Fargate*.
+- **A:** self-managed Kubernetes preserves compatibility but contradicts the requirement to outsource control-plane availability and upgrades.
+- **B:** ECS on Fargate reduces orchestration/node operations, but the stated Kubernetes APIs and controllers would require a material rewrite.
+- **C:** retaining an external control plane is technically possible and ECR can store images, but it does not meet the AWS-managed control-plane requirement.
+- **D:** correct; EKS preserves Kubernetes APIs, manages the control plane, supports multiple data-plane choices, and integrates workload identities with AWS permissions.
+- **Reusable rule:** choose EKS when Kubernetes compatibility is a hard constraint; choose ECS when AWS-native orchestration and lower Kubernetes operational complexity are acceptable.
 - **Lessons:** 206–207.
 - **Reference:** [What is EKS](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html).
-- **Common trap:** forgetting control-plane and worker cost.
+- **Common trap:** choosing EKS only because containers are present, without an actual Kubernetes compatibility requirement.
 
-## B16-09 — Answer A
+## B16-09 — Answer B,C,E
 
-- **Central requirement:** reference immutable tested image content.
-- **Decisive words:** *exact*, *even if tag is moved*.
-- **A:** correct; a digest identifies the content and immutable-tag controls reduce accidents.
-- **B:** `latest` is mutable and ambiguous.
-- **C:** registry credentials must not be embedded in deployments.
-- **D:** a console URL is not an image reference.
-- **Reusable rule:** reproducible release → image digest/immutable versioning.
-- **Lessons:** 205.
-- **Reference:** [ECR image details](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-detail.html).
-- **Common trap:** treating a mutable tag as content identity.
+- **Central requirement:** immutable deployment identity, vulnerability visibility, and private ECR access without NAT.
+- **Decisive words:** *exactly the tested bytes*, *vulnerable packages*, *private subnets*, *without NAT*.
+- **A:** incorrect; a mutable tag can later resolve to different bytes.
+- **B:** correct; the image digest identifies immutable image content.
+- **C:** correct; enhanced ECR scanning integrates Amazon Inspector findings for packages and supported languages.
+- **D:** incorrect; a workstation cache is neither a managed registry nor a deployable control.
+- **E:** correct; ECR API/DKR interface endpoints plus the S3 gateway endpoint support private image pulls.
+- **F:** incorrect; administrator access violates least privilege and does not solve the three requirements.
+- **Reusable rule:** secure private image delivery combines digest pinning, managed scanning, and the service endpoints used by the pull path.
+- **Lessons:** 203–205.
+- **Reference:** [Amazon ECR VPC endpoints](https://docs.aws.amazon.com/AmazonECR/latest/userguide/vpc-endpoints.html).
 
 ## B16-10 — Answer C
 
-- **Central requirement:** complete cleanup after deleting a function.
-- **Decisive words:** *deleted*, *remains*, *separate cleanup*.
-- **A:** a Region cannot be deleted.
-- **B:** the managed runtime is not a customer resource.
-- **C:** correct; log groups, roles, event mappings and related resources can remain.
-- **D:** the service control plane is AWS-managed.
-- **Reusable rule:** resource deletion does not imply dependency/log deletion; inventory explicitly.
+- **Central requirement:** bound asynchronous failure handling, retain recoverable failed events, create operational visibility, and enforce log retention.
+- **Decisive words:** *asynchronously*, *bound retry age*, *preserve exhausted events*, *30 days*.
+- **A:** EventBridge archives can aid replay, but disabling retries and relying on log discovery leaves no automatic durable terminal-failure route or prompt alert.
+- **B:** an SQS buffer can be a valid alternative architecture, but the proposed incomplete design omits stated correctness, observability, retention, and log-lifecycle requirements.
+- **C:** correct; native asynchronous controls bound attempts and age, a destination or DLQ preserves failures, alarms expose the condition, and log retention controls storage duration.
+- **D:** email per error is not a durable failed-event store, and indefinite retries/log retention fail the bounded-age and lifecycle requirements.
+- **Reusable rule:** asynchronous Lambda reliability combines retry/age limits, durable failure routing, alarms, idempotency, and explicit log retention.
 - **Lessons:** 203–214.
-- **Reference:** [Lambda monitoring](https://docs.aws.amazon.com/lambda/latest/dg/lambda-monitoring.html).
-- **Common trap:** checking only the Lambda console after cleanup.
+- **Reference:** [Handling errors for asynchronous invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async-error-handling.html) and [CloudWatch Logs retention](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html).
+- **Common trap:** assuming Lambda retries provide indefinite durable storage or operational alerting by themselves.
 
 ## Ação após a correção
 

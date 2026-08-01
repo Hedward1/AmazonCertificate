@@ -8,12 +8,12 @@ Abra depois das [questões B10](B10_Questoes.md).
 |---|---|---|
 | B10-01 | B | 2.2 |
 | B10-02 | C | 3.4 |
-| B10-03 | A | 3.4 |
+| B10-03 | A,B | 3.4 |
 | B10-04 | D | 3.4 |
 | B10-05 | B | 2.1 |
 | B10-06 | C | 3.4 |
 | B10-07 | A | 3.4 |
-| B10-08 | D | 3.4 |
+| B10-08 | A,C | 3.4 |
 | B10-09 | B | 2.1 |
 | B10-10 | C | 4.2 |
 
@@ -45,14 +45,15 @@ Abra depois das [questões B10](B10_Questoes.md).
 - **Aulas:** 114.
 - **Referência:** [Geolocation routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html).
 
-## B10-03 — Resposta A
+## B10-03 — Resposta A,B
 
 - **Requisito central:** retornar até oito IPs saudáveis via DNS.
 - **Palavras decisivas:** *até oito*, *saudáveis*, *não proxy*.
-- **A:** correta; multivalue pode associar saúde por record.
-- **B:** ALB é proxy L7 e não retorna uma lista de IPs de targets.
-- **C:** geoproximity não é necessária para seleção aleatória saudável.
-- **D:** MX anuncia mail exchangers.
+- **A:** correta; multivalue pode associar um health check a cada record.
+- **B:** correta; uma resposta multivalue contém até oito records saudáveis.
+- **C:** ALB é proxy L7 e não faz o DNS retornar uma lista de IPs dos targets.
+- **D:** geoproximity não é obrigatória para seleção multivalue saudável.
+- **E:** MX anuncia mail exchangers.
 - **Regra reutilizável:** múltiplas respostas DNS com health → multivalue.
 - **Variação:** caching e escolha do cliente permanecem; não há draining ou
   regras por path.
@@ -115,14 +116,19 @@ Abra depois das [questões B10](B10_Questoes.md).
 - **Aulas:** 118.
 - **Referência:** [Using Route 53 with another registrar](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/migrate-dns-domain-in-use.html).
 
-## B10-08 — Answer D
+## B10-08 — Answer A,C
 
 - **Requisito central:** forward VPC queries to on-premises DNS.
 - **Palavras decisivas:** *VPC workloads*, *corp.local*, *on premises*.
-- **A:** inbound handles the reverse query direction.
-- **B:** ALB does not provide recursive DNS forwarding.
-- **C:** public records would not query the corporate resolver.
-- **D:** correct; outbound endpoint plus rule and network path performs forwarding.
+- **A:** correct; an outbound endpoint sends queries toward the on-premises
+  resolvers, and the network/security path must permit DNS traffic.
+- **B:** inbound endpoints handle queries entering Route 53 Resolver from
+  external networks.
+- **C:** correct; the conditional forwarding rule matches `corp.local`, names
+  the target resolvers, and must be associated with the VPC.
+- **D:** a public multivalue record would answer publicly instead of querying
+  the corporate resolver.
+- **E:** ALB does not provide recursive DNS forwarding.
 - **Regra reutilizável:** AWS VPC → external DNS → outbound.
 - **Variação:** associate the rule with VPCs and share through RAM when required;
   include redundant endpoint IPs.
@@ -131,30 +137,47 @@ Abra depois das [questões B10](B10_Questoes.md).
 
 ## B10-09 — Answer B
 
-- **Requisito central:** process background jobs from SQS in Beanstalk.
-- **Palavras decisivas:** *background*, *Amazon SQS*.
-- **A:** health checks are not environment tiers.
-- **B:** correct; worker tier processes messages from an SQS queue.
-- **C:** a DNS record cannot run application jobs.
-- **D:** storage attachment is unrelated to execution tier.
-- **Regra reutilizável:** HTTP application → web tier; SQS background jobs →
-  worker tier.
-- **Variação:** a worker environment can scale its EC2/ASG capacity while the
-  queue buffers work.
+- **Requisito central:** decouple synchronous order intake from independently
+  scalable SQS-backed processing within Elastic Beanstalk.
+- **Palavras decisivas:** *return quickly*, *places each order in SQS*,
+  *separately scalable*, *not public HTTP endpoints*.
+- **A:** Route 53 health checks observe endpoints; authoritative DNS servers do
+  not execute the application's background jobs.
+- **B:** correct; the worker tier integrates an SQS queue with worker instances
+  and can scale independently of the public web environment.
+- **C:** DNS records describe name resolution and cannot carry or execute the
+  queued order workload.
+- **D:** EBS Multi-Attach is a block-storage attachment capability, not a
+  Beanstalk execution tier or message consumer.
+- **Regra reutilizável:** synchronous HTTP intake → web tier; buffered SQS work →
+  separately scaled worker tier.
+- **Variação:** if Beanstalk constraints no longer fit, the same decoupling
+  principle can be implemented with another compute consumer and SQS.
 - **Aulas:** 126–127.
 - **Referência:** [Beanstalk worker environments](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts-worker.html).
 
 ## B10-10 — Answer C
 
-- **Requisito central:** identify costs hidden behind managed orchestration.
-- **Palavras decisivas:** *load-balanced*, *no additional service charge*.
-- **A:** Beanstalk provisions resources into the customer account.
-- **B:** runtime resources, storage and observability also charge.
-- **C:** correct; underlying resources retain normal service pricing/cleanup.
-- **D:** CNAME does not stop or delete infrastructure.
-- **Regra reutilizável:** no Beanstalk surcharge ≠ free environment.
-- **Variação:** terminating an environment should remove managed resources, but
-  audit EIP, snapshots, logs, buckets and data independently.
+- **Requisito central:** decommission a zero-traffic managed environment without
+  confusing absence of a Beanstalk surcharge with absence of resource cost or
+  retention obligations.
+- **Palavras decisivas:** *traffic falls to zero*, *removes CNAME*, *leaves the
+  environment running*, *retention requirement*.
+- **A:** reducing instance capacity can lower compute cost, but a retained load
+  balancer, storage, logs, and other provisioned resources keep their own
+  lifecycle and pricing.
+- **B:** immediate deletion without an ownership and retention inventory can
+  destroy audit evidence or recoverable data that the scenario requires the
+  team to preserve.
+- **C:** correct; the team must inventory underlying resources, terminate what is
+  obsolete, and preserve or separately manage artifacts required for retention.
+- **D:** changing DNS and archiving source code do not terminate the environment
+  or deprovision its supporting resources.
+- **Regra reutilizável:** no platform surcharge ≠ free architecture; decommission
+  by resource ownership, dependency, and retention policy.
+- **Variação:** environment termination can remove managed components, but audit
+  retained logs, buckets, snapshots, Elastic IPs, and external dependencies
+  separately.
 - **Aulas:** 126–127.
 - **Referência:** [Beanstalk concepts](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.html).
 

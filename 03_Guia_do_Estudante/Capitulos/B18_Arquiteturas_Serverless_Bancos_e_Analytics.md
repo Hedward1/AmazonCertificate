@@ -33,7 +33,9 @@ Ao concluir, você deverá:
 | 243 | OpenSearch para busca/log analytics |
 | 244 | EMR para frameworks distribuídos |
 
-O bloco abre analytics; Glue, Lake Formation, QuickSight, Flink e MSK ficam no
+O bloco abre analytics; Glue, Lake Formation, Amazon QuickSuite no guia
+SAA-C03, Amazon Quick na documentação do produto e Amazon Quick Sight para BI,
+Flink e MSK ficam no
 B19. Não antecipe detalhes, mas já separe ingestão, storage, catalog, query e BI.
 
 **Atualização de disponibilidade:** Amazon Timestream for LiveAnalytics fechou

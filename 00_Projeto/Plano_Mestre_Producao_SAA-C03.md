@@ -347,9 +347,11 @@ Devem conter:
 - cenário realista;
 - requisito explícito;
 - restrições relevantes;
-- quatro alternativas plausíveis;
+- quatro alternativas para `single`, cinco ou seis para `Choose TWO` e seis
+  para `Select THREE`;
 - instrução clara sobre escolher uma ou mais respostas;
-- uma solução inequivocamente melhor segundo os requisitos;
+- uma resposta ou conjunto de respostas inequivocamente melhor segundo os
+  requisitos;
 - ausência de pistas artificiais ou pegadinhas linguísticas ruins.
 
 ### Prioridade das fontes
@@ -391,8 +393,13 @@ Para cada questão:
 6. análise da alternativa B;
 7. análise da alternativa C;
 8. análise da alternativa D;
-9. regra reutilizável;
-10. referência oficial para revisão.
+9. análise das alternativas E e F quando existirem;
+10. regra reutilizável;
+11. referência oficial para revisão.
+
+O banco B01–B25 usa 24% de questões multi-answer e a distribuição pedagógica
+20% fundamental, 45% situacional e 35% integrada. Esses valores orientam o
+treino interno e não representam uma proporção oficial publicada pela AWS.
 
 ---
 
@@ -571,12 +578,15 @@ Entregas:
 - auditoria integral da matriz de cobertura;
 - fechamento do Guia inicial.
 
-### Fase final — 28/08 a 31/08
+### Fase final — 24/08 a 31/08
 
 Foco:
 
 - revisão dirigida pelo Caderno de Erros;
-- simulados completos de 65 questões;
+- `SIM-A` autoral em 26/08 e `SIM-C` autoral em 31/08, ambos privados;
+- Practice Udemy reservado para 28/08, sem exposição prévia;
+- `SIM-B` autoral privado somente como tentativa extra após o ciclo ou
+  substituto se o practice exam estiver indisponível;
 - correção aprofundada;
 - retomada dos tópicos fracos;
 - decisão sobre prontidão para a prova.
@@ -905,8 +915,8 @@ quatro primeiros. Cada bloco agora contém:
 
 O conjunto final contém 25 capítulos, 25 laboratórios, 250 questões, 250
 respostas e 25 checklists. A progressão de idioma termina com B20–B25 totalmente
-em inglês. O escopo SAA-C03, as listas de serviços e a nomenclatura Amazon Quick
-Sight/Amazon Quick foram revalidados em 01/08/2026.
+em inglês. O escopo SAA-C03, as listas de serviços e a nomenclatura Amazon
+QuickSuite/Amazon Quick/Amazon Quick Sight foram revalidados em 01/08/2026.
 
 Um validador editorial passou sobre os 25 blocos, cobrindo estrutura, densidade,
 idiomas, distribuição de respostas, datas, referências oficiais, navegação,

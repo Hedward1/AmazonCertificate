@@ -2,24 +2,24 @@
 
 **Quantidade:** 10 questões autorais<br>
 **Idioma:** 10 em inglês<br>
-**Regra:** selecione uma resposta<br>
+**Regra:** selecione a quantidade indicada em cada questão<br>
 **Tempo sugerido:** 18 minutos<br>
 **Gabarito:** [arquivo separado](B25_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B25-01 | 2.2 | CloudFormation change set | Situacional | Intermediate | Inglês |
-| B25-02 | 2.2 | CloudFormation drift | Situacional | Intermediate | Inglês |
-| B25-03 | 1.1 | CloudFormation service role | Situacional | Advanced | Inglês |
-| B25-04 | 1.2 | Session Manager | Situacional | Intermediate | Inglês |
-| B25-05 | 2.2 | Complementary services | Situacional | Basic | Inglês |
-| B25-06 | 3.5 | Amazon AppFlow | Situacional | Basic | Inglês |
-| B25-07 | 4.2 | Cost Anomaly Detection | Situacional | Intermediate | Inglês |
-| B25-08 | 2.2 | Well-Architected pillars | Situacional | Basic | Inglês |
-| B25-09 | 2.2 | Trusted Advisor | Situacional | Intermediate | Inglês |
-| B25-10 | 2.2 | DeletionPolicy Retain and exam readiness | Situacional | Intermediate | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B25-01 | 2.2 | CloudFormation change set | single | fundamental | básica | Inglês |
+| B25-02 | 2.2 | CloudFormation drift | single | situacional | intermediária | Inglês |
+| B25-03 | 1.1 | CloudFormation service role | single | situacional | intermediária | Inglês |
+| B25-04 | 1.2 | Session Manager operations | multi-2 | integrada | avançada | Inglês |
+| B25-05 | 3.2 | Managed compute integration | single | integrada | avançada | Inglês |
+| B25-06 | 4.2 | AWS Outposts e compute híbrido | single | integrada | avançada | Inglês |
+| B25-07 | 4.2 | Cost Anomaly Detection | single | integrada | avançada | Inglês |
+| B25-08 | 2.2 | Well-Architected review | single | situacional | intermediária | Inglês |
+| B25-09 | 4.2 | CUR and Compute Optimizer | multi-3 | integrada | avançada | Inglês |
+| B25-10 | 2.2 | Retained state and resilient automation | single | integrada | avançada | Inglês |
 
 ## Questões
 
@@ -36,8 +36,6 @@
 - C. An SCP that grants database access.
 - D. A Cost Anomaly monitor.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B25-02
 
 **Context:** An administrator manually changed a supported property of a resource that belongs to a CloudFormation stack.
@@ -50,8 +48,6 @@
 - B. CloudFormation drift detection.
 - C. AWS Shield Advanced.
 - D. Amazon SES.
-
-**Before moving on:** record decisive words and confidence.
 
 ### B25-03
 
@@ -66,112 +62,121 @@
 - C. cloudwatch:GetMetricData only.
 - D. route53:ListHostedZones only.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B25-04
 
-**Context:** Private EC2 instances must be administered without inbound SSH, public IP addresses, or a bastion host.
+**Context:** Private EC2 instances must be administered without inbound SSH, public IP addresses, a bastion, or general internet egress. Sessions must use IAM authorization and be auditable.
 
-**Requirement:** Sessions must use managed identity and can be logged.
+**Requirement:** Select the managed session capability and the private connectivity needed to reach it. **Choose TWO.**
 
-**Question:** Which service is the best fit?
-
-- A. AWS WAF.
-- B. Systems Manager Session Manager.
-- C. Amazon CloudFront.
-- D. AWS Snow Family.
-
-**Before moving on:** record decisive words and confidence.
+- A. Use Systems Manager Session Manager with an appropriate instance profile and logging configuration.
+- B. Open TCP 22 from the corporate internet and store shared SSH keys in user data.
+- C. Use Amazon CloudFront as the interactive shell endpoint.
+- D. Configure the required Systems Manager interface VPC endpoints and private DNS for the isolated VPC.
+- E. Use AWS WAF rules to authorize operating-system commands.
 
 ### B25-05
 
-**Context:** A company needs to run queued containerized compute jobs that can scale according to batch demand.
+**Context:** A research company runs containerized rendering and genomics jobs
+with dependencies, queue priorities, retry rules, and highly variable CPU/GPU
+demand. Jobs may wait for capacity, can use Spot where interruption is
+acceptable, and do not require a continuously running stream processor.
 
-**Requirement:** It does not need continuous stream processing.
+**Requirement:** Use a managed scheduler that selects and scales compatible
+compute environments while the company pays for underlying resources.
 
-**Question:** Which service should it use?
+**Question:** Which design best fits?
 
-- A. Amazon Pinpoint.
-- B. Amazon AppFlow.
-- C. AWS Batch.
-- D. Amazon Lex.
-
-**Before moving on:** record decisive words and confidence.
+- A. Run an Amazon ECS service whose long-lived workers poll SQS, and build custom dependency, priority, retry, GPU-placement, and scale-to-zero logic.
+- B. Use Step Functions Distributed Map with ECS `RunTask` integrations for every job and implement queue fairness, capacity selection, retries, and large-scale scheduler behavior in workflows.
+- C. Use AWS Batch job definitions, queues, scheduling policies/dependencies, and managed EC2/Fargate compute environments appropriate to each workload.
+- D. Run Kubernetes Jobs on Amazon EKS with a separately operated queueing/scheduling stack and node autoscaling, retaining the Kubernetes operations the team has not requested.
 
 ### B25-06
 
-**Context:** A business team must transfer data between a supported SaaS application and Amazon S3 with minimal custom integration code.
+**Context:** A factory control workload must process data inside the customer's
+facility because equipment interactions require single-digit-millisecond local
+latency and policy requires local processing. The company wants supported EC2,
+EBS, and ECS interfaces, AWS-managed infrastructure, and VPC integration. The
+site can provide rack space, power, networking, and resilient connectivity to
+the parent Region, and the team can plan finite capacity in advance.
 
-**Requirement:** The solution should use a managed data integration service.
+**Requirement:** Select the hybrid compute placement that satisfies the local
+execution requirement with the least customer management of infrastructure.
 
-**Question:** Which service is appropriate?
+**Question:** Which design is appropriate?
 
-- A. AWS Outposts.
-- B. Amazon AppFlow.
-- C. Amazon Inspector.
-- D. AWS Direct Connect only.
-
-**Before moving on:** record decisive words and confidence.
+- A. Run the workload in an AWS Local Zone; a Local Zone is installed inside
+  the customer's factory and uses the customer's power and racks.
+- B. Deploy an appropriately sized AWS Outposts rack at the factory, design the
+  service link and local connectivity for resilience, and run supported AWS
+  resources in Outpost subnets.
+- C. Use AWS Direct Connect to a Region and assume the circuit places EC2 and
+  EBS capacity physically inside the factory.
+- D. Operate customer-owned servers and Kubernetes on premises; this preserves
+  local compute but does not satisfy the requirement for AWS-managed local
+  infrastructure and supported AWS service interfaces.
 
 ### B25-07
 
-**Context:** A company wants notifications when daily AWS spending deviates unexpectedly from learned patterns.
+**Context:** A company needs notifications when service-level daily spend
+deviates from learned patterns, then needs analysts to attribute the change by
+account, service, and Region. A separate forecast threshold is already managed
+as a budget; neither mechanism should be described as automatically stopping
+resources.
 
-**Requirement:** The feature should detect anomalies, not enforce a hard spending cap.
+**Requirement:** Add model-based anomaly monitoring and a notification path
+without replacing attribution or budget controls.
 
-**Question:** Which service capability should be configured?
+**Question:** Which design is correct?
 
-- A. AWS Cost Anomaly Detection.
-- B. A security group.
-- C. CloudFormation drift detection.
-- D. AWS Certificate Manager.
-
-**Before moving on:** record decisive words and confidence.
+- A. Configure AWS Cost Anomaly Detection monitors and alert subscriptions, investigate detections with Cost Explorer/cost data, and retain Budgets for explicit actual/forecast thresholds.
+- B. Use AWS Budgets with actual/forecast thresholds as if fixed thresholds were a learned anomaly model, then skip service-level anomaly monitors.
+- C. Schedule Cost Explorer queries and custom Lambda statistical rules, owning seasonality, false positives, notification state, and model maintenance.
+- D. Use a CloudWatch billing alarm with one static account-level threshold and treat it as service-level learned-pattern detection.
 
 ### B25-08
 
-**Context:** An architecture review evaluates operations, security, reliability, performance, cost, and environmental impact.
+**Context:** A team is reviewing a low-cost single-AZ design. Moving to multiple
+AZs improves reliability but raises cost and embodied/operational resource use;
+automation can reduce operational risk. The team needs a structured review,
+documented improvement plan, and explicit trade-offs rather than a tool that
+silently changes production.
 
-**Requirement:** The team wants the complete current set of Well-Architected pillars.
+**Requirement:** Use the complete current AWS Well-Architected decision model
+and record findings without treating pillars as isolated service categories.
 
-**Question:** Which list is correct?
+**Question:** Which approach is correct?
 
-- A. Security, networking, storage, database, compute, migration.
-- B. Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability.
-- C. Audit, encryption, backup, scaling, caching, and billing.
-- D. Identity, DNS, routing, logging, patching, and support.
-
-**Before moving on:** record decisive words and confidence.
+- A. Replace the workload review with outputs from Trusted Advisor, Security Hub CSPM, and Compute Optimizer, assuming automated checks cover every architectural trade-off and business context.
+- B. Evaluate Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability together, and use the Well-Architected Tool to record risks and improvements rather than automatically remediate resources.
+- C. Use the Well-Architected Tool but review only five historical pillars, omitting Sustainability from trade-offs and the improvement plan.
+- D. Review all six pillars, then configure automation to apply every recorded improvement directly to production without owner approval or workload testing.
 
 ### B25-09
 
-**Context:** An account owner wants automated checks and recommendations for areas such as cost, performance, security, fault tolerance, and service limits.
+**Context:** A FinOps team needs line-item cost and usage data for SQL analysis, resource rightsizing recommendations based on utilization, and alerts when spending deviates from learned patterns.
 
-**Requirement:** The architect must remember that coverage varies by support plan.
+**Requirement:** Use purpose-built AWS capabilities for detailed allocation, optimization, and anomaly notification. **Select THREE.**
 
-**Question:** Which service provides these checks?
-
-- A. AWS Trusted Advisor.
-- B. Amazon Kendra.
-- C. AWS DMS.
-- D. Amazon Textract.
-
-**Before moving on:** record decisive words and confidence.
+- A. Deliver AWS Cost and Usage Reports to Amazon S3 for detailed cost records.
+- B. Use AWS Artifact to recommend EC2 instance sizes.
+- C. Use AWS Compute Optimizer for supported resource recommendations.
+- D. Use Amazon Inspector as the cost allocation ledger.
+- E. Configure AWS Cost Anomaly Detection monitors and alert subscriptions.
+- F. Use CloudTrail Event history as the authoritative line-item billing dataset.
 
 ### B25-10
 
-**Context:** A course stack is deleted, but a database with DeletionPolicy Retain remains. The learner is tempted to open the reserved practice exam during B25.
+**Context:** An RDS database is managed by CloudFormation. The company must preserve a recoverable snapshot if the stack is deleted or if an update replaces the database, while allowing stateless resources to follow normal deletion behavior.
 
-**Requirement:** Cleanup must be verified, and the practice exam must remain unseen until SIM B.
+**Requirement:** Apply protection specifically to the stateful resource through infrastructure as code.
 
-**Question:** What should the learner do?
+**Question:** Which design best meets the requirement?
 
-- A. Assume stack deletion removed every resource and open the exam.
-- B. Delete every database in the account and open the exam.
-- C. Verify the retained resource and its ownership, clean it up only if authorized, and keep the practice exam unopened.
-- D. Ignore the retained database because retained resources are free.
-
-**Before moving on:** record decisive words and confidence.
+- A. Set `DeletionPolicy: Snapshot` and `UpdateReplacePolicy: Snapshot` on the database resource.
+- B. Set `DeletionPolicy: Delete` and rely on stack event history as the backup.
+- C. Add a stack output containing the database endpoint; outputs prevent deletion and replacement.
+- D. Use a CloudFormation change set only; a change set automatically snapshots replaced databases.
 
 ## Registro antes de corrigir
 

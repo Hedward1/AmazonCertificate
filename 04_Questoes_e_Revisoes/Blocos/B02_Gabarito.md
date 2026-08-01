@@ -9,12 +9,12 @@ as [questões B02](B02_Questoes.md).
 |---|---|---|
 | B02-01 | B | 1.1 |
 | B02-02 | C | 1.2 |
-| B02-03 | A | 1.1 |
+| B02-03 | A,B | 1.1 |
 | B02-04 | D | 1.1 |
 | B02-05 | B | 4.2 |
 | B02-06 | C | 3.2 |
 | B02-07 | A | 3.2 |
-| B02-08 | D | 1.2 |
+| B02-08 | A,C | 1.2 |
 | B02-09 | B | 1.2 |
 | B02-10 | C | 3.2 |
 
@@ -48,17 +48,20 @@ as [questões B02](B02_Questoes.md).
 - **Aulas:** 25–26, 32–33.
 - **Referência:** [IAM role for applications on EC2](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html).
 
-## B02-03 — Resposta A
+## B02-03 — Resposta A,B
 
 - **Requisito central:** separar auditoria de credenciais de análise de
   permissões não utilizadas.
 - **Palavras decisivas:** *password/MFA/access keys* e *services not used*.
-- **A:** correta; credential report resume credenciais, e last accessed ajuda a
-  refinar permissões.
-- **B:** CloudTrail registra eventos, mas security groups não analisam IAM.
-- **C:** Budgets trata de custos; Config trata de configuração/compliance.
-- **D:** Access Analyzer não substitui o inventário de credenciais, e CUR é
-  relatório de custos.
+- **A:** correta; o credential report resume o estado e a idade das credenciais
+  duradouras dos IAM users.
+- **B:** correta; last accessed information/Access Advisor mostra quando uma
+  identidade acessou serviços e ajuda a refinar permissões.
+- **C:** security groups filtram tráfego de rede e não inventariam credenciais
+  IAM.
+- **D:** o Cost and Usage Report detalha custos e uso faturável, não o uso de
+  permissões IAM.
+- **E:** AWS Budgets monitora custos ou uso, não lista access keys.
 - **Regra reutilizável:** credencial duradoura → credential report; uso de
   permissão → last accessed.
 - **Variação:** para confirmar uma chamada e seu resultado, consulte CloudTrail.
@@ -125,29 +128,47 @@ as [questões B02](B02_Questoes.md).
 - **Lessons:** 34.
 - **Reference:** [EC2 instance type categories](https://docs.aws.amazon.com/ec2/latest/instancetypes/ec2-instance-type-specifications.html).
 
-## B02-08 — Answer D
+## B02-08 — Answer A,C
 
-- **Central requirement:** public HTTPS and restricted SSH.
-- **Keywords:** *internet users*, *only from corporate IPv4*.
-- **A:** exposes SSH to every IPv4 address.
-- **B:** reverses the required source scopes.
-- **C:** port 80 is HTTP; port 3389 is RDP.
-- **D:** correct; 443 is public and 22 is limited to one `/32` source.
-- **Reusable rule:** application port follows its audience; administrative ports
-  use the narrowest source.
-- **Variation:** if SSH is unnecessary, omit port 22 entirely.
+- **Central requirement:** expose TLS at the public ALB while allowing private
+  targets to receive application traffic only from that ALB.
+- **Keywords:** *terminates HTTPS*, *private subnets*, *only from the load
+  balancer*, *no inbound SSH*.
+- **A:** correct; the internet-facing listener needs inbound TCP 443 from its
+  public IPv4 audience.
+- **B:** an internet source on the target port bypasses the intended ALB-only
+  network boundary whenever a route or public address makes the instance
+  reachable.
+- **C:** correct; referencing the ALB security group authorizes traffic from
+  load-balancer nodes without opening the target port to arbitrary sources.
+- **D:** this reverses the traffic direction and puts the backend port on the
+  frontend security group instead of authorizing the ALB listener.
+- **E:** security groups are stateful, so response traffic for an allowed flow
+  does not require a separate broad ephemeral-port ingress rule.
+- **Reusable rule:** public client → listener SG; listener SG → private target
+  SG on the application port.
+- **Variation:** if SSH is unnecessary because Session Manager is configured,
+  omit port 22 instead of opening it to an administrative CIDR.
 - **Lessons:** 35.
 - **Reference:** [Security group use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html).
 
 ## B02-09 — Answer B
 
-- **Central requirement:** response to an outbound connection.
-- **Keyword:** *stateful*.
-- **A:** an inbound ephemeral-port rule is unnecessary for response traffic.
-- **B:** correct; stateful connection tracking permits the response.
-- **C:** the external response does not originate from the instance itself.
-- **D:** security groups have allow rules, not ordered explicit deny rules.
-- **Reusable rule:** allowed request → response is automatically allowed.
+- **Central requirement:** distinguish the stateful instance security group from
+  the stateless subnet network ACL on an outbound HTTPS flow.
+- **Keywords:** *initiates*, *security group outbound 443*, *network ACL inbound
+  ephemeral ports*, *additional inbound rule*.
+- **A:** the stateless network ACL needs the corresponding response-port path,
+  but a broad inbound ephemeral rule is unnecessary on the stateful security
+  group for an established outbound connection.
+- **B:** correct; security-group connection tracking permits the response to the
+  allowed outbound flow.
+- **C:** the response source is the external service, and no self-referencing
+  inbound 443 rule is required for that established flow.
+- **D:** security groups contain allow rules and do not implement ordered
+  explicit deny processing.
+- **Reusable rule:** allowed security-group flow → return traffic is tracked;
+  stateless NACLs still need both directions and the relevant response ports.
 - **Variation:** a new inbound connection still needs an applicable inbound
   rule.
 - **Lessons:** 35.
@@ -155,17 +176,25 @@ as [questões B02](B02_Questoes.md).
 
 ## B02-10 — Answer C
 
-- **Central requirement:** map EC2 launch components to their functions.
-- **A:** AMI supplies the image; security group controls traffic.
-- **B:** instance type selects capacity; user data automates initialization.
-- **C:** correct; all four mappings are accurate.
-- **D:** key pair does not select Region, and Budgets does not attach storage.
+- **Central requirement:** combine a reproducible image, right-sized capacity,
+  tier-to-tier network authorization, and automated bootstrap without mixing
+  their responsibilities.
+- **Keywords:** *approved operating system*, *CPU and memory*, *HTTPS only from
+  the ALB*, *automatically at first boot*.
+- **A:** an AMI supplies the system image; it is not the control plane for
+  runtime firewall authorization, and an instance type does not choose the OS.
+- **B:** a security group filters traffic; it cannot install software, while
+  user data does not choose the instance hardware.
+- **C:** correct; the AMI, instance type, security group reference, and user data
+  each satisfy the corresponding requirement and can evolve independently.
+- **D:** a key pair authenticates supported instance access; it does not select a
+  Region, and AWS Budgets neither provisions nor attaches storage.
 - **Reusable rule:** image + capacity + network control + bootstrap are separate
-  decisions.
+  architectural decisions that must be composed explicitly.
 - **Variation:** an IAM role supplies API permissions, while a subnet defines
   network placement.
 - **Lessons:** 32–35.
-- **Referências:** [EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Instances.html) e [EC2 user data](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
+- **References:** [EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Instances.html), [EC2 user data](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html), and [security-group referencing](https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html#security-group-referencing).
 
 ## Ação após a correção
 

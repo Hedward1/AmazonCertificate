@@ -1,24 +1,24 @@
 # B18 — Questões
 
-**Formato:** 10 questões autorais; uma resposta correta<br>
+**Formato:** questões de resposta única e múltipla, conforme indicado<br>
 **Idioma:** 2 Português + 8 Inglês<br>
 **Aulas:** 226–244<br>
 **Tarefas:** 2.1, 3.3, 3.5 e 4.3
 
 ## Metadados das questões
 
-| ID | Domínio | Tarefa | Aulas | Idioma |
-|---|---:|---:|---|---|
-| B18-01 | 3 | 3.3 | 230–239 | Português |
-| B18-02 | 3 | 3.5 | 240–244 | Português |
-| B18-03 | 3 | 3.3 | 231–234 | Inglês |
-| B18-04 | 3 | 3.3 | 237 | Inglês |
-| B18-05 | 3 | 3.3 | 239 | Inglês |
-| B18-06 | 4 | 4.3 | 240–241 | Inglês |
-| B18-07 | 3 | 3.5 | 242 | Inglês |
-| B18-08 | 3 | 3.5 | 243 | Inglês |
-| B18-09 | 3 | 3.5 | 244 | Inglês |
-| B18-10 | 2 | 2.1 | 226–229 | Inglês |
+| ID | Domínio | Tarefa | Aulas | Idioma | Formato | Tipo | Dificuldade |
+|---|---:|---:|---|---|---|---|---|
+| B18-01 | 3 | 3.3 | 230–239 | Português | single | fundamental | básica |
+| B18-02 | 3 | 3.5 | 240–244 | Português | single | situacional | intermediária |
+| B18-03 | 3 | 3.3 | 231–234 | Inglês | single | situacional | intermediária |
+| B18-04 | 3 | 3.3 | 237 | Inglês | multi-2 | integrada | avançada |
+| B18-05 | 3 | 3.3 | 239 | Inglês | single | situacional | intermediária |
+| B18-06 | 4 | 4.3 | 240–241 | Inglês | single | situacional | intermediária |
+| B18-07 | 3 | 3.5 | 242 | Inglês | multi-2 | integrada | avançada |
+| B18-08 | 3 | 3.5 | 243 | Inglês | single | integrada | avançada |
+| B18-09 | 3 | 3.5 | 244 | Inglês | multi-3 | integrada | avançada |
+| B18-10 | 2 | 2.1 | 226–229 | Inglês | single | integrada | avançada |
 
 ### B18-01
 
@@ -52,13 +52,15 @@ Which design addresses the read-scaling requirement?
 
 ### B18-04
 
-A fraud system must efficiently traverse relationships among accounts, devices,
-IP addresses, and merchants. Which database is purpose-built for this?
+A financial platform needs millisecond graph traversals across accounts, devices,
+and IP addresses for fraud detection, while its order ledger requires relational
+constraints and ACID SQL transactions. **Choose TWO.**
 
-- A. Amazon Neptune
-- B. Amazon Keyspaces
-- C. Amazon Timestream
-- D. Amazon ElastiCache Memcached
+- A. Store both workloads in Amazon ElastiCache and implement durability in clients
+- B. Use Amazon Neptune for relationship traversal
+- C. Use Amazon DocumentDB for foreign-key enforcement
+- D. Use Amazon Aurora for the transactional order ledger
+- E. Use Amazon OpenSearch Service as the system of record for account balances
 
 ### B18-05
 
@@ -83,43 +85,58 @@ change most directly reduces bytes scanned?
 
 ### B18-07
 
-The business needs a managed data warehouse for repeated OLAP joins and BI over
-large structured datasets. Which service is the best fit?
+Analysts run repeated OLAP joins over curated structured data and occasional ad
+hoc SQL against raw Parquet in S3. The team wants managed scaling and no
+permanently provisioned cluster for either access pattern. **Choose TWO.**
 
-- A. DynamoDB Accelerator
-- B. Amazon S3 Object Lock
-- C. Amazon Redshift
-- D. Cognito identity pools
+- A. Use Amazon Redshift Serverless for repeated warehouse queries
+- B. Use Amazon Route 53 for SQL federation
+- C. Use Amazon Athena for ad hoc queries over Parquet in S3
+- D. Load every raw object into an EC2 instance store volume
+- E. Use Amazon SQS as the BI semantic layer
 
 ### B18-08
 
-Users need full-text search, relevance scoring, and log analytics over indexed
-documents. Which service is designed for this?
+An ecommerce platform keeps authoritative product and inventory records in a
+transactional database. Customer search traffic is high enough that it must not
+consume transactional database capacity, and both customers and operators need
+predictable low-latency queries through one managed indexed-search platform:
+typo-tolerant product relevance for customers and near-real-time log exploration
+for operators. The team accepts asynchronous indexing but cannot make the search
+layer the source of truth. Which architecture best fits?
 
-- A. Amazon OpenSearch Service
-- B. Amazon EBS
-- C. AWS Storage Gateway
-- D. Amazon RDS event subscriptions
+- A. Use Amazon OpenSearch Service as the managed search layer with product and log indexes, feed it from the systems of record, and keep transactional writes in the database
+- B. Use the transactional database's native full-text features for product search and CloudWatch Logs Insights for logs, accepting separate query models and database search load
+- C. Copy products and logs into DynamoDB and use filter expressions plus scans for typo tolerance and relevance ranking
+- D. Store periodic product exports and logs in S3 and query them with Athena for every interactive search request
 
 ### B18-09
 
-Data engineers need to run custom Apache Spark jobs over a large data lake.
-Which AWS service should they evaluate?
+Data engineers need custom Apache Spark processing over an S3 data lake, a shared
+technical catalog for Athena and the Spark jobs, and centrally governed
+fine-grained data permissions across analytics accounts. Which components meet
+the requirements? **Select THREE.**
 
-- A. Amazon SNS
-- B. Amazon EMR
-- C. Amazon Cognito
-- D. AWS Global Accelerator
+- A. Amazon EMR or EMR Serverless for the Spark workloads
+- B. Amazon Route 53 private hosted zones as the table catalog
+- C. AWS Glue Data Catalog for shared table metadata
+- D. Amazon SES identity policies for column permissions
+- E. AWS Lake Formation for centralized data lake permissions
+- F. Amazon EBS Multi-Attach as cross-account object storage
 
 ### B18-10
 
-A website sends every large software binary through Lambda to users worldwide.
-It must reduce compute work and origin load. Which redesign is best?
+A software vendor proxies multi-gigabyte downloads through Lambda. It currently
+uses horizontal concurrency scaling and vertical memory increases, but those
+compute scaling strategies still proxy every byte. It needs global low latency,
+private origin access, versioned releases, optional time-limited customer
+authorization, and lower repeated origin transfer. Which redesign removes
+Lambda from the data path while meeting the controls?
 
-- A. Increase Lambda timeout for each download
-- B. Put binaries in an ElastiCache node only
-- C. Store versioned binaries in private S3 and distribute through CloudFront with OAC
-- D. Send binaries in SQS messages
+- A. Return time-limited S3 presigned URLs directly to viewers, keeping S3 private but accepting no edge cache for repeated global downloads
+- B. Put CloudFront in front of a public S3 website endpoint and use long cache TTLs without OAC or viewer authorization
+- C. Store versioned binaries in private S3, use CloudFront with OAC and caching, and apply signed URLs or cookies when viewer authorization is required
+- D. Put Global Accelerator in front of the Lambda download proxy and continue horizontally scaling concurrency for every byte
 
 ## Registro antes de corrigir
 

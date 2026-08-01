@@ -2,24 +2,24 @@
 
 **Quantidade:** 10 questões autorais  
 **Idioma:** 6 em português e 4 em inglês  
-**Regra:** selecione uma resposta em cada questão  
+**Formato:** questões single-answer e multi-answer; siga a instrução de cada questão<br>
 **Tempo sugerido:** 15 minutos; registre sua confiança antes de corrigir  
 **Gabarito:** [arquivo separado](B02_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B02-01 | 1.1 | CLI e credenciais temporárias | Situacional | Básica | Português |
-| B02-02 | 1.2 | Role para EC2 | Situacional | Básica | Português |
-| B02-03 | 1.1 | Auditoria IAM | Situacional | Intermediária | Português |
-| B02-04 | 1.1 | IAM best practices | Fundamental | Básica | Português |
-| B02-05 | 4.2 | AWS Budgets | Situacional | Básica | Português |
-| B02-06 | 3.2 | EC2 user data | Situacional | Básica | Português |
-| B02-07 | 3.2 | Instance families | Situacional | Básica | Inglês |
-| B02-08 | 1.2 | Security group e portas | Situacional | Intermediária | Inglês |
-| B02-09 | 1.2 | Stateful security group | Fundamental | Intermediária | Inglês |
-| B02-10 | 3.2 | Componentes de EC2 | Fundamental | Básica | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B02-01 | 1.1 | CLI e credenciais temporárias | single | fundamental | básica | Português |
+| B02-02 | 1.2 | Role para EC2 | single | fundamental | básica | Português |
+| B02-03 | 1.1 | Auditoria IAM | multi-2 | fundamental | intermediária | Português |
+| B02-04 | 1.1 | IAM best practices | single | situacional | intermediária | Português |
+| B02-05 | 4.2 | AWS Budgets | single | situacional | intermediária | Português |
+| B02-06 | 3.2 | EC2 user data | single | situacional | intermediária | Português |
+| B02-07 | 3.2 | Instance families | single | situacional | intermediária | Inglês |
+| B02-08 | 1.2 | Security group e portas | multi-2 | integrada | avançada | Inglês |
+| B02-09 | 1.2 | Stateful security group | single | situacional | intermediária | Inglês |
+| B02-10 | 3.2 | Componentes de EC2 | single | situacional | intermediária | Inglês |
 
 ## Questões
 
@@ -61,13 +61,18 @@ Uma empresa precisa:
 2. descobrir quais serviços permitidos por uma IAM role não apresentam uso
    recente, para ajudar a reduzir suas permissões.
 
-Qual combinação atende melhor aos requisitos?
+Quais ferramentas atendem aos requisitos?
 
-- A. IAM credential report para a primeira verificação e last accessed
-  information/Access Advisor para a segunda.
-- B. CloudTrail Event history para a primeira e security groups para a segunda.
-- C. AWS Budgets para a primeira e AWS Config para a segunda.
-- D. IAM Access Analyzer para a primeira e Cost and Usage Report para a segunda.
+**Choose TWO.**
+
+- A. Gerar o IAM credential report para verificar senha, MFA, access keys e
+  idade das credenciais dos IAM users.
+- B. Consultar last accessed information/Access Advisor para identificar
+  serviços sem uso recente pela IAM role.
+- C. Usar security groups para inventariar senhas e MFA dos IAM users.
+- D. Usar o Cost and Usage Report para determinar quais permissões IAM foram
+  utilizadas.
+- E. Usar o AWS Budgets para listar access keys e sua última rotação.
 
 ### B02-04
 
@@ -125,26 +130,35 @@ Which EC2 instance family category is the best starting point?
 
 ### B02-08
 
-A public Linux web server must accept HTTPS connections from internet users.
-Administrators must connect through SSH only from the corporate public IPv4
-address `203.0.113.10`.
+A public Application Load Balancer terminates HTTPS and forwards requests on
+TCP port 8080 to Linux instances in private subnets. The instances must accept
+application traffic only from the load balancer; administrators use Systems
+Manager Session Manager, so no inbound SSH rule is required.
 
-Which inbound security group configuration best meets these requirements?
+Which inbound security group rules meet these requirements?
 
-- A. Allow TCP 443 and TCP 22 from `0.0.0.0/0`.
-- B. Allow TCP 443 from `203.0.113.10/32` and TCP 22 from `0.0.0.0/0`.
-- C. Allow TCP 80 from `0.0.0.0/0` and TCP 3389 from
-  `203.0.113.10/32`.
-- D. Allow TCP 443 from `0.0.0.0/0` and TCP 22 from
-  `203.0.113.10/32`.
+**Choose TWO.**
+
+- A. On the load balancer security group, allow TCP 443 from `0.0.0.0/0`.
+- B. On the instance security group, allow TCP 8080 from `0.0.0.0/0`.
+- C. On the instance security group, allow TCP 8080 with the load balancer
+  security group as the source.
+- D. On the load balancer security group, allow TCP 8080 with the instance
+  security group as the source.
+- E. On the instance security group, allow all ephemeral TCP ports from
+  `0.0.0.0/0` for response traffic.
 
 ### B02-09
 
-An EC2 instance has a security group that permits outbound TCP 443 traffic. It
-initiates an HTTPS request to an external service. Assume that the network ACL
-permits the traffic.
+An EC2 workload in a private subnet initiates HTTPS connections through the
+approved egress path to an external API. Its security group permits outbound TCP
+443. The subnet network ACL, which is stateless, explicitly permits outbound TCP
+443 and the corresponding inbound ephemeral response ports. The team now asks
+whether the stateful instance control also needs a broad inbound ephemeral-port
+rule.
 
-What inbound security group rule is required for the response?
+What additional inbound security group rule is required for the response
+traffic?
 
 - A. An inbound rule allowing all ephemeral ports from `0.0.0.0/0`.
 - B. No additional inbound rule, because security groups are stateful and allow
@@ -155,17 +169,24 @@ What inbound security group rule is required for the response?
 
 ### B02-10
 
-Which statement correctly describes the main purpose of common EC2 launch
-components?
+A company is standardizing a repeatable EC2 web tier. Every replacement instance
+must boot with the approved operating system, receive enough CPU and memory for
+the workload, accept HTTPS only from the Application Load Balancer, and install
+the current application package automatically at first boot. The design must
+keep image, capacity, network authorization, and bootstrap responsibilities
+separate so each can change independently.
 
-- A. An AMI defines firewall rules, while the instance type defines the
+Which launch design meets all requirements?
+
+- A. Put the firewall rules in the AMI, and use the instance type to select the
   operating system.
-- B. A security group installs software, while user data selects CPU and memory.
-- C. An AMI provides the system image, the instance type determines hardware
-  capacity, a security group controls allowed network traffic, and user data can
-  automate boot-time configuration.
-- D. A key pair selects the AWS Region, while AWS Budgets attaches persistent
-  storage.
+- B. Use a security group to install the package, and use user data to select CPU
+  and memory.
+- C. Use an approved AMI for the system image, an appropriate instance type for
+  capacity, a security group that permits HTTPS from the load balancer security
+  group, and user data for boot-time package installation.
+- D. Use a key pair to select the deployment Region, and use AWS Budgets to
+  attach the persistent application volume.
 
 ## Registro antes de corrigir
 

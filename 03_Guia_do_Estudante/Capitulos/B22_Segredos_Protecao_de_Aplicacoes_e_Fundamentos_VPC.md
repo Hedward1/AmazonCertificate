@@ -153,6 +153,14 @@ O **Regional NAT Gateway**, disponível desde 2025, é associado à VPC em vez d
 ### 5.30 Ponto 30
 
 Nenhum dos modos de NAT Gateway aceita conexão iniciada da internet. NAT instance continua sendo uma alternativa autogerenciada em EC2 e exige source/destination check desabilitado.
+
+#### Classificação da novidade: Regional NAT Gateway
+
+- **`núcleo SAA-C03`:** decidir se workloads privados precisam de saída IPv4, traçar a rota e comparar NAT Gateway gerenciado com NAT instance. No desenho zonal clássico, use um NAT por AZ quando a questão exigir alta disponibilidade e evitar dependência ou tráfego inter-AZ.
+- **`atualização relevante`:** o Regional NAT Gateway é associado à VPC, usa um único NAT ID nas AZs, não precisa ficar em subnet pública e expande automaticamente conforme a presença de workloads. É uma alternativa atual para simplificar alta disponibilidade de saída pública.
+- **`conteúdo profissional opcional`:** modos automático e manual, até 60 minutos para expansão a uma nova AZ e limites de endereços/portas. Isso ajuda em operação real, mas **não é para memorizar** para a SAA-C03.
+
+Armadilha: Regional NAT Gateway oferece conectividade pública; ele não oferece private NAT. Uma rota para NAT continua sem permitir conexão iniciada da internet.
 ### 5.31 Ponto 31
 
 Security group é stateful e contém allow.
@@ -166,6 +174,18 @@ Retorno em NACL precisa de regra e portas apropriadas.
 
 Session Manager pode eliminar bastion quando pré-requisitos existem.
 
+### Cápsula de decisão — Amazon Detective
+
+- **Problema que resolve:** investigar a causa raiz, o alcance e as entidades relacionadas a um finding ou a uma atividade suspeita por meio de dados históricos e de um behavior graph.
+- **Tarefa SAA-C03 relacionada:** 1.2 — projetar workloads e aplicações seguros, especialmente a investigação posterior a uma detecção.
+- **Quando escolher:** depois de um finding do GuardDuty ou de outro sinal, quando a equipe precisa correlacionar chamadas de API, fluxos de rede, recursos e comportamento ao longo do tempo.
+- **Quando não escolher:** para bloquear tráfego, corrigir automaticamente a ameaça ou substituir a detecção inicial.
+- **Serviço semelhante:** GuardDuty detecta atividade potencialmente maliciosa; Detective aprofunda a investigação e ajuda a explicar causa e impacto. Security Hub agrega e prioriza findings de várias fontes.
+- **Armadilha:** Detective não é firewall nem mecanismo automático de remediação. Ele investiga dados e findings; habilitá-lo também implica ingestão regional e custo conforme os dados analisados.
+- **Questão situacional extra (fora do banco de 250):** GuardDuty sinalizou credenciais comprometidas e chamadas incomuns em uma instância EC2. Qual serviço ajuda a reconstruir a linha do tempo, relacionar entidades e estimar o alcance?
+- **Resposta curta:** Amazon Detective, porque constrói e explora o behavior graph com eventos e findings para investigar causa raiz e escopo.
+- **Referência oficial:** [What is Amazon Detective?](https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html)
+
 ## 6. Tabela de decisão
 
 | Requisito dominante | Escolha inicial | Motivo |
@@ -177,6 +197,7 @@ Session Manager pode eliminar bastion quando pré-requisitos existem.
 | DDoS básico | Shield Standard | proteção automática |
 | Política em contas | Firewall Manager | administração central |
 | Threat detection | GuardDuty | sinais gerenciados |
+| Causa raiz e alcance de um finding | Amazon Detective | investigação por behavior graph e histórico |
 | Vulnerabilidade | Inspector | workload e CVE |
 | PII no S3 | Macie | classificação de dados |
 | Saída IPv4 privada | NAT Gateway zonal ou regional | NAT gerenciado; escolher o modo conforme resiliência e topologia |
@@ -305,6 +326,7 @@ Faça inventário antes e depois. Exclua somente recursos criados por você e id
 - [CloudHSM](https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html)
 - [AWS WAF and Shield](https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html)
 - [GuardDuty](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html)
+- [Amazon Detective](https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html)
 - [Inspector](https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html)
 - [Macie](https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html)
 - [VPC subnets](https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html)

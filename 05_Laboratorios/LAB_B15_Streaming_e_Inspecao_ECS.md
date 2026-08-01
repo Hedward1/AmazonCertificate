@@ -106,6 +106,24 @@ Preencha:
 
 Marque qualquer senha em environment como **anti-pattern**; não a copie.
 
+### 6.1 Aplicação — plano de migração para containers
+
+Considere uma API em uma VM que grava sessões e uploads no disco local, lê
+configuração de um arquivo e usa access keys fixas. Sem criar recursos, preencha:
+
+| Etapa | Decisão e evidência de conclusão |
+|---|---|
+| assessment | processos, portas, dependências, estado, jobs e requisitos de SO/licença |
+| estado | destino de sessões, uploads e dados duráveis |
+| configuração/segredos | Parameter Store ou Secrets Manager e task role |
+| build | Dockerfile/image testada, scan e ECR com versão imutável |
+| runtime | ECS/Fargate, ECS on EC2 ou EKS, com justificativa operacional |
+| deployment | task definition, service, ALB/health check, logs e scaling |
+| cutover | teste, métrica de sucesso, estratégia de tráfego e rollback |
+
+Compare o plano com um rehost por AWS Application Migration Service. Registre
+qual requisito justificaria adiar a containerização em vez de forçá-la.
+
 ## 7. Service e capacity — 4 min
 
 Desenhe duas opções:

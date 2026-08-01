@@ -2,24 +2,24 @@
 
 **Quantidade:** 10 questões autorais  
 **Idioma:** 6 em português e 4 em inglês  
-**Regra:** selecione uma resposta em cada questão  
+**Formato:** questões single-answer e multi-answer; siga a instrução de cada questão<br>
 **Tempo sugerido:** 15 minutos; registre sua confiança antes de corrigir  
 **Gabarito:** [arquivo separado](B03_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B03-01 | 1.2 | SSH e security group | Situacional | Básica | Português |
-| B03-02 | 1.2 | EC2 Instance Connect | Fundamental | Intermediária | Português |
-| B03-03 | 1.2 | Session Manager | Situacional | Intermediária | Português |
-| B03-04 | 1.1 | EC2 instance role | Situacional | Básica | Português |
-| B03-05 | 4.2 | On-Demand Instances | Situacional | Básica | Português |
-| B03-06 | 4.2 | Compute Savings Plans | Situacional | Intermediária | Português |
-| B03-07 | 4.2 | Spot e EC2 Fleet | Situacional | Intermediária | Inglês |
-| B03-08 | 4.2 | Zonal Reserved Instance | Situacional | Avançada | Inglês |
-| B03-09 | 4.2 | Dedicated Hosts | Situacional | Intermediária | Inglês |
-| B03-10 | 4.2 | Dedicated Instances | Situacional | Intermediária | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B03-01 | 1.2 | SSH e security group | single | fundamental | básica | Português |
+| B03-02 | 1.2 | EC2 Instance Connect | single | fundamental | básica | Português |
+| B03-03 | 1.2 | Session Manager | multi-2 | fundamental | intermediária | Português |
+| B03-04 | 1.1 | EC2 instance role | single | situacional | intermediária | Português |
+| B03-05 | 4.2 | Disponibilidade por classe | single | integrada | avançada | Português |
+| B03-06 | 4.2 | Compute Savings Plans | single | situacional | intermediária | Português |
+| B03-07 | 4.2 | Spot e EC2 Fleet | single | integrada | avançada | Inglês |
+| B03-08 | 4.2 | Zonal Reserved Instance | multi-2 | integrada | avançada | Inglês |
+| B03-09 | 4.2 | Dedicated Hosts | single | situacional | intermediária | Inglês |
+| B03-10 | 4.2 | Dedicated Instances | single | situacional | intermediária | Inglês |
 
 ## Questões
 
@@ -62,15 +62,19 @@ política de segurança proíbe portas administrativas de entrada e o uso de
 bastion hosts. Os administradores precisam obter um shell interativo com
 controle de acesso pelo IAM.
 
-Qual solução atende melhor aos requisitos?
+Quais configurações atendem aos requisitos?
 
-- A. Usar EC2 Instance Connect diretamente pela internet, sem um EC2 Instance
-  Connect Endpoint.
-- B. Adicionar uma regra de entrada SSH de `0.0.0.0/0` e associar um Elastic IP.
-- C. Migrar a instância para um Dedicated Host, pois isso cria automaticamente
-  um canal administrativo.
-- D. Usar AWS Systems Manager Session Manager, com SSM Agent, uma instance role
-  adequada e conectividade de saída aos endpoints do Systems Manager.
+**Choose TWO.**
+
+- A. Tornar a instância um managed node do Systems Manager, com SSM Agent e uma
+  instance role que conceda as permissões necessárias.
+- B. Associar um Elastic IP e liberar SSH de `0.0.0.0/0`.
+- C. Migrar a instância para um Dedicated Host para criar automaticamente um
+  canal administrativo.
+- D. Fornecer conectividade de saída aos endpoints do Systems Manager por NAT
+  ou por interface VPC endpoints apropriados.
+- E. Liberar TCP 443 de entrada da internet para que o Session Manager alcance
+  a instância.
 
 ### B03-04
 
@@ -90,17 +94,29 @@ Qual abordagem é a mais apropriada?
 
 ### B03-05
 
-Uma empresa executará um teste de migração que utilizará aproximadamente 20
-instâncias EC2 durante dez dias. A duração e o número exato de instâncias ainda
-podem mudar. A execução não pode sofrer interrupções e a empresa não quer
-assumir um compromisso de um ou três anos.
+Uma empresa opera duas classes de workload:
 
-Qual opção de compra é a mais apropriada?
+- o checkout de produção possui objetivo de disponibilidade de 99,95%, RTO de
+  10 minutos, RPO de 1 minuto e deve continuar após a perda de uma Availability
+  Zone;
+- o ambiente de desenvolvimento usa dados sintéticos, pode ser reconstruído por
+  infraestrutura como código em até oito horas, funciona somente em horário
+  comercial e aceita interrupções.
 
-- A. Standard Reserved Instances com compromisso de três anos.
-- B. Spot Instances em um único capacity pool.
-- C. On-Demand Instances.
-- D. Dedicated Hosts reservados por três anos.
+Qual estratégia atende aos objetivos com o menor custo apropriado?
+
+- A. Executar o checkout em uma única Spot Instance e manter desenvolvimento
+  com capacidade On-Demand redundante em três AZs durante 24 horas por dia.
+- B. Aplicar a mesma frota Multi-AZ não interrompível e permanentemente ligada
+  aos dois ambientes, porque todo workload deve receber o maior nível de
+  disponibilidade possível.
+- C. Manter o checkout com baseline não interrompível e redundante entre AZs,
+  dados e recuperação compatíveis com RTO/RPO; agendar ou zerar desenvolvimento
+  fora da janela e usar Spot somente nas partes reconstruíveis e tolerantes a
+  interrupção.
+- D. Executar produção em um único Dedicated Host e reservar capacidade de
+  desenvolvimento em cada AZ, pois hardware dedicado substitui failover e
+  reduz automaticamente o RPO.
 
 ### B03-06
 
@@ -139,16 +155,26 @@ Which solution is the best fit?
 
 ### B03-08
 
-A non-interruptible EC2 workload will use the same instance type, platform, and
-tenancy in a specific Availability Zone for three years. The company requires
-both a committed-use discount and reserved capacity in that Availability Zone.
+A non-interruptible EC2 workload will run in one Availability Zone for three
+years. Finance is comparing a single purchase that couples discount and capacity
+with a design that manages the billing commitment and capacity reservation
+separately.
 
-Which option best meets the requirements?
+Which statements about these designs are correct?
 
-- A. Purchase a matching Zonal Reserved Instance.
-- B. Purchase a Compute Savings Plan only.
-- C. Purchase a Regional Reserved Instance.
-- D. Continue using On-Demand Instances without a Capacity Reservation.
+**Choose TWO.**
+
+- A. A matching Zonal Reserved Instance provides its billing discount and a
+  capacity reservation in the selected Availability Zone.
+- B. Purchase only a Compute Savings Plan and rely on it to reserve capacity in
+  the Availability Zone.
+- C. Purchase a Regional Reserved Instance and rely on it to reserve capacity
+  in one specific Availability Zone.
+- D. An On-Demand Capacity Reservation can reserve capacity independently and
+  the eligible instance usage can receive an applicable Savings Plan or
+  Reserved Instance billing discount.
+- E. Spot Instances provide an uninterrupted three-year capacity reservation
+  when they are launched with a persistent request.
 
 ### B03-09
 

@@ -1,25 +1,25 @@
-# B19 — Questões: Analytics, streaming e serviços gerenciados de AI/ML
+# B19 — Questões: Analytics, streaming, ingestão segura e AI/ML
 
 **Quantidade:** 10 questões autorais<br>
 **Idioma:** 2 em português e 8 em inglês<br>
-**Regra:** selecione uma resposta em cada questão<br>
+**Regra:** selecione a quantidade indicada em cada questão<br>
 **Tempo sugerido:** 18 minutos; registre confiança antes de corrigir<br>
 **Gabarito:** [arquivo separado](B19_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B19-01 | 3.5 | Athena versus Redshift | Situacional | Intermediária | Português |
-| B19-02 | 3.5 | Extração de documentos | Situacional | Básica | Português |
-| B19-03 | 3.5 | Data lake governance | Situacional | Intermediate | Inglês |
-| B19-04 | 3.5 | MSK and Flink | Situacional | Intermediate | Inglês |
-| B19-05 | 3.5 | Speech to text | Situacional | Basic | Inglês |
-| B19-06 | 3.5 | Text to speech | Situacional | Basic | Inglês |
-| B19-07 | 3.5 | Natural language insights | Situacional | Basic | Inglês |
-| B19-08 | 3.5 | Enterprise search | Situacional | Intermediate | Inglês |
-| B19-09 | 3.5 | Custom ML lifecycle | Situacional | Intermediate | Inglês |
-| B19-10 | 3.5 | Business intelligence | Situacional | Basic | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B19-01 | 3.5 | Athena versus Redshift | single | fundamental | básica | Português |
+| B19-02 | 3.5 | Extração de documentos | single | situacional | intermediária | Português |
+| B19-03 | 3.5 | Data lake governance | single | situacional | intermediária | Inglês |
+| B19-04 | 3.5 | MSK and Flink | multi-2 | integrada | avançada | Inglês |
+| B19-05 | 3.5 | Secure ingestion access point | single | integrada | avançada | Inglês |
+| B19-06 | 3.5 | Text to speech | single | situacional | intermediária | Inglês |
+| B19-07 | 3.5 | AI/ML content pipeline | multi-2 | integrada | avançada | Inglês |
+| B19-08 | 3.5 | Enterprise search | single | integrada | avançada | Inglês |
+| B19-09 | 3.5 | Analytics and ML pipeline | multi-3 | integrada | avançada | Inglês |
+| B19-10 | 3.5 | Business intelligence | single | situacional | intermediária | Inglês |
 
 ## Questões
 
@@ -36,8 +36,6 @@
 - C. Amazon RDS for PostgreSQL Multi-AZ.
 - D. Amazon Quick Sight usado como mecanismo SQL.
 
-**Before moving on:** record the decisive words and your confidence.
-
 ### B19-02
 
 **Context:** Uma seguradora recebe formulários digitalizados que contêm texto, pares chave-valor e tabelas.
@@ -50,8 +48,6 @@
 - B. Amazon Transcribe.
 - C. Amazon Textract.
 - D. Amazon SageMaker AI.
-
-**Before moving on:** record the decisive words and your confidence.
 
 ### B19-03
 
@@ -66,37 +62,45 @@
 - C. Amazon MSK.
 - D. AWS Lake Formation.
 
-**Before moving on:** record the decisive words and your confidence.
-
 ### B19-04
 
-**Context:** Applications publish Apache Kafka records continuously. The company must calculate per-customer aggregates in five-minute windows.
+**Context:** Applications publish Apache Kafka records continuously. The company must calculate per-customer aggregates in five-minute windows and retain a durable, scalable Kafka-compatible event backbone.
 
-**Requirement:** The solution must preserve Kafka compatibility and perform stateful stream processing.
+**Requirement:** Minimize broker operations while preserving Kafka APIs and use managed stateful stream processing. **Choose TWO.**
 
-**Question:** Which combination best meets the requirements?
-
-- A. AWS Glue crawler and Amazon Quick Sight.
-- B. Amazon MSK and Amazon Managed Service for Apache Flink.
-- C. Amazon Athena and Amazon Polly.
-- D. Amazon S3 Glacier and AWS Batch.
-
-**Before moving on:** record the decisive words and your confidence.
+- A. Use an AWS Glue crawler as the streaming broker.
+- B. Use Amazon MSK for the Kafka-compatible event backbone.
+- C. Run periodic Amazon Athena queries as the subsecond stream processor.
+- D. Use Amazon Managed Service for Apache Flink for keyed windows and state.
+- E. Use Amazon S3 Glacier Flexible Retrieval as the consumer checkpoint store.
 
 ### B19-05
 
-**Context:** A call center stores customer calls as audio files.
+**Context:** An ECS service in a producer account uses the AWS SDK to write
+regulated events to an Amazon Kinesis Data Stream in a data account. The tasks
+run in private subnets with no NAT gateway or internet route. Assume the Region
+supports policies on Kinesis interface VPC endpoints.
 
-**Requirement:** The company needs searchable text transcripts of the conversations.
+**Requirement:** Only the service's task role may call `PutRecord` and
+`PutRecords` on that stream. Traffic must use a private AWS path and TLS, and the
+stream must use server-side encryption with a customer managed KMS key.
 
-**Question:** Which service should be used?
+**Question:** Which design meets the requirements?
 
-- A. Amazon Polly.
-- B. Amazon Transcribe.
-- C. Amazon Translate.
-- D. Amazon Textract.
-
-**Before moving on:** record the decisive words and your confidence.
+- A. Grant the task role the write actions in its identity policy, omit a stream
+  resource policy because the role is already trusted in its own account, and
+  send requests to the public Regional endpoint through a new NAT gateway.
+- B. Grant the task role only `PutRecord` and `PutRecords` on the exact stream
+  ARN, authorize that external role in the stream resource policy, use a
+  Kinesis interface VPC endpoint with private DNS and a restrictive endpoint
+  policy, and configure TLS plus the required cross-account permissions for the
+  customer managed KMS key.
+- C. Create a Kinesis interface VPC endpoint and name the stream in its endpoint
+  policy, but grant no permissions to the task role or stream because private
+  connectivity authorizes the request.
+- D. Create an IAM user in the data account, store its long-term access keys in
+  the task definition, grant `kinesis:*` and `kms:*` on all resources, and use
+  the public Kinesis endpoint.
 
 ### B19-06
 
@@ -111,67 +115,63 @@
 - C. Amazon Rekognition.
 - D. Amazon Polly.
 
-**Before moving on:** record the decisive words and your confidence.
-
 ### B19-07
 
-**Context:** A retailer has millions of written reviews.
+**Context:** A contact center stores call recordings and needs searchable transcripts plus sentiment and named-entity analysis.
 
-**Requirement:** It must detect sentiment and named entities without developing a custom model.
+**Requirement:** Use managed, pretrained AI services and avoid building a speech or natural-language model. **Choose TWO.**
 
-**Question:** Which service should it use?
-
-- A. Amazon Connect.
-- B. Amazon Kendra.
-- C. Amazon Comprehend.
-- D. Amazon Redshift.
-
-**Before moving on:** record the decisive words and your confidence.
+- A. Use Amazon Transcribe to convert the audio to text.
+- B. Use Amazon Kendra to train a speech recognition model.
+- C. Use Amazon Polly to convert each recording into another audio format.
+- D. Use Amazon Comprehend to analyze sentiment and entities in the transcripts.
+- E. Use Amazon Redshift as the speech-to-text engine.
 
 ### B19-08
 
-**Context:** Employees need a natural-language search experience across internal document repositories.
+**Context:** Employees must search policies stored across supported internal
+repositories. Results should use semantic relevance and preserve source access
+controls. The team does not want to train, host, or tune a search model.
 
-**Requirement:** The company wants managed intelligent enterprise search rather than a model-building platform.
+**Requirement:** Provide managed enterprise search with connectors and
+permission-aware results, while leaving document repositories as systems of
+record.
 
-**Question:** Which service is most appropriate?
+**Question:** Which architecture is most appropriate?
 
-- A. Amazon Kendra.
-- B. Amazon SageMaker AI.
-- C. Amazon Lex.
-- D. Amazon Athena.
-
-**Before moving on:** record the decisive words and your confidence.
+- A. Index the repositories with Amazon Kendra connectors and map document access controls into the search experience.
+- B. Build an OpenSearch index plus custom crawlers, relevance tuning, ACL synchronization, and query APIs for every repository.
+- C. Put Amazon Lex in front of keyword searches performed independently by each source repository, with no shared permission-aware index.
+- D. Build a Bedrock knowledge base and generative answer layer while implementing repository connectors and source-ACL enforcement separately.
 
 ### B19-09
 
-**Context:** Data scientists must train a proprietary forecasting model and deploy it behind a managed inference endpoint.
+**Context:** A company stores raw Parquet in S3, trains a proprietary forecasting model, and exposes curated results to governed analytics accounts.
 
-**Requirement:** They need control of training code, artifacts, experiments, and deployment.
+**Requirement:** Data scientists need managed training and inference, analysts need serverless ad hoc SQL, and administrators need centralized fine-grained lake permissions. **Select THREE.**
 
-**Question:** Which service best meets the requirement?
-
-- A. Amazon Textract.
-- B. Amazon SageMaker AI.
-- C. Amazon Translate.
-- D. Amazon Quick Sight.
-
-**Before moving on:** record the decisive words and your confidence.
+- A. Use Amazon Textract for model training.
+- B. Use Amazon SageMaker AI for training, experiments, and managed inference.
+- C. Use Amazon Quick Sight as the data lake permissions engine.
+- D. Use Amazon Athena for ad hoc SQL over the Parquet data.
+- E. Use Amazon Translate to catalog the lake.
+- F. Use AWS Lake Formation for centralized data permissions.
 
 ### B19-10
 
-**Context:** Business users need interactive dashboards based on curated analytics results.
+**Context:** Curated sales data is cataloged by AWS Glue and queried with
+Athena. Business teams need interactive dashboards, scheduled refreshes, and
+row-level visibility by Region without receiving direct S3 object permissions.
 
-**Requirement:** The service must provide managed business intelligence and visualization.
+**Requirement:** Add a managed BI and visualization layer while preserving the
+catalog/query layers and applying dataset-level access controls.
 
 **Question:** Which service should be selected?
 
-- A. Amazon Textract.
-- B. AWS Glue Data Catalog.
-- C. Amazon MSK.
-- D. Amazon Quick Sight, formerly Amazon QuickSight and now a component of Amazon Quick.
-
-**Before moving on:** record the decisive words and your confidence.
+- A. Build a custom web dashboard that calls Athena for every interaction and reimplements caching, scheduled refresh, sharing, and row-level filtering.
+- B. Use Amazon Managed Grafana as the business semantic layer, even though the primary requirement is governed business analytics rather than operational telemetry.
+- C. Move curated data into Redshift Serverless and give business users SQL access, but provide no managed dashboard or row-level visualization layer.
+- D. Amazon Quick Sight, the BI capability of Amazon Quick (listed as Amazon QuickSuite in the SAA-C03 guide), integrated with Athena and configured for row-level security.
 
 ## Registro antes de corrigir
 

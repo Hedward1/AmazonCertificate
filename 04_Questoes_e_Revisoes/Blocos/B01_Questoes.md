@@ -2,25 +2,25 @@
 
 **Quantidade:** 10 questões autorais  
 **Idioma:** 6 em português e 4 em inglês  
-**Regra:** selecione uma resposta em cada questão  
+**Formato:** questões single-answer e multi-answer; siga a instrução de cada questão<br>
 **Tempo sugerido:** 15 minutos para resolver; depois registre sua confiança antes
 de abrir o gabarito  
 **Gabarito:** [arquivo separado](B01_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B01-01 | 2.2 | Region e AZ | Situacional | Básica | Português |
-| B01-02 | 2.1/3.4 | Edge locations | Situacional | Básica | Português |
-| B01-03 | 1.1 | Shared responsibility/EC2 | Fundamental | Básica | Português |
-| B01-04 | 1.1 | Shared responsibility/S3 | Situacional | Intermediária | Português |
-| B01-05 | 1.1 | Root user e MFA | Situacional | Intermediária | Português |
-| B01-06 | 1.1 | Groups e least privilege | Situacional | Intermediária | Português |
-| B01-07 | 1.1 | Role para EC2 | Situacional | Intermediária | Inglês |
-| B01-08 | 1.1 | Cross-account role | Integrada | Avançada | Inglês |
-| B01-09 | 1.1 | Least-privilege policy | Situacional | Avançada | Inglês |
-| B01-10 | 1.1 | Workforce access | Integrada | Avançada | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B01-01 | 2.2 | Region e AZ | single | fundamental | básica | Português |
+| B01-02 | 2.1/3.4 | Edge locations | single | fundamental | básica | Português |
+| B01-03 | 1.1 | Shared responsibility/EC2 | multi-2 | fundamental | intermediária | Português |
+| B01-04 | 1.1 | Shared responsibility/S3 | single | situacional | intermediária | Português |
+| B01-05 | 1.1 | Root user e MFA | single | situacional | intermediária | Português |
+| B01-06 | 1.1 | Groups e least privilege | single | situacional | intermediária | Português |
+| B01-07 | 1.1 | Role para EC2 | single | situacional | intermediária | Inglês |
+| B01-08 | 1.1 | Cross-account role | multi-2 | integrada | avançada | Inglês |
+| B01-09 | 1.1 | Least-privilege policy | single | situacional | intermediária | Inglês |
+| B01-10 | 1.1 | Workforce access | single | situacional | intermediária | Inglês |
 
 ## Questões
 
@@ -58,14 +58,18 @@ Qual solução é mais adequada?
 
 Uma empresa executa uma aplicação em instâncias Amazon EC2.
 
-Segundo o modelo de responsabilidade compartilhada, qual atividade é
+Segundo o modelo de responsabilidade compartilhada, quais atividades são
 responsabilidade do cliente?
+
+**Choose TWO.**
 
 - A. Substituir discos físicos com defeito no data center.
 - B. Aplicar patches de segurança ao sistema operacional convidado das
   instâncias.
 - C. Manter a camada de virtualização utilizada pelo Amazon EC2.
 - D. Controlar o acesso físico às instalações da AWS.
+- E. Configurar security groups, permissões IAM e a proteção dos dados da
+  aplicação.
 
 ### B01-04
 
@@ -134,25 +138,31 @@ Developers in a development AWS account occasionally need limited access to a
 deployment bucket in a production account. The company wants temporary access
 and does not want to create duplicate user credentials in production.
 
-Which solution should a solutions architect recommend?
+Which configurations should a solutions architect implement?
 
-- A. Create IAM users with long-term access keys in the production account for
+**Choose TWO.**
+
+- A. Create a role in production and attach a permissions policy that limits
+  access to the required deployment bucket actions and resources.
+- B. Configure the production role trust policy for the authorized development
+  principal, and allow that principal to call `sts:AssumeRole`.
+- C. Create IAM users with long-term access keys in the production account for
   every developer.
-- B. Attach an S3 policy only to the developers in the development account; no
-  production configuration is required.
-- C. Store the production account root user credentials in AWS Secrets Manager
+- D. Store the production account root user credentials in AWS Secrets Manager
   in the development account.
-- D. Create a role in production whose trust policy trusts the authorized
-  development principal, attach a least-privilege permissions policy to the
-  role, and allow the developers to call `sts:AssumeRole`.
+- E. Make the deployment bucket public and distribute its URL to the
+  developers.
 
 ### B01-09
 
-A reporting application must download known objects only from the `quarterly/`
-prefix of the `reports-bucket` S3 bucket. It does not need to list, upload,
-modify, or delete objects.
+A reporting workload assumes an IAM role and receives exact object keys from an
+approved manifest. It must download only objects under the `quarterly/` prefix
+of `reports-bucket`; it never discovers keys by listing and must not upload,
+modify, or delete data. The bucket separately enforces TLS, and any required KMS
+permission is scoped in another policy statement.
 
-Which permission statement best follows the principle of least privilege?
+Which S3 permission statement should be included in the role to preserve least
+privilege?
 
 - A. `Allow` `s3:GetObject` on
   `arn:aws:s3:::reports-bucket/quarterly/*`.

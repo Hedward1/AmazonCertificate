@@ -153,6 +153,88 @@ OUs agrupam contas para governança.
 
 Não criar organização ou Config organization-wide para praticar.
 
+### Cápsula de decisão — AWS X-Ray
+
+- **Problema resolvido:** seguir uma request por serviços e dependências para
+  localizar erro, throttling ou latência em uma aplicação distribuída.
+- **Relação SAA-C03:** tarefa 2.2 — validar dependências e pontos de falha de uma
+  arquitetura resiliente.
+- **Quando escolher:** métricas agregadas mostram degradação, mas é necessário
+  ver traces, segmentos e o trace map por request.
+- **Quando não escolher:** CloudTrail responde quem chamou uma API; CloudWatch
+  metrics/alarms respondem saúde agregada; nenhum deles é substituído pelo X-Ray.
+- **Serviço semelhante:** CloudWatch Application Signals, voltado a serviços,
+  SLOs e saúde; X-Ray fornece o detalhe do trace correlacionado.
+- **Armadilha:** sampling significa que nem toda request será registrada e a
+  aplicação precisa de instrumentação. Para código novo, prefira OpenTelemetry;
+  os SDKs e o daemon próprios do X-Ray estão em maintenance mode desde
+  25/02/2026.
+- **Questão situacional extra (fora do banco de 250):** uma chamada passa por API, Lambda e banco, mas
+  só 2% ficam lentas. **Resposta curta:** instrumente com OpenTelemetry e envie
+  traces ao X-Ray; use o trace map para localizar o segmento lento.
+- **Referência oficial:** [What is AWS X-Ray?](https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html) e [migração para OpenTelemetry](https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-migration.html).
+
+### Cápsula de decisão — AWS Security Hub
+
+- **Problema resolvido:** correlacionar e priorizar sinais de segurança de
+  múltiplas fontes em contas e Regions para orientar resposta.
+- **Relação SAA-C03:** tarefa 1.2 — proteção e operação segura de workloads.
+- **Quando escolher:** GuardDuty, Inspector, Macie, IAM Access Analyzer e outros
+  geram findings que precisam de visão e workflows centralizados; habilite
+  Security Hub CSPM também quando quiser standards e control checks.
+- **Quando não escolher:** ele não substitui o serviço que detecta a ameaça nem
+  um SIEM/data lake quando o requisito é guardar e consultar todo evento bruto.
+- **Serviço semelhante:** GuardDuty detecta atividade potencialmente maliciosa;
+  Security Hub reúne/correlaciona findings e exposures.
+- **Armadilha:** finding não é remediação nem prova automática de compliance;
+  configuração central, cobertura regional, integrações e custo precisam ser
+  planejados.
+- **Questão situacional extra (fora do banco de 250):** uma empresa recebe findings de GuardDuty,
+  Inspector e Macie e quer priorizar riscos correlacionados. **Resposta curta:**
+  AWS Security Hub; acrescente Security Hub CSPM para standards e controles.
+- **Referência oficial:** [Introduction to AWS Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub-v2.html).
+
+### Cápsula de decisão — AWS Artifact
+
+- **Problema resolvido:** obter relatórios/certificações de segurança e
+  compliance da infraestrutura AWS e gerenciar acordos com a AWS.
+- **Relação SAA-C03:** tarefas 1.2 e 1.3 — evidência do provedor e controles de
+  segurança/compliance sob responsabilidade compartilhada.
+- **Quando escolher:** auditor solicita SOC, ISO, PCI ou outro documento da AWS,
+  ou a organização precisa revisar/aceitar um acordo disponível no portal.
+- **Quando não escolher:** para provar como a própria conta configurou recursos
+  ou coletar evidência contínua do workload, use Audit Manager/Config/CloudTrail.
+- **Serviço semelhante:** AWS Audit Manager, que organiza evidência sobre o uso
+  da AWS pelo cliente; Artifact entrega documentos e acordos do provedor.
+- **Armadilha:** relatórios podem ser confidenciais e receber watermark; baixe e
+  compartilhe somente conforme os termos. Artifact não transfere ao provedor a
+  responsabilidade pelos controles do cliente.
+- **Questão situacional extra (fora do banco de 250):** o auditor pede o relatório SOC da AWS, não a
+  configuração das suas instâncias. **Resposta curta:** baixe-o no AWS Artifact
+  com permissões e tratamento seguro.
+- **Referência oficial:** [What is AWS Artifact?](https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html).
+
+### Cápsula de decisão — AWS Audit Manager
+
+- **Problema resolvido:** estruturar assessments por frameworks/controls e
+  coletar continuamente evidências automáticas e manuais para auditorias.
+- **Relação SAA-C03:** tarefas 1.2 e 1.3 — demonstrar a operação de controles do
+  cliente, sem confundir evidência com garantia jurídica.
+- **Quando escolher:** contas e serviços em escopo precisam de evidência
+  recorrente de Config, CloudTrail, Security Hub CSPM e APIs, além de revisão por
+  stakeholders e relatório de assessment.
+- **Quando não escolher:** para obter certificações SOC/ISO da AWS, use Artifact;
+  para bloquear uma mudança, use preventive guardrails/policies.
+- **Serviço semelhante:** AWS Config avalia configuração de recursos; Audit
+  Manager agrega diferentes fontes como evidência de controles de auditoria.
+- **Armadilha:** o serviço auxilia a coleta, mas não declara compliance e pode
+  exigir evidência manual. Assessment ativo continua coletando evidência e pode
+  gerar custo.
+- **Questão situacional extra (fora do banco de 250):** PCI exige um pacote recorrente de evidências da
+  configuração e atividade das contas. **Resposta curta:** Audit Manager com
+  framework/assessment e escopo definidos; complete lacunas manualmente.
+- **Referência oficial:** [What is AWS Audit Manager?](https://docs.aws.amazon.com/audit-manager/latest/userguide/what-is.html).
+
 ## 6. Tabela de decisão
 
 | Requisito dominante | Escolha inicial | Motivo |
@@ -164,6 +246,10 @@ Não criar organização ou Config organization-wide para praticar.
 | Quem excluiu recurso | CloudTrail | autoria de API |
 | Histórico de SG | AWS Config | timeline de configuração |
 | Compliance de configuração | Config rule | avalia estado |
+| Trace de uma request distribuída | X-Ray com OpenTelemetry | encontra latência/erro por segmento |
+| Correlacionar findings de segurança | AWS Security Hub | prioriza sinais e exposures |
+| Relatório SOC/ISO da AWS | AWS Artifact | documento do provedor |
+| Evidência contínua para auditoria | AWS Audit Manager | framework, controls e assessment |
 | 90 dias de management events | CloudTrail Event history | consulta regional |
 | Retenção longa de auditoria | Trail para S3 | entrega contínua |
 | Agrupar contas | Organizations e OUs | governança multi-account |
@@ -294,6 +380,12 @@ Faça inventário antes e depois. Exclua somente recursos criados por você e id
 - [Event history](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html)
 - [AWS Config concepts](https://docs.aws.amazon.com/config/latest/developerguide/config-concepts.html)
 - [AWS Organizations](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html)
+- [AWS X-Ray](https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html)
+- [X-Ray SDK/daemon support timeline](https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-daemon-timeline.html)
+- [AWS Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub-v2.html)
+- [Security Hub e Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/what-are-securityhub-services.html)
+- [AWS Artifact](https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html)
+- [AWS Audit Manager](https://docs.aws.amazon.com/audit-manager/latest/userguide/what-is.html)
 
 **Referências verificadas em:** 01/08/2026.
 

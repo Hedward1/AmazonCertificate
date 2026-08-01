@@ -387,7 +387,7 @@ Se D+2 cair no domingo, a revisão passa para a segunda-feira seguinte. Isso oco
 > faça os quizzes `Q19` e `Q20` no tempo **Q**.  
 > [Títulos e tratamento item a item — B19](Roteiro_de_Aulas_por_Dia_SAA-C03.md#b19).
 
-- **V — 49 min:** seção 22, aulas 245–251; seção 23, aulas 252–263. Amazon Quick Sight (nome histórico no curso: QuickSight), Glue, Lake Formation, Flink, MSK, pipeline de dados e visão geral de ML.
+- **V — 49 min:** seção 22, aulas 245–251; seção 23, aulas 252–263. O guia SAA-C03 usa Amazon QuickSuite; a documentação do produto usa Amazon Quick, cujo componente de BI e visualização é Amazon Quick Sight (nome histórico no curso: QuickSight). Glue, Lake Formation, Flink, MSK, pipeline de dados e visão geral de ML completam o bloco.
 - **T — 45 min:** pipeline analítico ponta a ponta; ML apenas em nível de reconhecimento de caso de uso; revisão semanal.
 - **L — 20 min:** desenhar ingestão batch e streaming com S3/Glue/Athena/Redshift e Kinesis/Firehose. Não criar MSK, Redshift, OpenSearch ou SageMaker.
 - **Q — 66 min:** quizzes das seções 22 e 23 e mini-simulado de aproximadamente 15 questões.
@@ -523,7 +523,7 @@ Se D+2 cair no domingo, a revisão passa para a segunda-feira seguinte. Isso oco
 - **Revisões:** D+7 de B23.
 - **Saída do dia:** todo erro do SIM A com causa, regra correta e ação de revisão.
 
-#### 28/08 — sexta-feira — SIM B
+#### 28/08 — sexta-feira — Practice Udemy
 
 > **Udemy:** nenhuma aula nova; execute somente o **Simulado 1 — Practice
 > Exam**, em inglês, cronometrado e sem consulta.  
@@ -532,15 +532,17 @@ Se D+2 cair no domingo, a revisão passa para a segunda-feira seguinte. Isso oco
 - **SIM — 180 min:** 10 min de recuperação D+7 de B24; 130 min para o practice exam de 65 questões da seção 32 da Udemy, em inglês e sem consulta; 40 min de triagem.
 - **Revisões:** D+7 de B24.
 - **Saída do dia:** comparar nota, tempo e distribuição de erros com o SIM A.
+  O banco privado `SIM-B` autoral continua fechado e serve como tentativa extra
+  após o ciclo ou como substituto se o practice exam estiver indisponível.
 
 #### 29/08 — sábado
 
-> **Udemy:** nenhuma aula nova. Corrija profundamente o SIM B.  
+> **Udemy:** nenhuma aula nova. Corrija profundamente o Practice Udemy.
 > [Roteiro da fase final](Roteiro_de_Aulas_por_Dia_SAA-C03.md#fase-final).
 
-- **T — 50 min:** D+7 de B25 e retomada dos conceitos fracos do SIM B.
+- **T — 50 min:** D+7 de B25 e retomada dos conceitos fracos do Practice Udemy.
 - **L — 30 min:** laboratório ou diagrama de remediação focado no pior domínio; não repetir um laboratório já dominado.
-- **Q — 100 min:** correção aprofundada do SIM B, Caderno de Erros e 10–15 questões inéditas direcionadas.
+- **Q — 100 min:** correção aprofundada do Practice Udemy, Caderno de Erros e 10–15 questões inéditas direcionadas.
 - **Revisões:** D+7 de B25.
 - **Saída do dia:** checklist de prontidão preliminar e plano exato para o SIM C.
 

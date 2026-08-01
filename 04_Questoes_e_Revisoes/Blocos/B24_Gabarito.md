@@ -9,12 +9,12 @@ Volte às [questões B24](B24_Questoes.md) antes de corrigir.
 | B24-01 | B | 2.2 |
 | B24-02 | C | 2.2 |
 | B24-03 | A | 2.2 |
-| B24-04 | C | 2.2 |
+| B24-04 | A,C | 2.2 |
 | B24-05 | A | 3.5 |
 | B24-06 | C | 3.5 |
 | B24-07 | A | 2.2 |
 | B24-08 | B | 3.5 |
-| B24-09 | A | 4.4 |
+| B24-09 | B,D,F | 4.4 |
 | B24-10 | C | 2.2 |
 
 ## B24-01 — Answer B
@@ -62,20 +62,18 @@ Volte às [questões B24](B24_Questoes.md) antes de corrigir.
 - **Lessons:** 351–352
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)
 
-## B24-04 — Answer C
+## B24-04 — Answer A,C
 
-- **Central requirement:** The primary goal is server disaster recovery.
-- **Decisive words:** continuous server replication, staging, recovery
-- **Why the correct answer works:** AWS DRS continuously replicates servers and orchestrates recovery from a staging area.
-- **A:** DMS moves database data.
-- **B:** MGN focuses on migration to AWS.
-- **C:** This is correct.
-- **D:** BI is unrelated.
-- **Reusable rule:** Continuous server DR points to AWS Elastic Disaster Recovery.
-- **Cost/operation:** Staging storage, replication, tests, and launched recovery resources can charge.
-- **Variation:** Test recovery regularly without disrupting replication.
-- **Lessons:** 352
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html)
+- **Central requirement:** continuously replicate whole servers and validate orchestrated DR without disrupting production.
+- **Decisive words:** *block-level replication*, *staging area*, *point in time*, *non-disruptive drills*.
+- **A:** correct; Elastic Disaster Recovery supplies ongoing block replication and recovery orchestration.
+- **B:** incorrect; DMS migrates database data and changes, not complete server disks and boot recovery.
+- **C:** correct; DRS drill launches validate recovery while source workloads and replication continue.
+- **D:** incorrect; Application Migration Service is optimized for migration/cutover, not the ongoing DR requirement.
+- **E:** incorrect; Quick Sight is BI and cannot launch recovery instances.
+- **Reusable rule:** MGN is server migration; DRS is continuous server disaster recovery with drills and failover.
+- **Lessons:** 352.
+- **Official reference:** [AWS Elastic Disaster Recovery](https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html).
 
 ## B24-05 — Answer A
 
@@ -94,63 +92,78 @@ Volte às [questões B24](B24_Questoes.md) antes de corrigir.
 
 ## B24-06 — Answer C
 
-- **Central requirement:** The team wants an initial copy followed by ongoing changes until a short cutover.
-- **Decisive words:** initial copy, ongoing changes, short cutover
-- **Why the correct answer works:** Full load copies the initial data, and CDC applies ongoing source changes.
-- **A:** CDC alone lacks the requested initial load in this design.
-- **B:** Full load alone misses later writes.
-- **C:** This is correct.
-- **D:** MGN migrates servers rather than logical database changes.
-- **Reusable rule:** Initial state plus continuing writes maps to DMS full load and CDC.
+- **Central requirement:** convert a heterogeneous schema and keep data synchronized through a controlled low-downtime cutover.
+- **Decisive words:** different engine, source keeps writing, initial copy, delta, validation
+- **Why the correct answer works:** schema assessment/conversion addresses engine differences, while DMS full load plus CDC establishes the baseline and applies ongoing changes until cutover.
+- **A:** CDC without a consistent initial state and prepared target schema leaves missing historical data and objects.
+- **B:** full load alone loses all changes written after the copy begins; DNS does not reconcile data.
+- **C:** correct; it includes conversion, baseline, ongoing replication, lag/validation evidence, and an explicit quiesce/cutover step.
+- **D:** MGN performs server block-level replication and does not convert database schema or provide logical table CDC for this heterogeneous migration.
+- **Reusable rule:** heterogeneous database migration separates schema/code conversion from DMS data movement; low downtime generally requires full load plus CDC and measured cutover readiness.
 - **Cost/operation:** Replication capacity, logs, transfer, and endpoints can charge.
-- **Variation:** Changing engines also requires schema and code assessment.
+- **Variation:** Engine-native tools may be preferable for some homogeneous migrations; always validate supported types, LOB behavior, and source logging prerequisites.
 - **Lessons:** 353–355
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html)
 
 ## B24-07 — Answer A
 
-- **Central requirement:** The service must govern backups rather than migrate servers.
-- **Decisive words:** backup schedules, retention, vaults, cross-account
-- **Why the correct answer works:** AWS Backup centrally manages plans, vaults, retention, and copies for supported resources.
-- **A:** This is correct.
-- **B:** DMS migrates and replicates data stores.
-- **C:** Direct Connect is networking.
-- **D:** EventBridge alone is not the backup service.
-- **Reusable rule:** Central backup governance points to AWS Backup.
+- **Central requirement:** enforce organization-scale backup policy, copy
+  recovery points across accounts, make destination retention immutable after a
+  reviewed cooling-off period with AWS Backup Vault Lock in compliance mode,
+  and prove restorability without custom schedulers in every account.
+- **Decisive words:** many accounts, cross-account copy, compliance mode,
+  premature deletion, restore-tested
+- **Why the correct answer works:** AWS Backup centralizes plans and organization
+  policies, cross-account copies isolate recovery points in the security
+  account, Vault Lock compliance mode makes the lock immutable after its
+  cooling-off period, and restore testing provides recovery evidence for
+  supported resources.
+- **A:** correct; it combines centralized backup governance, cross-account
+  isolation, explicit compliance-mode Vault Lock protection, and scheduled
+  restore verification.
+- **B:** custom snapshot automation can work, but recreating policy, inventory, lifecycle, copies, immutability, and restore testing across accounts adds substantial operations.
+- **C:** Data Lifecycle Manager is useful for supported EBS snapshot/EBS-backed AMI lifecycles, but it is not the broad cross-service backup-governance layer requested.
+- **D:** local AWS Backup plans cover part of the problem, but co-located recovery points and absent restore tests fail the isolation and evidence requirements.
+- **Reusable rule:** AWS Backup governs supported backup lifecycles;
+  cross-account copies reduce account blast radius, Vault Lock compliance mode
+  becomes immutable after its cooling-off period, and restore tests validate
+  recoverability.
 - **Cost/operation:** Recovery points can persist and continue charging after original resources are removed.
-- **Variation:** A completed backup must still be restore-tested.
+- **Variation:** Use governance mode only when authorized administrators must
+  retain the ability to remove the lock. It does not meet a requirement for an
+  immutable lock after the cooling-off period; verify service/Region support,
+  destination KMS permissions, retention ranges, and cross-account copy behavior.
 - **Lessons:** 357–358
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html)
 
 ## B24-08 — Answer B
 
-- **Central requirement:** The scenario explicitly describes an existing customer that remains eligible to order Snowball Edge within the final support window.
-- **Decisive words:** existing customer, before December 31, 2026, petabytes, physical appliance
-- **Why the correct answer works:** For this narrowly qualified legacy scenario, Snowball Edge still supports physical, large-scale data transfer while the existing customer's service remains supported.
-- **A:** CloudFront distributes content.
-- **B:** This is correct.
-- **C:** WAF is web filtering.
-- **D:** Identity Center is workforce access.
-- **Reusable rule:** Treat Snowball Edge as a historical exam pattern, not a default for a new design in 2026.
+- **Central requirement:** complete a qualified legacy offline baseline before end of support while synchronizing and validating the changing delta online.
+- **Decisive words:** existing eligible customer, petabyte baseline, support deadline, delta, cutover
+- **Why the correct answer works:** Snowball Edge can serve the physical baseline only for the explicitly eligible existing customer; DataSync or another supported online method handles later changes and cutover validation.
+- **A:** Direct Connect plus DataSync can be a strong online design, but the scenario explicitly states that the available network path cannot complete the baseline by the deadline.
+- **B:** correct; it respects the time-limited eligibility, assigns physical and online tools to distinct phases, and avoids pretending shipping provides continuous replication.
+- **C:** Data Transfer Terminal is a current physical-site option for eligible Enterprise customers using their own supported equipment, but those prerequisites are absent and it is not a shipped AWS appliance.
+- **D:** physical baseline-only transfer leaves all writes during shipping unsynchronized and provides no evidence for a safe short cutover.
+- **Reusable rule:** offline seeding still needs discovery, encryption/chain-of-custody, target validation, and a delta/cutover path; in 2026, Snowball Edge is a legacy exception rather than a new-customer default.
 - **Cost/operation:** Include device jobs, shipping, target storage, transfer, encryption, and the final delta synchronization.
 - **Variation:** Snowball Edge is unavailable to new customers since November 7, 2025, and AWS has announced end of support in commercial Regions after December 31, 2026. For a new design, evaluate DataSync or Direct Connect online, and Data Transfer Terminal eligibility or an AWS Partner solution offline.
 - **Lessons:** 360
 - **Official reference:** [Snowball Edge availability change](https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html), [Snowball end-of-support notice](https://aws.amazon.com/snowball/), and [AWS Data Transfer Terminal](https://docs.aws.amazon.com/datatransferterminal/latest/userguide/what-is-dtt.html)
 
-## B24-09 — Answer A
+## B24-09 — Answer B,D,F
 
-- **Central requirement:** The company wants to reduce NAT data processing cost while keeping S3 access private.
-- **Decisive words:** S3, NAT processing cost, private
-- **Why the correct answer works:** An S3 gateway endpoint routes S3 traffic privately without sending it through the NAT Gateway.
-- **A:** This is correct.
-- **B:** Public IPv4 does not reduce NAT processing safely.
-- **C:** Cross-Region NAT adds complexity and cost.
-- **D:** CloudHSM is unrelated.
-- **Reusable rule:** S3 or DynamoDB traffic through NAT is a clue for a gateway endpoint.
-- **Cost/operation:** Gateway endpoints have no hourly endpoint charge, though normal service and transfer pricing applies.
-- **Variation:** Interface endpoints have hourly and data charges.
-- **Lessons:** 349 plus 333–334
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html)
+- **Central requirement:** reduce S3 NAT processing, cross-AZ NAT dependency, and repeated origin transfer without sacrificing multi-AZ design.
+- **Decisive words:** *high-volume S3*, *one NAT across AZs*, *large static downloads*, *preserving resilience*.
+- **A:** incorrect; public IPv4 addresses increase exposure and do not optimize the private S3 path.
+- **B:** correct; an S3 gateway endpoint removes supported S3 traffic from the NAT path without an hourly endpoint charge.
+- **C:** incorrect; centralizing all AZ routes adds cross-AZ transfer and a zonal dependency.
+- **D:** correct; CloudFront caches objects near users and reduces repeat origin traffic.
+- **E:** incorrect; EBS is not a scalable regional object-download replacement.
+- **F:** correct; same-AZ NAT routing removes cross-AZ NAT dependency and transfer for remaining internet egress, justified here by high volume and resilience.
+- **Reusable rule:** optimize network cost by changing the path: endpoints for AWS services, caching for repeated delivery, and zonally aligned egress.
+- **Lessons:** 349 plus 333–334.
+- **Official reference:** [Gateway endpoints](https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html) and [NAT Gateway architecture](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html).
 
 ## B24-10 — Answer C
 

@@ -9,13 +9,13 @@ Abra após responder às [questões B17](B17_Questoes.md).
 | B17-01 | B | 3.2 |
 | B17-02 | A | 3.3 |
 | B17-03 | C | 3.3 |
-| B17-04 | D | 3.3 |
+| B17-04 | B,E | 3.3 |
 | B17-05 | A | 2.1 |
 | B17-06 | C | 1.2 |
-| B17-07 | B | 2.1 |
+| B17-07 | A,D | 2.1 |
 | B17-08 | D | 1.2 |
-| B17-09 | A | 1.2 |
-| B17-10 | B | 3.3 |
+| B17-09 | A,C,E | 1.2 |
+| B17-10 | B | 3.5 |
 
 ## B17-01 — Resposta B
 
@@ -56,18 +56,18 @@ Abra após responder às [questões B17](B17_Questoes.md).
 - **Reference:** [DynamoDB capacity modes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html).
 - **Common trap:** treating on-demand as always cheapest for steady predictable traffic.
 
-## B17-04 — Answer D
+## B17-04 — Answer B,E
 
-- **Central requirement:** add a new access pattern with a different partition key.
-- **Decisive words:** *different partition key*, *existing table*.
-- **A:** an LSI keeps the base partition key and must be defined at table creation.
-- **B:** S3 has no DynamoDB index type.
-- **C:** CloudFront caching is unrelated.
-- **D:** correct; a GSI can use different keys and be added later.
-- **Reusable rule:** alternate partition key added after creation → GSI.
+- **Central requirement:** add an alternate partition-key query to an existing table with only required projected data.
+- **Decisive words:** *different partition key*, *without recreating*, *eventually consistent*, *attributes required*.
+- **A:** incorrect; an LSI uses the base partition key and must be created with the table.
+- **B:** correct; a GSI can be added later and defines a different partition key.
+- **C:** incorrect; GSI reads support eventual consistency, not strongly consistent reads.
+- **D:** incorrect; repeated scans do not provide the scalable low-latency access pattern.
+- **E:** correct; projecting query attributes supports the access path and avoids unnecessary base-table reads.
+- **Reusable rule:** a new alternate partition key on an existing DynamoDB table points to a GSI; design its key and projection from the query.
 - **Lessons:** 219–221.
-- **Reference:** [DynamoDB secondary indexes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html).
-- **Common trap:** reversing GSI and LSI creation constraints.
+- **Reference:** [DynamoDB global secondary indexes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html).
 
 ## B17-05 — Answer A
 
@@ -95,57 +95,58 @@ Abra após responder às [questões B17](B17_Questoes.md).
 - **Reference:** [API keys and usage plans](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html).
 - **Common trap:** securing private data with only an API key.
 
-## B17-07 — Answer B
+## B17-07 — Answer A,D
 
-- **Central requirement:** orchestrate sequence, branches, retries and compensation.
-- **Decisive words:** *sequential*, *branching*, *backoff*, *compensation*.
-- **A:** S3 Lifecycle manages objects.
-- **B:** correct; Step Functions models state and error handling explicitly.
-- **C:** Route 53 Resolver handles DNS.
-- **D:** EBS Multi-Attach is block storage.
-- **Reusable rule:** multi-step workflow with state/error paths → Step Functions.
-- **Lessons:** 224.
-- **Reference:** [Step Functions concepts](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-statemachines.html).
-- **Common trap:** implementing orchestration by Lambda calling Lambda.
+- **Central requirement:** provide managed GraphQL real-time access and reliable stateful business-process orchestration.
+- **Decisive words:** *GraphQL*, *subscriptions*, *branch*, *retry with backoff*, *compensation*.
+- **A:** correct; AppSync provides managed GraphQL APIs and real-time subscription capabilities.
+- **B:** incorrect; Route 53 routes DNS and does not persist workflow state.
+- **C:** incorrect; an SQS group orders messages but does not define a GraphQL API.
+- **D:** correct; Step Functions models branching, retries, state, and compensation workflows.
+- **E:** incorrect; WAF filters web requests and does not orchestrate transactions.
+- **Reusable rule:** use AppSync for the client-facing GraphQL contract and Step Functions for multi-step stateful orchestration.
+- **Lessons:** 222–224.
+- **Reference:** [What is AWS AppSync?](https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html).
 
 ## B17-08 — Answer D
 
-- **Central requirement:** authenticate app users and issue JWTs.
-- **Decisive words:** *sign-up*, *MFA*, *federation*, *JWT*.
-- **A:** an identity pool brokers temporary AWS credentials.
-- **B:** Streams captures DynamoDB item changes.
-- **C:** usage plans meter API clients.
-- **D:** correct; a user pool is the user directory/authentication component.
-- **Reusable rule:** application user authentication → Cognito User Pool.
+- **Central requirement:** authenticate human users and separately exchange identity for least-privilege temporary AWS credentials.
+- **Decisive words:** *JWTs for an API*, *own S3 prefix*, *short-lived*, *no long-lived keys*.
+- **A:** presigned uploads can be a sound design, but this option does not meet the explicit requirement that clients receive scoped temporary AWS credentials.
+- **B:** direct federation can issue temporary credentials, but it omits the required managed self-service user directory and MFA lifecycle.
+- **C:** the user pool solves authentication, but embedded long-lived IAM credentials violate device security and per-user scope.
+- **D:** correct; the user pool authenticates and issues JWTs, while the identity pool maps authenticated identities to scoped temporary-role credentials.
+- **Reusable rule:** user pool answers “who is the app user?”; identity pool answers “which temporary AWS role may that identity assume?”.
 - **Lessons:** 225.
-- **Reference:** [Cognito user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools.html).
-- **Common trap:** swapping user and identity pools.
+- **Reference:** [Cognito user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools.html) and [Cognito identity pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html).
+- **Common trap:** using a JWT directly as an AWS access key or giving all mobile users the same IAM identity.
 
-## B17-09 — Answer A
+## B17-09 — Answer A,C,E
 
-- **Central requirement:** issue temporary scoped AWS credentials to a mobile user.
-- **Decisive words:** *temporary*, *AWS credentials*, *one S3 prefix*.
-- **A:** correct; Identity Pool maps identity to least-privilege IAM roles.
-- **B:** hard-coded long-lived keys are unsafe.
-- **C:** a User Pool token is not itself permanent AWS access credentials.
-- **D:** public policy violates scoped access.
-- **Reusable rule:** client needs temporary AWS credentials → Cognito Identity Pool.
+- **Central requirement:** combine application authentication, temporary AWS authorization, and managed GraphQL real-time APIs.
+- **Decisive words:** *sign-in and MFA*, *temporary scoped credentials*, *direct S3*, *GraphQL subscriptions*.
+- **A:** correct; a user pool handles sign-up/sign-in, MFA, and application tokens.
+- **B:** incorrect; embedded long-lived access keys are insecure and cannot be safely scoped per user lifecycle.
+- **C:** correct; an identity pool exchanges identities for temporary IAM role credentials.
+- **D:** incorrect; anonymous public writes violate authentication and least privilege.
+- **E:** correct; AppSync supplies managed GraphQL queries, mutations, and subscriptions.
+- **F:** incorrect; a NAT Gateway provides egress, not identity federation.
+- **Reusable rule:** Cognito user pools authenticate users, identity pools vend scoped AWS credentials, and AppSync exposes GraphQL data APIs.
 - **Lessons:** 225.
-- **Reference:** [Cognito identity pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html).
-- **Common trap:** embedding IAM user keys in mobile binaries.
+- **Reference:** [Cognito identity pools](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html) and [AppSync real-time data](https://docs.aws.amazon.com/appsync/latest/devguide/aws-appsync-real-time-data.html).
 
 ## B17-10 — Answer B
 
-- **Central requirement:** distinguish operational RDS events from data changes.
-- **Decisive words:** *every row update*, *event notifications*.
-- **A:** RDS events do not require DynamoDB.
-- **B:** correct; subscriptions describe operational resource events, not general row CDC.
-- **C:** SNS/EventBridge integrations are relevant; Glacier is not required.
-- **D:** database public access is not a prerequisite.
-- **Reusable rule:** row-level change stream → CDC/engine mechanism, not RDS event subscription.
+- **Central requirement:** capture committed row changes while preserving a distinct channel for DB-instance lifecycle and availability events.
+- **Decisive words:** *order-row changes*, *low downtime*, *fails over*, *maintenance state*.
+- **A:** RDS operational notifications do not expose every committed row, and consumer sorting cannot reconstruct missing transactional changes.
+- **B:** correct; DMS CDC reads database change information for data replication, while RDS operational events are routed independently for notification and automation.
+- **C:** repeated full loads are not continuous delta capture and task restarts are not a complete operational event channel.
+- **D:** engine logs are useful diagnostics but are not a portable guarantee of complete committed-row CDC plus every RDS lifecycle event.
+- **Reusable rule:** database records require CDC or engine-native change streams; control-plane/resource state requires operational event services.
 - **Lessons:** 218.
 - **Reference:** [RDS event notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html).
-- **Common trap:** treating control-plane events as database records.
+- **Common trap:** treating an RDS event subscription as a transactional outbox or logical replication stream.
 
 ## Ação após a correção
 

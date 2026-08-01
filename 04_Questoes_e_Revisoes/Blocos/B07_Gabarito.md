@@ -8,12 +8,12 @@ Abra depois das [questões B07](B07_Questoes.md).
 |---|---|---|
 | B07-01 | B | 3.4 |
 | B07-02 | A | 3.4 |
-| B07-03 | B | 2.2 |
+| B07-03 | A,C | 2.2 |
 | B07-04 | D | 3.2 |
 | B07-05 | A | 3.2 |
 | B07-06 | C | 3.2 |
 | B07-07 | B | 3.2 |
-| B07-08 | D | 2.2 |
+| B07-08 | B,E | 2.2 |
 | B07-09 | C | 3.2 |
 | B07-10 | A | 4.2 |
 
@@ -47,14 +47,18 @@ Abra depois das [questões B07](B07_Questoes.md).
 - **Aulas:** 80–81.
 - **Referência:** [ALB HTTPS listeners](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html).
 
-## B07-03 — Resposta B
+## B07-03 — Resposta A,C
 
 - **Requisito central:** concluir requests durante remoção do target.
 - **Palavras decisivas:** *scale-in*, *downloads ativos*, *não imediatamente*.
-- **A:** DNS TTL não controla conexão já encaminhada ao target.
-- **B:** correta; draining e shutdown precisam respeitar deregistration delay.
-- **C:** snapshot protege disco, não request em andamento.
-- **D:** rotação KMS não coordena target removal.
+- **A:** correta; o deregistration delay mantém o target em draining pelo
+  período configurado.
+- **B:** DNS TTL não controla conexão já encaminhada ao target.
+- **C:** correta; com o target group associado, o Auto Scaling deregistra o
+  target e aguarda as requisições em andamento ou o timeout antes de terminar a
+  instância.
+- **D:** snapshot protege disco, não request em andamento.
+- **E:** rotação KMS não coordena target removal.
 - **Regra reutilizável:** scale-in/deploy gracioso → deregistration delay mais
   shutdown alinhado.
 - **Variação:** requests que excedem o delay ainda podem ser interrompidos.
@@ -117,14 +121,18 @@ Abra depois das [questões B07](B07_Questoes.md).
 - **Aulas:** 85–86.
 - **Referência:** [Default instance warmup](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html).
 
-## B07-08 — Answer D
+## B07-08 — Answer B,E
 
 - **Requisito central:** replace an application-unhealthy target.
 - **Palavras decisivas:** *EC2-healthy*, *fails ELB health*, *ASG uses ELB*.
 - **A:** a load balancer never creates a database replica.
-- **B:** ACM does not renew AMIs.
-- **C:** the maximum is configuration, not an automatic permanent reaction.
-- **D:** correct; the ASG can mark the instance unhealthy and replace it.
+- **B:** correct; after the grace period, an ELB health failure can cause the
+  ASG to mark and replace the instance.
+- **C:** ACM does not renew AMIs.
+- **D:** maximum capacity is configuration, not an automatic permanent reaction
+  to one failed health check.
+- **E:** correct; the grace period gives a newly launched application time to
+  become healthy before replacement decisions.
 - **Regra reutilizável:** application health should drive replacement → enable
   appropriate ELB health integration.
 - **Variação:** grace period avoids replacing a target during valid bootstrap.
@@ -133,29 +141,48 @@ Abra depois das [questões B07](B07_Questoes.md).
 
 ## B07-09 — Answer C
 
-- **Requisito central:** roll out a new immutable image safely.
-- **Palavras decisivas:** *new AMI*, *existing fleet*, *safest rollout*.
-- **A:** manual drift is not repeatable or fleet-wide.
-- **B:** reboot does not replace an instance with another AMI.
-- **C:** correct; versioned launch template plus controlled instance refresh is
-  auditable and supports health criteria.
-- **D:** a running instance's source AMI is not replaced by editing an ID.
-- **Regra reutilizável:** new image → new template version → instance refresh.
-- **Variação:** define minimum healthy percentage, checkpoints and rollback.
+- **Requisito central:** replace a Multi-AZ fleet with an immutable image while
+  preserving healthy capacity and providing observable rollback.
+- **Palavras decisivas:** *90% healthy*, *auditable*, *checkpoints*, *CloudWatch
+  alarm*, *rollback*.
+- **A:** a separate blue/green group can be valid, but an all-at-once shift based
+  only on EC2 status omits the required staged health checkpoints and automatic
+  alarm rollback.
+- **B:** setting the launch-template default affects future launches; waiting for
+  organic replacement does not replace the entire fleet within an auditable
+  rollout.
+- **C:** correct; a versioned launch template and instance refresh provide the
+  immutable desired state, controlled replacement, health thresholds,
+  checkpoints, and rollback integration.
+- **D:** in-place patching creates mutable fleet drift and does not prove that all
+  serving instances were replaced from the approved immutable image.
+- **Regra reutilizável:** new image → versioned template → controlled refresh →
+  health/alarm rollback policy.
+- **Variação:** a blue/green deployment using a separate group can provide
+  stronger isolation when the release requires independent capacity validation.
 - **Aulas:** 83–84.
 - **Referência:** [Instance refresh](https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-refresh.html).
 
 ## B07-10 — Answer A
 
-- **Requisito central:** preserve required state while instances are replaced.
-- **Palavras decisivas:** *state only in memory*, *horizontal scaling*.
-- **A:** correct; external state lets instances remain disposable.
-- **B:** ASG does not copy RAM.
-- **C:** stickiness routes a client but does not recover state after failure.
-- **D:** TLS protects transport and does not replicate session data.
-- **Regra reutilizável:** elastic compute should be stateless; externalize
-  durable/session state appropriately.
-- **Variação:** use a database/cache based on consistency and durability needs.
+- **Requisito central:** preserve cart state across load balancing, scale-out,
+  deregistration, replacement, and Availability Zone failure.
+- **Palavras decisivas:** *Multi-AZ ASG*, *state only in memory*, *different
+  target*, *disposable*.
+- **A:** correct; a shared durable database makes cart state independent of any
+  compute target. A cache can improve latency, but it remains optional and is
+  not the sole durable system of record.
+- **B:** stickiness and draining can preserve affinity temporarily while a target
+  is healthy; they do not recover RAM after replacement or zonal failure.
+- **C:** a nonpersistent cache can evict or lose entries and therefore cannot be
+  the only copy of business data that must be recoverable.
+- **D:** peer replication to local root volumes couples state durability to a
+  custom pair of replaceable instances and does not provide the required shared
+  durable system of record.
+- **Regra reutilizável:** elastic compute should be stateless; choose the external
+  state service from consistency, durability, latency, and failure-scope needs.
+- **Variação:** if state is truly disposable and reconstructible, a cache alone
+  may fit; durable cart semantics require a database-backed design.
 - **Aulas:** 83–86.
 - **Referência:** [Reliability design principles](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/design-principles.html).
 

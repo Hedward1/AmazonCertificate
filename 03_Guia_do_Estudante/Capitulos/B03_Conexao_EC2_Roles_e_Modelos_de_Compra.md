@@ -27,7 +27,8 @@ Ao terminar, você deverá conseguir:
 7. diferenciar desconto de preço de reserva de capacidade;
 8. escolher entre Dedicated Host e Dedicated Instance;
 9. reconhecer workloads adequados e inadequados para Spot;
-10. lançar e terminar uma instância de laboratório sem deixar recursos
+10. definir disponibilidade e custo por criticidade, SLA, RTO e RPO;
+11. lançar e terminar uma instância de laboratório sem deixar recursos
     residuais.
 
 ## 2. Como estudar as aulas deste bloco
@@ -673,7 +674,61 @@ Quero garantir capacidade? -> Zonal RI ou Capacity Reservation
 | licença por socket/core | Dedicated Host | custo e gestão do host |
 | isolamento single-tenant sem controle de host | Dedicated Instance | menos visibilidade e BYOL limitado |
 
-## 16. Armadilhas de prova
+## 16. Disponibilidade por classe de workload — tarefa 4.2
+
+“Produção” e “não produção” são rótulos iniciais, não arquiteturas. A decisão
+começa pelo impacto de uma interrupção e pelos objetivos mensuráveis de cada
+classe:
+
+| Entrada | Pergunta de arquitetura |
+|---|---|
+| criticidade | qual impacto financeiro, operacional, regulatório ou humano ocorre? |
+| disponibilidade/SLA | em quais horários e com qual percentual o workload precisa cumprir sua função? |
+| RTO | em quanto tempo o serviço precisa voltar depois de uma interrupção? |
+| RPO | quanto dado anterior ao incidente pode ser perdido? |
+| escopo de falha | deve sobreviver a processo, instância, AZ ou Region? |
+| reconstrução | imagem, configuração e dados permitem recriação automatizada? |
+
+Um **SLA** é um compromisso medido, muitas vezes contratual. O objetivo de
+disponibilidade do workload deve ser derivado do negócio; o SLA de um serviço
+AWS isolado não se transforma automaticamente no SLA da aplicação. **RTO** mede
+tempo de recuperação e **RPO** mede perda de dados aceitável. Uma arquitetura
+pode ter disponibilidade alta e ainda falhar no RPO se não proteger os dados.
+
+| Classe ilustrativa | Decisão inicial defensável | Custo aceito |
+|---|---|---|
+| produção crítica, RTO/RPO curtos, falha de AZ no escopo | componentes redundantes em múltiplas AZs, health checks, capacidade não interrompível para o baseline, dados resilientes e recuperação testada | réplicas, headroom, observabilidade e testes contínuos |
+| produção de menor criticidade ou uso em janela limitada | redundância e automação proporcionais ao impacto e ao horário de serviço | menos capacidade ociosa, com indisponibilidade documentada |
+| homologação que valida failover | topologia temporariamente semelhante à produção durante o teste | custo agendado para obter evidência válida |
+| desenvolvimento/teste descartável | uma AZ quando aceita, agenda de ligar/desligar ou scale-to-zero, Spot somente se reconstruível e tolerante a interrupção | recuperação mais lenta e possíveis interrupções |
+
+Não replique automaticamente a arquitetura mais cara em todas as classes. Por
+outro lado, não conclua que todo ambiente não produtivo pode ficar indisponível:
+um pipeline de release, um teste regulatório ou uma simulação de failover pode
+ser crítico em sua janela.
+
+O modelo de compra é consequência dessa análise:
+
+- On-Demand, RI ou Savings Plans podem financiar a capacidade estável, mas não
+  criam redundância por si mesmos;
+- Capacity Reservation aumenta a confiança de lançamento numa AZ, mas uma única
+  AZ continua sendo um domínio de falha;
+- Spot reduz custo quando interrupção e capacidade variável são aceitáveis;
+- maior disponibilidade normalmente custa mais por duplicar recursos, manter
+  margem, automatizar recuperação e testar falhas.
+
+### Cenário resolvido 5 — checkout e desenvolvimento
+
+O checkout possui objetivo de 99,95%, RTO de 10 minutos, RPO de 1 minuto e deve
+continuar após a perda de uma AZ. O ambiente de desenvolvimento usa dados
+sintéticos, pode ser reconstruído em oito horas e aceita interrupção. **Decisão:**
+projetar o checkout com baseline não interrompível e redundante entre AZs, dados
+compatíveis com RPO e failover testado; agendar ou eliminar capacidade ociosa de
+desenvolvimento e considerar Spot apenas para partes reconstruíveis. A economia
+vem de atender dois objetivos diferentes, não de reduzir a produção ao padrão
+do laboratório nem de executar desenvolvimento como produção 24×7.
+
+## 17. Armadilhas de prova
 
 1. Security group aberto não corrige usuário ou chave errados.
 2. IAM permission não abre uma porta de rede.
@@ -703,8 +758,13 @@ Quero garantir capacidade? -> Zonal RI ou Capacity Reservation
 23. Dedicated Instance não oferece visibilidade de sockets/cores.
 24. Dedicated Host é a resposta típica para BYOL ligado ao servidor.
 25. Dedicated não implica automaticamente maior desempenho.
+26. SLA do serviço AWS não garante sozinho a disponibilidade do workload.
+27. RTO é tempo de recuperação; RPO é perda de dados aceitável.
+28. “Não produção” não significa automaticamente “sem requisito de
+    disponibilidade”.
+29. Modelo de compra reduz ou altera custo; não substitui arquitetura Multi-AZ.
 
-## 17. Custos e cleanup do LAB B03
+## 18. Custos e cleanup do LAB B03
 
 O primeiro laboratório com EC2 pode consumir créditos ou gerar alguns centavos:
 
@@ -730,7 +790,7 @@ Se a conta não tiver default VPC, não crie uma arquitetura de rede improvisada
 nem um NAT gateway. Faça o exercício em diagrama e retome quando uma rede segura
 e seu custo tiverem sido definidos.
 
-## 18. Checklist de domínio
+## 19. Checklist de domínio
 
 - [ ] Explico key pair versus IAM access key.
 - [ ] Diagnostico SSH sem abrir `0.0.0.0/0`.
@@ -744,9 +804,12 @@ e seu custo tiverem sido definidos.
 - [ ] Identifico workloads adequados para Spot.
 - [ ] Escolho Dedicated Host para BYOL por socket/core.
 - [ ] Sei que Capacity Reservation e desconto são dimensões diferentes.
+- [ ] Defino disponibilidade por criticidade, SLA, RTO, RPO e escopo de falha.
+- [ ] Justifico por que produção e não produção podem receber arquiteturas e
+  modelos de compra diferentes.
 - [ ] Consigo provar que o cleanup do laboratório foi concluído.
 
-## 19. Recuperação ativa
+## 20. Recuperação ativa
 
 Responda sem consultar:
 
@@ -767,15 +830,20 @@ Responda sem consultar:
 15. Qual estratégia atual substitui Spot Fleet em um projeto novo?
 16. Dedicated Host e Dedicated Instance oferecem o mesmo controle?
 17. Capacity Reservation reduz o preço por si só?
+18. Qual é a diferença entre SLA, RTO e RPO?
+19. Quando um ambiente não produtivo ainda precisa imitar a disponibilidade de
+    produção?
+20. Por que aplicar Multi-AZ a todo ambiente pode desperdiçar custo, e por que
+    usar uma única Spot em toda produção também está errado?
 
-## 20. Ligações deste bloco
+## 21. Ligações deste bloco
 
 - [Laboratório B03](../../05_Laboratorios/LAB_B03_EC2_Web_Role_e_Cleanup.md)
 - [Questões B03](../../04_Questoes_e_Revisoes/Blocos/B03_Questoes.md)
 - [Gabarito B03](../../04_Questoes_e_Revisoes/Blocos/B03_Gabarito.md)
 - [Revisões B03](../../06_Progresso/B03_Checklist_e_Revisoes.md)
 
-## 21. Referências oficiais
+## 22. Referências oficiais
 
 - [Connect to an EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect.html)
 - [Connect to Linux using SSH](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect-to-linux-instance.html)
@@ -797,8 +865,11 @@ Responda sem consultar:
 - [Dedicated Hosts](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html)
 - [Dedicated Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-instance.html)
 - [On-Demand Capacity Reservations](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html)
+- [Understanding availability needs](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/understanding-availability-needs.html)
+- [Availability and its cost](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/availability.html)
+- [Reliability shared responsibility](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/shared-responsibility-model-for-resiliency.html)
 - [EC2 Free Tier usage](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-free-tier-usage.html)
 - [Public IPv4 pricing](https://aws.amazon.com/vpc/pricing/)
 - [Terminate EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-termination-works.html)
 
-**Referências verificadas em:** 24/07/2026.
+**Referências verificadas em:** 01/08/2026.

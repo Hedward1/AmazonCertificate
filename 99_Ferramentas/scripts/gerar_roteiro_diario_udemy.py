@@ -257,8 +257,11 @@ BLOCKS = (
         "`245–260` e `262–263`",
         skip="`261`, pois Amazon Personalize está explicitamente fora do escopo",
         notes=(
-            "A aula 245 usa o nome histórico QuickSight. Na nomenclatura oficial "
-            "vigente, estude Amazon Quick Sight como o componente de BI do Amazon Quick.",
+            "A aula 245 usa o nome histórico QuickSight. O [guia oficial SAA-C03]"
+            "(https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html) "
+            "cita **Amazon QuickSuite**; a [documentação atual do produto]"
+            "(https://docs.aws.amazon.com/quick/) usa **Amazon Quick**, e **Amazon "
+            "Quick Sight** é seu componente de BI e visualização.",
             "O quiz de Machine Learning continua útil; desconsidere somente uma "
             "eventual questão exclusivamente sobre Personalize.",
             "Transfira os 2 minutos economizados para recuperação ativa ou questões.",
@@ -334,8 +337,9 @@ BLOCKS = (
         "`386` e `389–393`; reveja os itens administrativos perto da prova",
         "`394–396`, por serem encerramento, trilhas e bônus",
         (
-            "O practice exam não pertence ao B25; ele está reservado ao SIM B "
-            "de 28/08.",
+            "O practice exam não pertence ao B25; ele está reservado ao evento "
+            "**Practice Udemy** de 28/08. Não confundir com o banco autoral privado "
+            "`SIM-B`, que é um recurso adicional e permanece fechado durante essa tentativa.",
         ),
     ),
 )
@@ -577,14 +581,20 @@ def render(inventory: list[dict[str, str]]) -> str:
             "- **25/08:** nenhuma aula nova; revisão por domínio.",
             "- **26/08 — SIM A:** nenhuma aula nova; simulado autoral.",
             "- **27/08:** nenhuma aula nova; correção aprofundada.",
-            f"- **28/08 — SIM B:** {item_label(simulation)} — "
-            f"{escape_cell(simulation['titulo'])}.",
-            "- **29/08:** nenhuma aula nova; correção do SIM B.",
+            f"- **28/08 — Practice Udemy:** {item_label(simulation)} — "
+            f"{escape_cell(simulation['titulo'])}; o `SIM-B` autoral fica reservado "
+            "como tentativa adicional.",
+            "- **29/08:** nenhuma aula nova; correção do Practice Udemy.",
             "- **31/08 — SIM C:** nenhuma aula nova; simulado autoral e decisão de "
             "prontidão.",
             "",
-            "> O practice exam aparece somente no SIM B. Ele não deve ser aberto "
-            "durante o B25 nem durante a revisão anterior.",
+            "O `SIM-B` autoral privado pode ser usado depois da correção do SIM C "
+            "ou como substituto somente se o practice exam da Udemy estiver "
+            "indisponível. Não realize os dois no mesmo dia e não abra previamente "
+            "nenhum dos bancos.",
+            "",
+            "> O practice exam aparece somente no evento Practice Udemy de 28/08. "
+            "Ele não deve ser aberto durante o B25 nem durante a revisão anterior.",
             "",
         ]
     )

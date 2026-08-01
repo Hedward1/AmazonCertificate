@@ -2,24 +2,24 @@
 
 **Quantidade:** 10 questões autorais  
 **Idioma:** 6 em português e 4 em inglês  
-**Regra:** selecione uma resposta em cada questão  
+**Formato:** questões single-answer e multi-answer; siga a instrução de cada questão<br>
 **Tempo sugerido:** 15 minutos; registre sua confiança antes de corrigir  
 **Gabarito:** [arquivo separado](B04_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B04-01 | 3.4 | Private, public e Elastic IP | Situacional | Básica | Português |
-| B04-02 | 3.4 | Elastic Network Interface | Situacional | Intermediária | Português |
-| B04-03 | 3.2 | Cluster placement group | Situacional | Básica | Português |
-| B04-04 | 2.2 | Partition placement group | Situacional | Intermediária | Português |
-| B04-05 | 2.2 | Spread placement group | Situacional | Intermediária | Português |
-| B04-06 | 4.2 | EC2 Hibernate | Situacional | Intermediária | Português |
-| B04-07 | 3.1 | Persistência de volumes EBS | Fundamental | Intermediária | Inglês |
-| B04-08 | 2.2 | Snapshots incrementais | Fundamental | Intermediária | Inglês |
-| B04-09 | 2.2 | AMI entre Regions | Situacional | Intermediária | Inglês |
-| B04-10 | 2.2 | Restauração EBS entre AZs | Situacional | Intermediária | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B04-01 | 3.4 | Private, public e Elastic IP | single | fundamental | básica | Português |
+| B04-02 | 3.4 | Elastic Network Interface | single | fundamental | básica | Português |
+| B04-03 | 3.2 | Cluster placement group | multi-2 | integrada | avançada | Português |
+| B04-04 | 2.2 | Partition placement group | single | situacional | intermediária | Português |
+| B04-05 | 2.2 | Spread placement group | single | situacional | intermediária | Português |
+| B04-06 | 4.2 | EC2 Hibernate | single | situacional | intermediária | Português |
+| B04-07 | 3.1 | Persistência de volumes EBS | single | fundamental | intermediária | Inglês |
+| B04-08 | 2.2 | Snapshots incrementais | multi-3 | integrada | avançada | Inglês |
+| B04-09 | 2.2 | AMI entre Regions | single | integrada | avançada | Inglês |
+| B04-10 | 2.2 | Restauração EBS entre AZs | single | situacional | intermediária | Inglês |
 
 ## Questões
 
@@ -64,13 +64,16 @@ Uma aplicação de high-performance computing possui dezenas de nós EC2 em uma
 requisito principal é obter baixa latência e alta taxa de transferência na
 rede.
 
-Qual estratégia de placement group é a mais apropriada?
+Quais decisões são apropriadas para esse workload?
+
+**Choose TWO.**
 
 - A. Cluster placement group.
 - B. Spread placement group.
 - C. Partition placement group.
-- D. Nenhum placement group, distribuindo obrigatoriamente os nós entre várias
-  Regions.
+- D. Manter os nós estreitamente acoplados na mesma Availability Zone e usar
+  tipos de instância compatíveis com enhanced networking.
+- E. Distribuir obrigatoriamente os nós entre várias Regions.
 
 ### B04-04
 
@@ -141,44 +144,58 @@ What happens when the instance is stopped and later when it is terminated?
 A 100-GiB EBS volume has an initial snapshot. After only 5 GiB of blocks change,
 a second snapshot is created. The company later deletes the first snapshot.
 
-Which statement is correct?
+Which statements are correct?
 
-- A. EBS snapshots are incremental, but each snapshot can restore the volume to
-  its own point in time. Deleting the first snapshot does not invalidate the
-  second because referenced data is retained.
+**Select THREE.**
+
+- A. After the initial snapshot, EBS stores only new and changed blocks
+  incrementally.
 - B. Every standard-tier snapshot stores and bills another complete 100-GiB
   physical copy.
-- C. The second snapshot becomes unusable as soon as the first snapshot is
-  deleted.
+- C. Each snapshot is a complete logical recovery point for its point in time.
 - D. EBS snapshots are tied to one Availability Zone and cannot restore a
-  volume in another AZ.
+  volume in another AZ in the same Region.
+- E. Deleting the first snapshot retains blocks that are still referenced by
+  the second snapshot.
+- F. Deleting the first snapshot breaks the incremental chain and makes the
+  second snapshot unusable.
 
 ### B04-09
 
-A company creates a customized EBS-backed AMI in `eu-west-1`. It must launch
-instances with the same operating system and software configuration in
-`us-east-1`.
+A company uses a customized EBS-backed AMI in `eu-west-1`. For regional disaster
+recovery, an Auto Scaling group in `us-east-1` must launch the same approved
+operating system and application build without depending on resources in the
+source Region. The source snapshots are encrypted with a customer managed KMS
+key, and the recovery account must be permitted to use the destination image.
 
-What should the company do?
+Which design meets the requirements?
 
-- A. Use the `eu-west-1` AMI ID directly when launching in `us-east-1`.
-- B. Change the Region attribute of the running source instance.
-- C. Detach the source root EBS volume and attach it directly to an instance in
-  `us-east-1`.
-- D. Copy the AMI to `us-east-1` and launch instances from the copied AMI.
+- A. Share the encrypted `eu-west-1` AMI with the recovery account and reference
+  its source AMI ID from the `us-east-1` launch template, without making a
+  regional copy.
+- B. Rebuild an image in `us-east-1` from the latest operating-system packages
+  only after a disaster, without copying or pretesting the approved source AMI.
+- C. Copy the AMI to `us-east-1` using the default AWS managed EBS KMS key, then
+  share that encrypted copy with the recovery account.
+- D. Copy the AMI to `us-east-1`, use an authorized destination KMS key for the
+  copied snapshots, grant the recovery account the required AMI and key access,
+  and reference the destination AMI in the launch template.
 
 ### B04-10
 
-An application stores data on an EBS volume in `us-east-1a`. The company has a
-recent snapshot and needs to recover the data on an EC2 instance in
-`us-east-1b`.
+A recovery runbook must restore an application data volume after the source
+instance and its Availability Zone become unavailable. The latest approved EBS
+snapshot is encrypted and remains available in `us-east-1`; the recovery
+instance will launch in `us-east-1b`, and the recovery role is authorized to use
+the snapshot's KMS key. The design must not wait for the original zonal volume or
+copy data to another Region.
 
-Which solution meets the requirement?
+Which recovery action meets the requirements?
 
 - A. Attach the existing `us-east-1a` EBS volume directly to the instance in
   `us-east-1b`.
-- B. Create a new EBS volume from the snapshot in `us-east-1b`, and attach the
-  new volume to the recovery instance.
+- B. Create a new encrypted EBS volume from the snapshot in `us-east-1b`, and
+  attach the restored volume to the recovery instance.
 - C. Copy the snapshot to another Region before creating the volume in
   `us-east-1b`.
 - D. Associate an Elastic IP with the EBS volume to make it available in both

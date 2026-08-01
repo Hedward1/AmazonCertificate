@@ -171,6 +171,18 @@ Egress-only IGW bloqueia novas conexões IPv6 iniciadas externamente.
 
 Dual-stack exige rotas e regras para as duas pilhas.
 
+### Cápsula de decisão — AWS Client VPN
+
+- **Problema que resolve:** fornecer acesso remoto seguro e gerenciado para usuários individuais alcançarem recursos em uma VPC ou na rede on-premises.
+- **Tarefas SAA-C03 relacionadas:** 1.1 e 3.4 — controlar acesso seguro e selecionar conectividade híbrida adequada ao consumidor.
+- **Quando escolher:** funcionários ou prestadores conectam notebooks de qualquer local com cliente baseado em OpenVPN e precisam de autenticação e autorização por rede ou grupo.
+- **Quando não escolher:** para conectar uma rede corporativa inteira à VPC; nesse caso, Site-to-Site VPN ou Direct Connect costuma representar melhor o requisito.
+- **Serviço semelhante:** Site-to-Site VPN liga redes por túneis IPsec; Client VPN termina sessões de usuários e usa TLS/OpenVPN.
+- **Armadilha:** autenticar o usuário não basta. O destino precisa de rota, regra de autorização explícita e security groups compatíveis; por padrão não há regras de autorização e o acesso é negado.
+- **Questão situacional extra (fora do banco de 250):** cem funcionários remotos precisam acessar subnets privadas usando seus notebooks, com autenticação federada e permissão diferente por grupo. Qual serviço atende com menor operação?
+- **Resposta curta:** AWS Client VPN, configurando endpoint, target network, rotas e regras de autorização por grupo.
+- **Referência oficial:** [What is AWS Client VPN?](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html) e [authorization rules](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-rules.html)
+
 ## 6. Tabela de decisão
 
 | Requisito | Escolha | Motivo |
@@ -182,6 +194,7 @@ Dual-stack exige rotas e regras para as duas pilhas.
 | Metadados ACCEPT REJECT | Flow Logs | registro de fluxo |
 | Cópia de pacote | Traffic Mirroring | inspeção profunda |
 | IPsec rápido | Site-to-Site VPN | internet cifrada |
+| Usuários remotos individuais | AWS Client VPN | acesso gerenciado baseado em OpenVPN |
 | Link dedicado | Direct Connect | conectividade previsível |
 | Dedicado e IPsec | DX mais VPN | requisitos combinados |
 | Saída IPv6 | Egress-only IGW | entrada não iniciada |
@@ -309,6 +322,8 @@ Faça inventário antes e depois. Exclua apenas recursos criados pelo bloco.
 - [Gateway endpoints](https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html)
 - [VPC Flow Logs](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
 - [Site-to-Site VPN](https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html)
+- [AWS Client VPN](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html)
+- [Client VPN authorization rules](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-rules.html)
 - [Direct Connect](https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html)
 - [Transit Gateway](https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html)
 - [Traffic Mirroring](https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html)

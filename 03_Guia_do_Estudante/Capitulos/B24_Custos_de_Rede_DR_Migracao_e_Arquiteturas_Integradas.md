@@ -32,7 +32,13 @@
 
 Use aulas, capítulo, laboratório e questões nessa ordem. Não copie credenciais nem crie recursos pagos para reproduzir telas.
 
-**Atualização da aula 360:** trate Snowball Edge como conteúdo legado. O serviço não aceita novos clientes desde 07/11/2025 e terá suporte encerrado nas Regions comerciais após 31/12/2026. Para uma decisão nova, avalie DataSync/Direct Connect para transferência online e, para transporte físico, Data Transfer Terminal (clientes Enterprise e locais suportados) ou uma solução AWS Partner.
+### Classificação da atualização da aula 360
+
+- **`núcleo SAA-C03`:** decidir a transferência pelo volume, prazo, throughput efetivo e possibilidade de usar rede. DataSync automatiza transferências online de storages suportados; Direct Connect pode tornar um fluxo recorrente mais previsível. Preserve também o padrão histórico de decisão “rede insuficiente versus transporte físico”, sem tratar uma tecnologia legada como escolha automática.
+- **`atualização relevante`:** Snowball Edge não aceita novos clientes desde 07/11/2025 e o suporte nas Regions comerciais termina em 31/12/2026. Portanto, não o proponha como solução nova sem contexto de transição.
+- **`conteúdo profissional opcional`:** Data Transfer Terminal e soluções AWS Partner são caminhos atuais para alguns casos físicos. Os detalhes operacionais, os locais e o processo de reserva são contexto profissional e **não são para memorizar** para a SAA-C03.
+
+Data Transfer Terminal não substitui Snowball universalmente: é uma instalação física à qual um cliente Enterprise elegível leva os próprios dispositivos e equipamentos, e só pode ser usada nos locais suportados.
 
 ## 3. Vocabulário essencial
 
@@ -139,7 +145,7 @@ Recovery points podem sobreviver ao recurso original.
 DataSync automatiza transferências de storage suportado.
 ### 5.26 Ponto 26
 
-Para novos projetos em 2026, Data Transfer Terminal atende transferência em local físico de alta velocidade para clientes Enterprise elegíveis; AWS Partners podem atender outros casos offline. Snowball Edge é legado e está em encerramento.
+AWS Data Transfer Terminal é uma instalação física preparada para rede. O cliente leva seus próprios dispositivos de armazenamento e equipamentos ao local reservado e transfere os dados para ou da AWS. Atualmente o serviço é somente para clientes AWS Enterprise e apenas em instalações suportadas. Não é um equipamento enviado pela AWS ao cliente e não substitui Snowball Edge universalmente; se a empresa não puder levar os dispositivos a uma instalação disponível, reavalie transferência online ou uma solução AWS Partner conforme prazo, volume e local.
 ### 5.27 Ponto 27
 
 Tempo de rede depende de bits e throughput efetivo.
@@ -186,7 +192,11 @@ EC2 HA usa múltiplas AZs e estado externo.
 | Lift-and-shift | AWS MGN | migração de servidor |
 | Banco com CDC | AWS DMS | dados e mudanças |
 | Política de backup | AWS Backup | governança central |
-| Dispositivos portáteis e rede insuficiente | Data Transfer Terminal | instalação física de alta velocidade; validar elegibilidade e local |
+| Storage suportado e transferência online automatizada | AWS DataSync | agenda, verificação e movimentação gerenciada pela rede |
+| Migração recorrente que exige throughput mais previsível | AWS Direct Connect | conectividade dedicada; não move nem converte os dados sozinho |
+| Cliente Enterprise pode levar os próprios dispositivos e equipamentos a uma instalação suportada | AWS Data Transfer Terminal | facility física de alta velocidade reservada pelo cliente |
+| Novo cliente quer que a AWS envie um dispositivo ao seu local | Reavaliar DataSync, Direct Connect ou solução AWS Partner | Data Transfer Terminal não envia equipamento e Snowball Edge está em encerramento |
+| Conta legada ainda usa Snowball Edge durante a transição | Snowball Edge apenas com plano de saída | novos clientes não entram e o suporte comercial termina em 31/12/2026 |
 | Firewall stateful VPC | Network Firewall | inspeção de rede |
 
 ## 7. Cenários resolvidos
@@ -266,6 +276,9 @@ Faça inventário antes e depois. Exclua apenas recursos criados pelo bloco.
 - DRS não é ferramenta de schema.
 - Backup sem restore testado é insuficiente.
 - DX não converte banco.
+- Data Transfer Terminal é uma instalação física: o cliente leva os próprios dispositivos e equipamentos; a AWS não envia um terminal ao cliente.
+- Data Transfer Terminal é atualmente restrito a clientes Enterprise e instalações suportadas, portanto não substitui Snowball Edge em todos os cenários.
+- Snowball Edge é conteúdo legado em encerramento, não uma recomendação padrão para projeto novo.
 - Menor RTO custa mais.
 - Network Firewall não é WAF.
 
@@ -315,6 +328,7 @@ Faça inventário antes e depois. Exclua apenas recursos criados pelo bloco.
 - [AWS DataSync](https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html)
 - [AWS Data Transfer Terminal](https://docs.aws.amazon.com/datatransferterminal/latest/userguide/what-is-dtt.html)
 - [Snowball Edge availability change](https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html)
+- [Snowball Edge document history](https://docs.aws.amazon.com/snowball/latest/developer-guide/doc-history.html)
 - [Snowball end-of-support notice](https://aws.amazon.com/snowball/)
 - [Network Firewall](https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html)
 - [Data transfer pricing](https://aws.amazon.com/ec2/pricing/on-demand/#Data_Transfer)

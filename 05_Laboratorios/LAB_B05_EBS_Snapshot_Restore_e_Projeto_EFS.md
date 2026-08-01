@@ -1,6 +1,6 @@
 # LAB B05 — EBS, snapshot, restauração e projeto EFS
 
-**Tempo líquido:** 45 minutos<br>
+**Tempo líquido:** 50 minutos<br>
 **Aulas:** 61–71<br>
 **Capítulo:** [B05](../03_Guia_do_Estudante/Capitulos/B05_EBS_Instance_Store_EFS_e_Fundamentos_de_HA.md)<br>
 **Modo:** criação controlada de EC2/EBS; EFS somente em diagrama<br>
@@ -16,6 +16,8 @@ Ao terminar, você deverá ter:
 - diferenciado volume montável de snapshot regional;
 - validado a propagação da criptografia na restauração;
 - comparado hash do arquivo original e restaurado;
+- dimensionado um volume a partir de uso, crescimento, headroom, IOPS e
+  throughput, sem criar capacidade adicional;
 - desenhado EFS Regional com mount targets e security groups;
 - removido todos os recursos criados pelo laboratório;
 - registrado evidências sem identificadores sensíveis.
@@ -28,6 +30,7 @@ Ao terminar, você deverá ter:
 | restauração entre AZs | 2.2 |
 | encryption e KMS | 1.3 |
 | storage compartilhado e custo | 3.1 / 4.1 |
+| tamanho, crescimento, desempenho e custo do volume | 4.1 |
 
 O objetivo não é memorizar cliques. Em cada etapa, diga em voz alta qual
 restrição arquitetural explica a escolha.
@@ -57,7 +60,7 @@ Projeto sem criação: EC2 AZ-a ─┐
                     EC2 AZ-b ──┘             + mount targets
 ```
 
-## 5. Procedimento (25 min)
+## 5. Procedimento (30 min)
 
 1. Lance uma instância Amazon Linux 2023 temporária na configuração mínima autorizada, sem porta SSH pública; prefira Session Manager se a role já existir. A instância e o novo volume devem ficar na mesma AZ.
 2. Crie um volume `gp3` pequeno com encryption habilitada e tags do laboratório. Anexe como data volume.
@@ -67,6 +70,37 @@ Projeto sem criação: EC2 AZ-a ─┐
 6. Crie o volume B a partir do snapshot **na AZ da instância**. Anexe, monte em `/mnt/b05-restore` sem formatar e leia o arquivo.
 7. Registre apenas: tipo, tamanho, criptografado sim/não, AZ igual/diferente e hash do arquivo. Não registre account ID, ARN, IP ou resource ID.
 8. No papel, projete EFS Regional: duas AZs, um mount target por AZ usada, SG do EFS permitindo TCP 2049 somente do SG dos clientes, access point e lifecycle para IA. Não crie o filesystem.
+
+### Exercício de dimensionamento (5 min, sem provisionar o resultado)
+
+Use este cenário separado do pequeno volume criado no laboratório:
+
+- dados usados agora: `1.200 GiB`;
+- crescimento observado: `80 GiB/mês`;
+- próxima revisão formal: em `6 meses`;
+- headroom aprovado para variação: `20%` sobre a projeção;
+- pico sustentado: `8.000 IOPS` e `400 MiB/s`;
+- latência single-digit millisecond atende ao requisito;
+- a instância escolhida suporta esse desempenho EBS.
+
+Preencha antes de olhar a solução:
+
+| Cálculo/decisão | Resultado |
+|---|---|
+| uso projetado em 6 meses | |
+| projeção + 20% de headroom | |
+| tamanho arredondado para cima | |
+| tipo de volume | |
+| IOPS provisionadas | |
+| throughput provisionado | |
+| componentes de preço a comparar | |
+
+**Solução esperada:** `1.200 + (80 × 6) = 1.680 GiB`; com headroom,
+`1.680 × 1,20 = 2.016 GiB`. Uma decisão defensável é arredondar para
+`2.100 GiB` de `gp3`, provisionar `8.000 IOPS` e `400 MiB/s`, validar os
+limites atuais do volume e da instância e estimar capacidade mais desempenho
+adicional na página de preços da Region. Não crie esse volume: o objetivo é
+provar o raciocínio sem gerar custo.
 
 ### Pontos de parada
 
@@ -86,6 +120,7 @@ Projeto sem criação: EC2 AZ-a ─┐
 - [ ] ambos os volumes marcados como criptografados;
 - [ ] diagrama EFS contém mount targets, SG e porta 2049;
 - [ ] consigo explicar por que o snapshot não é um volume montável.
+- [ ] planilha de dimensionamento separa GiB, IOPS, throughput e preço;
 
 ## 7. Cleanup seguro (10 min)
 
@@ -107,8 +142,13 @@ Projeto sem criação: EC2 AZ-a ─┐
 | hash original = restaurado | |
 | volumes/snapshots B05 após cleanup | deve ser 0 |
 | EFS criado | não |
+| capacidade calculada | 2.016 GiB; decisão arredondada justificada |
 
 Explique: por que a restauração pode ocorrer em outra AZ, mas o attach não; quando `io2` venceria `gp3`; por que Multi-Attach não atende ao diagrama EFS.
+
+Explique também por que comprar `8.000 GiB` apenas para obter `8.000 IOPS`
+seria desperdício em `gp3`, e qual alarme ou cadência permitiria reduzir o
+headroom com segurança.
 
 ## 9. Solução de problemas
 
@@ -128,4 +168,7 @@ Explique: por que a restauração pode ocorrer em outra AZ, mas o attach não; q
 - [Create an EBS snapshot](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-creating-snapshot.html)
 - [Restore an EBS volume](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-restoring-volume.html)
 - [EBS encryption](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html)
+- [`gp3` size, IOPS and throughput](https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html)
+- [EBS volume inventory and performance](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-data-inventory.html)
+- [Amazon EBS pricing](https://aws.amazon.com/ebs/pricing/)
 - [EFS network access](https://docs.aws.amazon.com/efs/latest/ug/manage-fs-access.html)

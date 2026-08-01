@@ -619,7 +619,7 @@
 **Pular:** `261`, pois Amazon Personalize está explicitamente fora do escopo.  
 **Quiz:** `Q19` — Teste 19: Data & Analytics Quiz; `Q20` — Teste 20: Machine Learning Quiz.
 
-> A aula 245 usa o nome histórico QuickSight. Na nomenclatura oficial vigente, estude Amazon Quick Sight como o componente de BI do Amazon Quick.
+> A aula 245 usa o nome histórico QuickSight. O [guia oficial SAA-C03](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html) cita **Amazon QuickSuite**; a [documentação atual do produto](https://docs.aws.amazon.com/quick/) usa **Amazon Quick**, e **Amazon Quick Sight** é seu componente de BI e visualização.
 
 > O quiz de Machine Learning continua útil; desconsidere somente uma eventual questão exclusivamente sobre Personalize.
 
@@ -869,7 +869,7 @@
 **Pular:** `394–396`, por serem encerramento, trilhas e bônus.  
 **Quiz:** `Q27` — Teste 27: Other Services Quiz; `Q28` — Teste 28: WhitePapers & Architectures Quiz.
 
-> O practice exam não pertence ao B25; ele está reservado ao SIM B de 28/08.
+> O practice exam não pertence ao B25; ele está reservado ao evento **Practice Udemy** de 28/08. Não confundir com o banco autoral privado `SIM-B`, que é um recurso adicional e permanece fechado durante essa tentativa.
 
 <details>
 <summary>Títulos e tratamento dos 32 itens deste bloco</summary>
@@ -919,8 +919,10 @@
 - **25/08:** nenhuma aula nova; revisão por domínio.
 - **26/08 — SIM A:** nenhuma aula nova; simulado autoral.
 - **27/08:** nenhuma aula nova; correção aprofundada.
-- **28/08 — SIM B:** `I422` — Simulado 1: Practice Exam - AWS Certified Solutions Architect Associate.
-- **29/08:** nenhuma aula nova; correção do SIM B.
+- **28/08 — Practice Udemy:** `I422` — Simulado 1: Practice Exam - AWS Certified Solutions Architect Associate; o `SIM-B` autoral fica reservado como tentativa adicional.
+- **29/08:** nenhuma aula nova; correção do Practice Udemy.
 - **31/08 — SIM C:** nenhuma aula nova; simulado autoral e decisão de prontidão.
 
-> O practice exam aparece somente no SIM B. Ele não deve ser aberto durante o B25 nem durante a revisão anterior.
+O `SIM-B` autoral privado pode ser usado depois da correção do SIM C ou como substituto somente se o practice exam da Udemy estiver indisponível. Não realize os dois no mesmo dia e não abra previamente nenhum dos bancos.
+
+> O practice exam aparece somente no evento Practice Udemy de 28/08. Ele não deve ser aberto durante o B25 nem durante a revisão anterior.

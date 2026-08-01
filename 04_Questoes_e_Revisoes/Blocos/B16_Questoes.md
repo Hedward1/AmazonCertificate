@@ -1,24 +1,24 @@
 # B16 — Questões
 
-**Formato:** 10 questões autorais; uma resposta correta<br>
+**Formato:** questões de resposta única e múltipla, conforme indicado<br>
 **Idioma:** 2 Português + 8 Inglês<br>
 **Aulas:** 203–216<br>
 **Tarefas:** 1.2, 3.2 e 4.2
 
 ## Metadados das questões
 
-| ID | Domínio | Tarefa | Aulas | Idioma |
-|---|---:|---:|---|---|
-| B16-01 | 3 | 3.2 | 206–207 | Português |
-| B16-02 | 3 | 3.2 | 210–214 | Português |
-| B16-03 | 3 | 3.2 | 210–212 | Inglês |
-| B16-04 | 3 | 3.2 | 213–214 | Inglês |
-| B16-05 | 3 | 3.2 | 213–215 | Inglês |
-| B16-06 | 3 | 3.2 | 215 | Inglês |
-| B16-07 | 3 | 3.2 | 216 | Inglês |
-| B16-08 | 3 | 3.2 | 203–207 | Inglês |
-| B16-09 | 1 | 1.2 | 205 | Inglês |
-| B16-10 | 4 | 4.2 | 210–214 | Inglês |
+| ID | Domínio | Tarefa | Aulas | Idioma | Formato | Tipo | Dificuldade |
+|---|---:|---:|---|---|---|---|---|
+| B16-01 | 3 | 3.2 | 206–207 | Português | single | fundamental | básica |
+| B16-02 | 3 | 3.2 | 210–214 | Português | single | situacional | intermediária |
+| B16-03 | 3 | 3.2 | 210–212 | Inglês | single | situacional | intermediária |
+| B16-04 | 3 | 3.2 | 213–214 | Inglês | multi-2 | integrada | avançada |
+| B16-05 | 3 | 3.2 | 213–215 | Inglês | single | situacional | intermediária |
+| B16-06 | 3 | 3.2 | 215 | Inglês | single | situacional | intermediária |
+| B16-07 | 3 | 3.2 | 216 | Inglês | multi-2 | integrada | avançada |
+| B16-08 | 3 | 3.2 | 203–207 | Inglês | single | situacional | intermediária |
+| B16-09 | 1 | 1.2 | 205 | Inglês | multi-3 | integrada | avançada |
+| B16-10 | 2 | 2.2 | 210–214 | Inglês | single | integrada | avançada |
 
 ### B16-01
 
@@ -52,13 +52,15 @@ choice is appropriate instead of a standard Lambda Function?
 
 ### B16-04
 
-A database accepts no more than 80 concurrent connections. A Lambda function
-can scale far beyond that during bursts. Which control is most direct?
+A bursty Lambda API writes to an RDS database that accepts at most 80 concurrent
+connections. The design must protect the database, reuse connections, and avoid
+unbounded function scaling. **Choose TWO.**
 
-- A. Increase function memory only
-- B. Enable a public Function URL
-- C. Add more CloudFront cache behaviors
-- D. Cap function/event-source concurrency and buffer bursts, while considering RDS Proxy
+- A. Increase the Lambda timeout to 15 minutes
+- B. Place Amazon RDS Proxy between the functions and the database
+- C. Put the functions in public subnets so each receives a public IP address
+- D. Set reserved concurrency to a limit the downstream system can safely absorb
+- E. Increase API Gateway cache TTL without limiting Lambda concurrency
 
 ### B16-05
 
@@ -81,43 +83,55 @@ Which statement best describes Lambda SnapStart?
 
 ### B16-07
 
-A CloudFront viewer request needs only a very fast URL rewrite and header
-normalization, with no network call. Which option is preferred?
+A global application needs a submillisecond URL rewrite on every viewer request
+and separate origin-request logic that uses AWS SDK calls and has longer execution
+requirements. Which edge options should be assigned to the two tasks? **Choose TWO.**
 
-- A. Amazon MQ
-- B. CloudFront Functions
-- C. A long-running ECS task
-- D. Lambda in a private subnet with NAT Gateway
+- A. Use CloudFront Functions for the lightweight viewer-request rewrite
+- B. Use an EC2 Auto Scaling group for every viewer-request rewrite
+- C. Use Step Functions Express Workflows as a CloudFront event handler
+- D. Use Lambda@Edge for the origin-request logic that exceeds CloudFront Functions capabilities
+- E. Use an SQS FIFO consumer for synchronous header normalization
 
 ### B16-08
 
-An organization has standardized on Kubernetes APIs and tooling and requires a
-managed Kubernetes control plane. Which service meets the requirement?
+A platform team already operates Helm charts, Kubernetes admission policies,
+and controllers across environments. It wants AWS to manage control-plane
+availability and upgrades while retaining Kubernetes APIs, choosing EC2 or
+Fargate worker capacity per workload, and integrating pods with AWS IAM. Which
+platform best satisfies these constraints with the least application rewrite?
 
-- A. Amazon ECS
-- B. AWS Lambda
-- C. Amazon ECR
-- D. Amazon EKS
+- A. Self-manage Kubernetes control-plane and worker nodes on EC2 to preserve every API and assume all upgrade/availability work
+- B. Migrate to Amazon ECS on Fargate and rewrite Helm charts, admission policies, and controllers into AWS-native deployment mechanisms
+- C. Keep Kubernetes outside AWS and use Amazon ECR only for images, accepting an independently operated control plane and network integration
+- D. Amazon EKS with managed control plane, appropriate data-plane options, and pod-level AWS access controls
 
 ### B16-09
 
-A production deployment must always reference the exact tested container image,
-even if a tag is later moved. What should it reference?
+A regulated ECS deployment pulls images from private ECR. It must deploy exactly
+the tested bytes, identify vulnerable packages, and access ECR from private
+subnets without routing image pulls through a NAT gateway. Which controls meet
+the requirements? **Select THREE.**
 
-- A. The image digest, with immutable-tag controls as appropriate
-- B. The `latest` tag only
-- C. A plaintext registry password
-- D. The ECR console URL
+- A. Reference the mutable `latest` tag in the task definition
+- B. Reference the tested image by digest
+- C. Enable ECR enhanced scanning with Amazon Inspector
+- D. Store the image only in a developer workstation cache
+- E. Configure the required ECR interface endpoints and an S3 gateway endpoint
+- F. Give the task role unrestricted administrator access
 
 ### B16-10
 
-A Lambda function is deleted after a lab, but charges/storage evidence remains.
-Which resource commonly requires separate cleanup?
+EventBridge invokes a Lambda order handler asynchronously. A partner outage can
+cause repeated failures; the company must bound retry age, preserve exhausted
+events for later recovery, alert operators, and retain function logs for only
+30 days. Which design meets the reliability and operations requirements without
+custom polling code?
 
-- A. The AWS Region
-- B. The runtime itself
-- C. The CloudWatch Logs log group and any exclusive role/triggers
-- D. The Lambda service control plane
+- A. Rely on an EventBridge archive for manual replay, disable Lambda retries, and keep failed-event discovery only in logs
+- B. Replace EventBridge with an SQS queue and redrive policy, but omit idempotency, alarms, maximum retention analysis, and the required 30-day log lifecycle
+- C. Configure asynchronous retry/maximum event age with an on-failure destination or DLQ, alarm on failures, and set the CloudWatch Logs retention policy to 30 days
+- D. Configure an SNS email notification for each error, leave native retry age unbounded by design, and retain logs indefinitely
 
 ## Registro antes de corrigir
 

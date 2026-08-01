@@ -36,14 +36,22 @@ Ao concluir, você deverá conseguir:
 
 ### Mudança que invalida uma escolha automática do curso
 
-AWS Snowball Edge não está disponível para **novos clientes**; a documentação
-vigente informa que nenhum dispositivo Snow Family novo pode ser solicitado por
-eles. Clientes existentes podem continuar usando. Para um novo cliente em
-2026, avalie **DataSync** para transferência online, **AWS Data Transfer
-Terminal** ou parceiros para transferência física e **Outposts** para compute
-no edge. Em questão de prova que descreva explicitamente Snowball como opção e
-não introduza a restrição temporal, reconheça o padrão histórico, mas em um
-projeto real valide disponibilidade.
+- **`núcleo SAA-C03`:** reconhecer o padrão de decisão entre transferência
+  online, transporte físico e compute em local desconectado, além de calcular a
+  janela com throughput efetivo.
+- **`atualização relevante`:** Snowball Edge não aceita novos clientes desde
+  **07/11/2025** e a AWS encerrará o suporte aos dispositivos nas Regions
+  comerciais em **31/12/2026**. Clientes existentes precisam planejar a saída;
+  não trate o serviço como escolha nova.
+- **`conteúdo profissional opcional`:** para projetos atuais, compare DataSync
+  ou Direct Connect para transferência online, Data Transfer Terminal ou
+  parceiros para transporte físico e Outposts para edge compute.
+
+`Conteúdo profissional opcional` não é para memorizar; ele serve para corrigir
+uma decisão real atual. Se uma questão
+SAA-C03 ainda apresentar Snowball como opção sem contexto temporal, reconheça o
+padrão histórico; em arquitetura real, aplique as datas e valide a alternativa
+disponível para o cliente e o local.
 
 Há uma segunda mudança relevante: **Amazon FSx File Gateway não está disponível
 para novos clientes desde 28 de outubro de 2024**. Clientes existentes podem
@@ -238,3 +246,5 @@ Sem consulta:
 - [AWS DataSync](https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html)
 - [AWS Transfer Family](https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html)
 - [Mudança de disponibilidade do Snowball Edge](https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html)
+- [Histórico oficial da mudança do Snowball Edge](https://docs.aws.amazon.com/snowball/latest/developer-guide/doc-history.html)
+- [Encerramento do suporte ao Snowball](https://aws.amazon.com/snowball/)
