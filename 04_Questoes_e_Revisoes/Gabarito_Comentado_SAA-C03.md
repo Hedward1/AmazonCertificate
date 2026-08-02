@@ -55,6 +55,6 @@ acidental da resposta.
 | [B23](Blocos/B23_Gabarito.md) | 10 | 10 | 10 |
 | [B24](Blocos/B24_Gabarito.md) | 10 | 10 | 10 |
 | [B25](Blocos/B25_Gabarito.md) | 10 | 10 | 10 |
-| SIM-A | 0 | 0 | 0 |
-| SIM-B | 0 | 0 | 0 |
-| SIM-C | 0 | 0 | 0 |
+| [SIM-A](Simulados/SIM-A/Gabarito.md) | 65 | 65 | 65 |
+| [SIM-B](Simulados/SIM-B/Gabarito.md) | 65 | 65 | 65 |
+| [SIM-C](Simulados/SIM-C/Gabarito.md) | 65 | 65 | 65 |

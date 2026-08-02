@@ -1,0 +1,2083 @@
+{
+  "id": "SIM-C",
+  "duration_minutes": 130,
+  "language": "English",
+  "questions": [
+    {
+      "id": "SIM-C-01",
+      "domain": 1,
+      "task": "1.1",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose ONE.",
+      "stem": "During an access incident, an IAM role has an identity policy that allows s3:GetObject, but a bucket policy explicitly denies that action for the role. No other policy changes are pending. What is the authorization result?",
+      "options": {
+        "A": "The request is denied because an applicable explicit deny overrides the allow.",
+        "B": "The request succeeds because an identity policy always overrides a resource policy.",
+        "C": "The request succeeds only if the object uses SSE-S3 encryption.",
+        "D": "The request is retried automatically by IAM until the policies converge."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. An explicit deny in any applicable policy overrides identity-based allows during authorization evaluation.",
+        "B": "Incorrect. Identity policies do not override an applicable explicit deny in a resource policy.",
+        "C": "Incorrect. The encryption method does not change the explicit-deny result for the S3 API authorization.",
+        "D": "Incorrect. IAM policy evaluation is synchronous and does not retry denied application requests."
+      },
+      "central_requirement": "Determine the effect of an applicable explicit deny during IAM policy evaluation.",
+      "decisive_words": "identity allow, bucket explicit deny, authorization result",
+      "reusable_rule": "An applicable explicit deny wins over any allow; boundaries and SCPs can further limit but never grant permissions.",
+      "references": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
+      ]
+    },
+    {
+      "id": "SIM-C-02",
+      "domain": 1,
+      "task": "1.1",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "An incident-response Lambda function in a security account must inspect snapshots in a workload account for two hours. The company prohibits IAM users and long-lived keys, and the workload account must control who can enter. Which design best meets these requirements?",
+      "options": {
+        "A": "Copy the workload account root access keys into Secrets Manager in the security account.",
+        "B": "Create a cross-account role in the workload account that trusts the response role, then call AWS STS AssumeRole.",
+        "C": "Make every snapshot public and restrict access by an undocumented naming convention.",
+        "D": "Attach an SCP in the security account that grants read access to snapshots in all workload accounts through AWS Organizations."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. Root credentials must not be distributed, and storage in Secrets Manager does not make them temporary or least privilege.",
+        "B": "Correct. The destination trust policy and temporary STS session satisfy cross-account control without long-lived credentials.",
+        "C": "Incorrect. Public sharing violates the security requirement and names do not provide authorization.",
+        "D": "Incorrect. An SCP sets permission guardrails and cannot grant cross-account resource access."
+      },
+      "central_requirement": "Provide temporary cross-account incident access controlled by the destination account.",
+      "decisive_words": "two hours, no IAM users, workload account controls entry",
+      "reusable_rule": "For cross-account operations, use a destination role trust policy plus caller permission to assume the role and short STS sessions.",
+      "references": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html"
+      ]
+    },
+    {
+      "id": "SIM-C-03",
+      "domain": 1,
+      "task": "1.1",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A global operations team uses IAM Identity Center across an AWS Organization. During a breach, access to production must be revoked centrally while an emergency role remains available only through audited short sessions. Which architecture best balances centralized control and break-glass access?",
+      "options": {
+        "A": "Use Amazon Cognito user pools to issue AWS Management Console administrator permissions to employees.",
+        "B": "Create IAM users with permanent administrator keys in every production account.",
+        "C": "Assign normal permission sets through IAM Identity Center and maintain a tightly trusted emergency role with MFA, short maximum session duration, and CloudTrail monitoring.",
+        "D": "Place the production accounts outside Organizations so no central policy can affect emergency access."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. Cognito user pools authenticate application users and do not replace workforce AWS account permission sets.",
+        "B": "Incorrect. Distributed long-lived administrator keys increase attack surface and make centralized revocation difficult.",
+        "C": "Correct. This separates routine centralized access from a constrained, auditable emergency path with temporary credentials.",
+        "D": "Incorrect. Removing accounts from governance weakens centralized response and does not create a safe break-glass design."
+      },
+      "central_requirement": "Centralize routine workforce access while preserving a constrained and audited emergency path.",
+      "decisive_words": "Identity Center, central revocation, emergency role, short sessions",
+      "reusable_rule": "Use Identity Center permission sets for workforce access and design break-glass roles as exceptional, temporary, MFA-protected, and heavily monitored.",
+      "references": [
+        "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+      ]
+    },
+    {
+      "id": "SIM-C-04",
+      "domain": 1,
+      "task": "1.1",
+      "format": "multi-2",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose TWO.",
+      "stem": "A compromised deployment role can create IAM roles. Security must prevent it from escalating privileges while allowing teams to create application roles within an approved permission ceiling. Which two controls should be applied?",
+      "options": {
+        "A": "Require application roles to use a permissions boundary that caps their effective identity permissions.",
+        "B": "Restrict iam:CreateRole and iam:PutRolePermissionsBoundary so the deployment role can use only the approved boundary.",
+        "C": "Allow the deployment role to attach AdministratorAccess if the new role name starts with app-.",
+        "D": "Store the administrator policy document in an encrypted S3 bucket before attaching it.",
+        "E": "Use a CloudWatch dashboard as the preventive permission ceiling."
+      },
+      "answers": [
+        "A",
+        "B"
+      ],
+      "rationales": {
+        "A": "Correct. A permissions boundary limits the maximum permissions an identity policy can produce for each created role.",
+        "B": "Correct. Conditional IAM permissions can require and constrain the boundary used during role creation.",
+        "C": "Incorrect. Resource names do not make administrator permissions safe and this enables privilege escalation.",
+        "D": "Incorrect. Encryption protects storage but does not reduce the permissions or escalation path.",
+        "E": "Incorrect. A dashboard is observational and cannot enforce IAM authorization limits."
+      },
+      "central_requirement": "Prevent privilege escalation while permitting delegated role creation under a fixed ceiling.",
+      "decisive_words": "compromised deployment role, create roles, approved ceiling",
+      "reusable_rule": "Delegated IAM administration requires both a permissions boundary on created identities and caller permissions that enforce the approved boundary.",
+      "references": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+      ]
+    },
+    {
+      "id": "SIM-C-05",
+      "domain": 1,
+      "task": "1.1",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A global storefront serves private S3 objects through CloudFront and dynamic traffic through regional ALBs. An incident showed direct S3 URL access and malicious requests reaching the application. The company wants one public edge, private origins, and centralized Layer 7 filtering. Which design is best?",
+      "options": {
+        "A": "Use Route 53 latency records that resolve users directly to S3 website endpoints and public ALBs.",
+        "B": "Make the S3 bucket public, use signed object names, and rely on ALB security groups for SQL injection filtering.",
+        "C": "Put a NAT Gateway in front of S3 and attach network ACL rules containing malicious URL strings.",
+        "D": "Use CloudFront with Origin Access Control for S3, restrict the bucket to the distribution, place AWS WAF on CloudFront, and route dynamic behavior to the ALBs."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. Direct origin routing violates the single-edge and private-origin requirements and provides no centralized WAF point.",
+        "B": "Incorrect. Public bucket access bypasses CloudFront and security groups cannot inspect application payloads for SQL injection.",
+        "C": "Incorrect. NAT Gateways provide egress translation, and network ACLs cannot inspect URL or HTTP payload content.",
+        "D": "Correct. OAC keeps the bucket private, CloudFront becomes the public edge, and WAF filters supported web requests centrally."
+      },
+      "central_requirement": "Create a single protected global edge while preventing clients from bypassing private origins.",
+      "decisive_words": "global storefront, private S3, direct URLs, centralized Layer 7",
+      "reusable_rule": "For private global delivery, make CloudFront the public entry point, authorize origin access explicitly, and attach WAF at the shared edge.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+      ]
+    },
+    {
+      "id": "SIM-C-06",
+      "domain": 1,
+      "task": "1.1",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose ONE.",
+      "stem": "A developer needs command-line access to an AWS account for one hour. The organization forbids embedded access keys and wants credentials to expire automatically. Which credential characteristic directly satisfies the requirement?",
+      "options": {
+        "A": "Temporary AWS STS credentials with a limited session duration.",
+        "B": "An IAM user access key stored in an encrypted local file with a one-hour credential-process cache.",
+        "C": "The AWS account root access key protected by MFA.",
+        "D": "A presigned S3 URL used as a general AWS CLI credential."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. STS credentials include an expiration and avoid permanent IAM user access keys.",
+        "B": "Incorrect. Encryption at rest does not make an IAM user key temporary or automatically expiring.",
+        "C": "Incorrect. Root access keys are long lived and must not be used for routine command-line access.",
+        "D": "Incorrect. A presigned URL authorizes a specific request and is not a general AWS credential set."
+      },
+      "central_requirement": "Identify the credential model that automatically expires and avoids long-lived keys.",
+      "decisive_words": "one hour, command-line, expire automatically",
+      "reusable_rule": "Use role-based STS sessions for human and workload access whenever permanent access keys are unnecessary.",
+      "references": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html"
+      ]
+    },
+    {
+      "id": "SIM-C-07",
+      "domain": 1,
+      "task": "1.1",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A consumer application authenticates millions of customers with social identity providers and MFA. A subset of signed-in users must upload directly to a user-specific S3 prefix without passing through the API servers. Which design has the least credential-management overhead?",
+      "options": {
+        "A": "Create one IAM user and permanent access key for every customer account.",
+        "B": "Use a Cognito user pool for authentication and a Cognito identity pool that maps users to scoped IAM roles for temporary S3 credentials.",
+        "C": "Make the upload bucket public and include the customer ID only in the object key.",
+        "D": "Use IAM Identity Center permission sets in the mobile application for consumer sign-in."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. Millions of IAM users and long-lived keys are unsafe and create excessive credential operations.",
+        "B": "Correct. User pools handle customer authentication while identity pools vend temporary AWS credentials governed by role policies.",
+        "C": "Incorrect. A public bucket does not enforce authenticated user-to-prefix isolation.",
+        "D": "Incorrect. Identity Center targets workforce access to AWS accounts, not high-scale customer application authentication."
+      },
+      "central_requirement": "Authenticate consumer users and issue temporary, prefix-scoped AWS credentials for direct uploads.",
+      "decisive_words": "social identities, MFA, direct S3, user-specific prefix",
+      "reusable_rule": "Use Cognito user pools for application authentication and identity pools when clients also need temporary scoped AWS credentials.",
+      "references": [
+        "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html"
+      ]
+    },
+    {
+      "id": "SIM-C-08",
+      "domain": 1,
+      "task": "1.2",
+      "format": "multi-2",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose TWO.",
+      "stem": "A serverless order API has bursty Lambda traffic and an RDS password rotated every 30 days. During rotation, old connections and sudden connection storms cause failures. Which two services should be combined to reduce credential and connection operations?",
+      "options": {
+        "A": "Store and rotate the database credential in AWS Secrets Manager.",
+        "B": "Embed both old and new passwords in Lambda environment variables during every rotation window.",
+        "C": "Place Amazon RDS Proxy between Lambda and the database and integrate it with the secret.",
+        "D": "Increase the Lambda timeout to fifteen minutes so connections remain open longer.",
+        "E": "Move the function to a public subnet to obtain more source IP addresses."
+      },
+      "answers": [
+        "A",
+        "C"
+      ],
+      "rationales": {
+        "A": "Correct. Secrets Manager supports managed rotation and controlled programmatic retrieval of the current credential.",
+        "B": "Incorrect. Embedded duplicate credentials increase exposure and require deployment coordination instead of managed rotation.",
+        "C": "Correct. RDS Proxy pools connections and can obtain database credentials from Secrets Manager.",
+        "D": "Incorrect. Longer function timeouts do not pool connections or coordinate credential rotation.",
+        "E": "Incorrect. Public subnet placement does not grant Lambda public IPs and does not solve database connection pressure."
+      },
+      "central_requirement": "Manage rotating database credentials and absorb serverless connection bursts.",
+      "decisive_words": "Lambda bursts, RDS password rotation, connection storms",
+      "reusable_rule": "For Lambda-to-RDS workloads, combine Secrets Manager rotation with RDS Proxy connection pooling when supported.",
+      "references": [
+        "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+        "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+      ]
+    },
+    {
+      "id": "SIM-C-09",
+      "domain": 1,
+      "task": "1.2",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "Private EC2 instances use an interface VPC endpoint to call Secrets Manager. A response team discovers that every role in the VPC can reach every secret allowed by IAM. The team wants an additional network-path policy that permits only one role and selected secrets. What should be changed?",
+      "options": {
+        "A": "Add a network ACL rule containing the approved IAM role ARN.",
+        "B": "Replace the endpoint with an Internet Gateway and filter secret names in the route table.",
+        "C": "Attach a restrictive endpoint policy to the Secrets Manager interface endpoint and retain least-privilege IAM and secret policies.",
+        "D": "Disable TLS on the endpoint so packet inspection can identify the role."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. Network ACLs filter IP protocol fields and cannot evaluate IAM principal ARNs.",
+        "B": "Incorrect. Route tables cannot filter API principals or secret ARNs, and an internet path weakens the stated design.",
+        "C": "Correct. Endpoint policies can constrain which principals and resources may use the private endpoint in addition to normal authorization.",
+        "D": "Incorrect. Secrets Manager requires secure API access, and removing TLS would not create principal-aware authorization."
+      },
+      "central_requirement": "Add a principal- and resource-aware control at the private service endpoint.",
+      "decisive_words": "interface endpoint, one role, selected secrets, additional policy",
+      "reusable_rule": "VPC endpoint policies are defense in depth; they narrow endpoint use but do not replace IAM and resource-policy authorization.",
+      "references": [
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
+      ]
+    },
+    {
+      "id": "SIM-C-10",
+      "domain": 1,
+      "task": "1.2",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "GuardDuty produces a high-severity finding for credential exfiltration in a member account. The organization wants centralized finding aggregation, automatic isolation of tagged instances, and an investigation view of related entities without building a custom event poller. Which architecture is best?",
+      "options": {
+        "A": "Enable only CloudWatch CPU alarms and terminate every instance above 80 percent utilization.",
+        "B": "Send monthly Config snapshots to S3 and have administrators inspect them manually for credential exfiltration.",
+        "C": "Use AWS Artifact to aggregate findings and Amazon Macie to isolate EC2 network interfaces.",
+        "D": "Aggregate findings in Security Hub, route the finding event through EventBridge to an idempotent remediation workflow, and use Detective for relationship investigation."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. CPU is not a reliable credential-exfiltration signal and broad termination is unsafe remediation.",
+        "B": "Incorrect. Config state snapshots are not a timely threat-finding or automated response pipeline.",
+        "C": "Incorrect. Artifact distributes compliance documents, while Macie discovers sensitive data in S3 rather than isolating compute.",
+        "D": "Correct. The services cover centralized findings, event-driven response, and contextual investigation as separate managed capabilities."
+      },
+      "central_requirement": "Combine centralized security findings, event-driven containment, and contextual investigation.",
+      "decisive_words": "GuardDuty high severity, centralized, automatic isolation, related entities",
+      "reusable_rule": "Use purpose-built stages: detection and aggregation, EventBridge-driven idempotent response, then Detective investigation of linked activity.",
+      "references": [
+        "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html"
+      ]
+    },
+    {
+      "id": "SIM-C-11",
+      "domain": 1,
+      "task": "1.2",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose ONE.",
+      "stem": "An EC2 security group allows inbound HTTPS from a client. The response packets must return to that client. Which security-group behavior is relevant when evaluating whether a separate outbound response rule is required?",
+      "options": {
+        "A": "Security groups are stateful, so response traffic for an allowed connection is automatically permitted.",
+        "B": "Security groups are stateless and require mirrored inbound and outbound rules for every application connection.",
+        "C": "Security groups support ordered deny rules before allow rules.",
+        "D": "Security groups evaluate the HTTP method before allowing the response."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. State tracking permits return traffic for an established allowed flow regardless of a matching outbound rule.",
+        "B": "Incorrect. That describes network ACL behavior rather than security-group connection tracking.",
+        "C": "Incorrect. Security groups contain allow rules and do not use ordered explicit deny entries.",
+        "D": "Incorrect. Security groups filter connection properties and do not inspect HTTP methods."
+      },
+      "central_requirement": "Identify the stateful return-traffic behavior of EC2 security groups.",
+      "decisive_words": "inbound HTTPS allowed, response packets, outbound rule",
+      "reusable_rule": "Security groups are stateful allow lists; network ACLs are stateless ordered subnet filters.",
+      "references": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html"
+      ]
+    },
+    {
+      "id": "SIM-C-12",
+      "domain": 1,
+      "task": "1.2",
+      "format": "multi-2",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose TWO.",
+      "stem": "A private REST API in API Gateway must be callable only through one interface VPC endpoint and only by principals from approved organization accounts. The API must have no public invocation path. Which two controls are required?",
+      "options": {
+        "A": "Configure the API as a private API and associate or use the execute-api interface VPC endpoint.",
+        "B": "Place a NAT Gateway in each private subnet and allow the public API hostname.",
+        "C": "Use only a usage plan API key as the security boundary.",
+        "D": "Add an API resource policy that restricts the source VPC endpoint and approved principals or organization context.",
+        "E": "Add an S3 gateway endpoint because gateway endpoints support every AWS API."
+      },
+      "answers": [
+        "A",
+        "D"
+      ],
+      "rationales": {
+        "A": "Correct. A private API is reached through an execute-api VPC endpoint rather than a public endpoint type.",
+        "B": "Incorrect. NAT provides outbound internet reachability and would not eliminate the public invocation path.",
+        "C": "Incorrect. API keys identify usage and are not authorization controls for private principals.",
+        "D": "Correct. The resource policy can deny calls outside the expected private endpoint and principal boundary.",
+        "E": "Incorrect. S3 gateway endpoints are service-specific and cannot carry API Gateway execute-api traffic."
+      },
+      "central_requirement": "Enforce a private API network path and resource-level caller restrictions.",
+      "decisive_words": "private REST API, one VPC endpoint, approved organization accounts",
+      "reusable_rule": "A private API design requires the private endpoint type plus a resource policy that constrains endpoint and principal context.",
+      "references": [
+        "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-apis.html"
+      ]
+    },
+    {
+      "id": "SIM-C-13",
+      "domain": 1,
+      "task": "1.2",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A company hosts public applications behind ALBs in fifty accounts. A new zero-day request pattern must be blocked consistently within minutes, and DDoS response support is required for the most critical endpoints. Which design minimizes decentralized operations?",
+      "options": {
+        "A": "Ask each account owner to update security-group rules containing the malicious HTTP string.",
+        "B": "Use AWS Firewall Manager to deploy organization-wide AWS WAF policies and enroll critical resources in AWS Shield Advanced.",
+        "C": "Route all web requests through centralized NAT Gateways and use network ACLs to inspect and block the malicious request body.",
+        "D": "Use Amazon Inspector findings as inline ALB request filters."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. Security groups cannot inspect HTTP content and decentralized manual updates will not meet the time objective.",
+        "B": "Correct. Firewall Manager centralizes supported policies across accounts, while Shield Advanced provides enhanced DDoS capabilities for protected resources.",
+        "C": "Incorrect. NAT Gateways do not proxy inbound traffic and network ACLs cannot inspect request bodies.",
+        "D": "Incorrect. Inspector detects workload vulnerabilities and is not an inline Layer 7 request control."
+      },
+      "central_requirement": "Centrally enforce Layer 7 controls across accounts and add enhanced DDoS protection where justified.",
+      "decisive_words": "fifty accounts, zero-day pattern, within minutes, DDoS response",
+      "reusable_rule": "At organization scale, centralize WAF policy with Firewall Manager and separately evaluate Shield Advanced for high-value DDoS requirements.",
+      "references": [
+        "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-firewall-manager.html"
+      ]
+    },
+    {
+      "id": "SIM-C-14",
+      "domain": 1,
+      "task": "1.2",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "After an outage, auditors need to know who changed a security group, reconstruct the resulting configuration over time, and correlate the change with application error metrics. Which service mapping provides the necessary evidence?",
+      "options": {
+        "A": "Use AWS Artifact for the configuration timeline and IAM Access Analyzer for application latency.",
+        "B": "Use CloudWatch for API caller identity and payloads, CloudTrail for CPU and error metrics, and AWS Config for packet captures.",
+        "C": "Use CloudTrail for API caller history, AWS Config for configuration timeline, and CloudWatch for operational metrics and logs.",
+        "D": "Use only VPC Flow Logs because flow records include every API caller and resource configuration."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. Artifact supplies compliance documents and Access Analyzer reasons about external or unused access, not latency.",
+        "B": "Incorrect. These assignments reverse service responsibilities and Config does not capture packet payloads.",
+        "C": "Correct. Each service supplies the audit, state, and behavior evidence requested by the incident review.",
+        "D": "Incorrect. Flow Logs provide network metadata, not management API identity or full configuration history."
+      },
+      "central_requirement": "Map API authorship, resource state, and application impact to the correct evidence sources.",
+      "decisive_words": "who changed, configuration over time, error metrics",
+      "reusable_rule": "CloudTrail answers who called an API, Config answers how a resource was configured, and CloudWatch answers how the system behaved.",
+      "references": [
+        "https://docs.aws.amazon.com/pdfs/decision-guides/latest/cloudtrail-or-cloudwatch/cloudtrail-or-cloudwatch.pdf"
+      ]
+    },
+    {
+      "id": "SIM-C-15",
+      "domain": 1,
+      "task": "1.3",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A regulated archive stores signed records in S3. Even administrators must be unable to shorten a seven-year retention period, and the evidence must survive accidental stack deletion. Which design provides the strongest required immutability?",
+      "options": {
+        "A": "Replicate the objects to an unversioned public bucket in another Region.",
+        "B": "Use S3 Lifecycle expiration after seven years and grant administrators s3:DeleteObjectVersion.",
+        "C": "Enable only MFA Delete and keep the root virtual MFA device with the operations team.",
+        "D": "Create an S3 Object Lock compliance-mode retention period in a versioned bucket and protect the bucket lifecycle through controlled infrastructure policies."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. An unversioned public destination is neither immutable nor appropriately secured.",
+        "B": "Incorrect. Lifecycle controls transition or expiration but does not provide immutable compliance retention against administrators.",
+        "C": "Incorrect. MFA Delete adds a deletion control but does not enforce an unshortenable fixed retention period.",
+        "D": "Correct. Compliance mode prevents protected object versions from deletion or retention shortening, including by the root user, during the retention period."
+      },
+      "central_requirement": "Enforce administrator-resistant fixed retention for regulated S3 object versions.",
+      "decisive_words": "seven years, administrators unable to shorten, immutability",
+      "reusable_rule": "For WORM compliance that no user can shorten, use S3 Object Lock compliance mode on a versioned bucket and protect the surrounding lifecycle.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
+      ]
+    },
+    {
+      "id": "SIM-C-16",
+      "domain": 1,
+      "task": "1.3",
+      "format": "multi-2",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose TWO.",
+      "stem": "An application encrypts large files client-side and uses a customer managed KMS key only to protect data-key material. Which two steps are part of correct envelope encryption?",
+      "options": {
+        "A": "Call GenerateDataKey and use the returned plaintext data key locally to encrypt the file.",
+        "B": "Send the entire multi-gigabyte file to the KMS Encrypt API.",
+        "C": "Write the plaintext data key into S3 object tags for recovery.",
+        "D": "Use an Organizations SCP as the symmetric cipher key.",
+        "E": "Store the encrypted copy of the data key with the file ciphertext and erase the plaintext key after use."
+      },
+      "answers": [
+        "A",
+        "E"
+      ],
+      "rationales": {
+        "A": "Correct. The plaintext data key performs efficient bulk encryption outside KMS.",
+        "B": "Incorrect. KMS cryptographic APIs are not designed for bulk payload encryption and impose size limits.",
+        "C": "Incorrect. Persisting plaintext key material exposes the protected data and defeats envelope encryption.",
+        "D": "Incorrect. An SCP is an authorization guardrail and is not cryptographic key material.",
+        "E": "Correct. The encrypted data key is safe to retain for later KMS decryption while plaintext key material should be removed."
+      },
+      "central_requirement": "Identify the data-key generation and storage steps in envelope encryption.",
+      "decisive_words": "large files, KMS protects key material, client-side",
+      "reusable_rule": "Envelope encryption uses a plaintext data key briefly for bulk data and stores only its KMS-encrypted copy with the ciphertext.",
+      "references": [
+        "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#enveloping"
+      ]
+    },
+    {
+      "id": "SIM-C-17",
+      "domain": 1,
+      "task": "1.3",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A payment API terminates client TLS at an ALB and connects to an RDS database that requires encrypted sessions. Security wants managed public certificate renewal at the edge and verified TLS on the database hop. Which design best meets the requirement?",
+      "options": {
+        "A": "Use an ACM public certificate on the ALB, configure HTTPS listeners, and require the application to validate the RDS CA certificate over TLS.",
+        "B": "Terminate TLS at the ALB and send plaintext database connections because the traffic remains in a VPC.",
+        "C": "Install one self-signed certificate on every client and disable certificate validation in the application.",
+        "D": "Use an S3 presigned URL as the ALB and RDS certificate."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. ACM manages the public edge certificate while database TLS and CA validation protect the separate backend connection.",
+        "B": "Incorrect. A VPC boundary does not satisfy the explicit encryption requirement for the database hop.",
+        "C": "Incorrect. Disabling validation permits impersonation and creates unnecessary certificate operations.",
+        "D": "Incorrect. Presigned URLs authorize S3 requests and do not provide TLS certificates for ALB or RDS."
+      },
+      "central_requirement": "Protect both independent network hops with the appropriate certificate mechanisms.",
+      "decisive_words": "ALB client TLS, managed renewal, RDS encrypted sessions, validate CA",
+      "reusable_rule": "Treat each termination point as a separate TLS hop: ACM for supported public endpoints and validated database TLS for the backend.",
+      "references": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html"
+      ]
+    },
+    {
+      "id": "SIM-C-18",
+      "domain": 1,
+      "task": "1.3",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A global application encrypts regional DynamoDB exports before replication. During a regional outage, the recovery Region must decrypt locally without a cross-Region KMS dependency, while administrators require equivalent key identifiers and independent regional key policies. Which design is best?",
+      "options": {
+        "A": "Use one single-Region KMS key and call its original regional endpoint from every recovery Region.",
+        "B": "Use related KMS multi-Region primary and replica keys, grant the recovery workload locally, and encrypt data keys with the regional related key.",
+        "C": "Export KMS key material to S3 and import it into an AWS managed key in the recovery Region.",
+        "D": "Disable encryption on replicas so recovery never depends on KMS."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. Single-Region keys cannot be used through another Region's KMS endpoint and create the prohibited dependency.",
+        "B": "Correct. Related multi-Region keys share key material and key ID while retaining independent regional policies and service endpoints.",
+        "C": "Incorrect. AWS managed keys do not accept customer imports, and exporting protected key material this way is unsupported.",
+        "D": "Incorrect. Removing encryption violates the stated protection requirement."
+      },
+      "central_requirement": "Enable local regional decryption with related key material and independently governed policies.",
+      "decisive_words": "regional outage, decrypt locally, equivalent key identifiers, independent policies",
+      "reusable_rule": "Use KMS multi-Region keys only when interoperable regional key material is required; policies and grants remain regional.",
+      "references": [
+        "https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html"
+      ]
+    },
+    {
+      "id": "SIM-C-19",
+      "domain": 1,
+      "task": "1.3",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A data lake receives millions of new S3 objects daily. Security must discover likely personal data, publish findings centrally, and limit recurring classification cost to newly arrived high-risk prefixes. Which approach is most appropriate?",
+      "options": {
+        "A": "Use GuardDuty DNS findings to classify every object column.",
+        "B": "Enable Amazon Inspector enhanced scanning on the S3 bucket objects.",
+        "C": "Configure Amazon Macie classification jobs scoped to the selected buckets or prefixes and schedule them for the required sampling window.",
+        "D": "Download every object to an administrator laptop and search it manually."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. GuardDuty detects threats from security signals and does not perform content classification of S3 objects.",
+        "B": "Incorrect. Inspector assesses supported compute and code workloads for vulnerabilities, not personal-data content in S3.",
+        "C": "Correct. Macie is purpose-built for sensitive-data discovery in S3 and supports scoped classification jobs to control coverage and cost.",
+        "D": "Incorrect. Manual exfiltration is insecure, operationally unscalable, and inconsistent with recurring managed discovery."
+      },
+      "central_requirement": "Discover sensitive S3 data with controlled classification scope and recurring cost.",
+      "decisive_words": "S3 objects, personal data, new high-risk prefixes, cost",
+      "reusable_rule": "Use Macie for S3 sensitive-data discovery and narrow job scope or sampling to the risk and cost objective.",
+      "references": [
+        "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+      ]
+    },
+    {
+      "id": "SIM-C-20",
+      "domain": 1,
+      "task": "1.3",
+      "format": "multi-2",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose TWO.",
+      "stem": "Objects encrypted with a customer managed KMS key must replicate to a bucket in another account and Region. Replication is enabled but encrypted objects fail while unencrypted objects succeed. Which two changes are required?",
+      "options": {
+        "A": "Replace both customer managed keys with the source account's default AWS managed S3 key.",
+        "B": "Grant the S3 replication role permission to decrypt with the source KMS key and encrypt with the destination KMS key.",
+        "C": "Configure the replication rule to include SSE-KMS objects and specify the destination KMS key.",
+        "D": "Make both buckets public so S3 can bypass KMS authorization.",
+        "E": "Use a NAT Gateway in the source Region as the replication identity."
+      },
+      "answers": [
+        "B",
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. AWS managed keys cannot generally be shared and administered for this cross-account replication design.",
+        "B": "Correct. The replication principal needs cryptographic authorization on both sides of the encrypted transfer.",
+        "C": "Correct. SSE-KMS replication must be explicitly selected and a valid destination encryption key configured.",
+        "D": "Incorrect. Public bucket access does not grant KMS permissions and creates severe exposure.",
+        "E": "Incorrect. A NAT Gateway changes network translation and cannot authorize S3 or KMS operations."
+      },
+      "central_requirement": "Authorize and configure cross-account, cross-Region replication of SSE-KMS objects.",
+      "decisive_words": "encrypted objects fail, replication role, destination key",
+      "reusable_rule": "SSE-KMS replication requires rule opt-in, a destination key, and role/key-policy permissions to decrypt source and encrypt destination.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-config-for-kms-objects.html"
+      ]
+    },
+    {
+      "id": "SIM-C-21",
+      "domain": 2,
+      "task": "2.1",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose ONE.",
+      "stem": "An order worker receives messages from an SQS Standard queue. After completing a database update, it crashes before deleting a message, and the message is delivered again. Which delivery property must the application design for?",
+      "options": {
+        "A": "Strict global ordering across all producers and consumers.",
+        "B": "Exactly-once business transactions automatically coordinated with the database.",
+        "C": "At-most-once delivery, so the repeated message proves the queue is corrupted.",
+        "D": "At-least-once delivery, requiring idempotent processing of repeated messages."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. Standard queues provide best-effort ordering and do not guarantee one global order.",
+        "B": "Incorrect. SQS does not atomically coordinate arbitrary database commits with message deletion.",
+        "C": "Incorrect. A repeated delivery is consistent with Standard queue behavior rather than corruption.",
+        "D": "Correct. Standard queues can redeliver a message, so business effects must tolerate repeated processing."
+      },
+      "central_requirement": "Recognize the delivery behavior that explains redelivery after processing but before delete.",
+      "decisive_words": "SQS Standard, crash before delete, delivered again",
+      "reusable_rule": "Treat Standard queue consumers as idempotent because acknowledgement and external business commits are not one atomic transaction.",
+      "references": [
+        "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html"
+      ]
+    },
+    {
+      "id": "SIM-C-22",
+      "domain": 2,
+      "task": "2.1",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "Several SaaS applications emit order events with different JSON shapes. Five internal consumers need filtered subsets and independent retry behavior, and producers must not know consumer endpoints. Which managed design has the lowest coupling?",
+      "options": {
+        "A": "Publish normalized or partner events to Amazon EventBridge and use content-based rules with separate targets and failure handling.",
+        "B": "Write every event to one EC2 instance file and let all consumers poll the same file.",
+        "C": "Call all five consumers synchronously from each producer in a fixed sequence.",
+        "D": "Place every consumer on one SQS queue so each event is processed five times."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. EventBridge decouples producers, routes by event content, and lets each target have independent retry and DLQ configuration.",
+        "B": "Incorrect. A shared host and file create a single point of failure, polling, and tight operational coupling.",
+        "C": "Incorrect. Synchronous fan-out couples producer latency and availability to every consumer.",
+        "D": "Incorrect. Competing consumers on one queue divide messages rather than give each consumer an independent copy."
+      },
+      "central_requirement": "Route heterogeneous events to independently operated consumers without producer endpoint coupling.",
+      "decisive_words": "different JSON shapes, filtered subsets, independent retry, producers unaware",
+      "reusable_rule": "Use an event bus and content rules for many-to-many event routing; give each consumer its own target or durable buffer.",
+      "references": [
+        "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+      ]
+    },
+    {
+      "id": "SIM-C-23",
+      "domain": 2,
+      "task": "2.1",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A global ticketing platform accepts bursts through API Gateway. Each request starts a multi-step reservation with a five-minute payment wait, compensating release on failure, and an audit trail of state transitions. The team wants to avoid custom workflow coordination. Which design is best?",
+      "options": {
+        "A": "Have API Gateway synchronously call every service, keep the client connection open for five minutes, and write compensating API calls in the client.",
+        "B": "Start an AWS Step Functions Standard workflow and use service integrations, wait states, retries, and compensation branches.",
+        "C": "Publish the reservation to one SNS topic and assume SNS tracks each workflow step.",
+        "D": "Store workflow state only in Lambda global variables between invocations."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. A synchronous client request is fragile and does not provide durable orchestration or compensation state.",
+        "B": "Correct. Standard workflows durably track long-running state transitions and model wait, retry, and compensation logic explicitly.",
+        "C": "Incorrect. SNS distributes messages but does not maintain per-reservation workflow state or branching.",
+        "D": "Incorrect. Lambda execution environments are ephemeral and cannot provide durable cross-invocation state."
+      },
+      "central_requirement": "Orchestrate a durable multi-step serverless transaction with waits and compensation.",
+      "decisive_words": "bursts, five-minute wait, compensation, audit trail",
+      "reusable_rule": "Use Step Functions Standard for durable, auditable workflows with long waits, retries, branching, and compensation.",
+      "references": [
+        "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html"
+      ]
+    },
+    {
+      "id": "SIM-C-24",
+      "domain": 2,
+      "task": "2.1",
+      "format": "multi-2",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose TWO.",
+      "stem": "An EventBridge rule invokes a payment target that sometimes throttles. Matched events must be retried for a bounded period and preserved for operator-controlled replay after delivery attempts are exhausted. Which two configurations meet the requirement?",
+      "options": {
+        "A": "Increase the root EBS volume of an unrelated EC2 instance.",
+        "B": "Configure an EventBridge target retry policy with an appropriate maximum age and retry attempts.",
+        "C": "Disable all retries so duplicate delivery can never occur.",
+        "D": "Configure an SQS dead-letter queue for the EventBridge target with the required queue policy.",
+        "E": "Use a CloudWatch dashboard as the failed-event storage destination."
+      },
+      "answers": [
+        "B",
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. EC2 block storage has no role in EventBridge target delivery reliability.",
+        "B": "Correct. The target retry policy bounds how long and how often EventBridge retries retryable delivery failures.",
+        "C": "Incorrect. Disabling retries increases event loss risk and does not meet the preservation requirement.",
+        "D": "Correct. The target DLQ preserves events that cannot be delivered after the retry policy is exhausted.",
+        "E": "Incorrect. A dashboard visualizes metrics and does not durably store undelivered event payloads."
+      },
+      "central_requirement": "Bound target delivery retries and retain exhausted events for controlled recovery.",
+      "decisive_words": "target throttles, bounded retry, preserved, replay",
+      "reusable_rule": "For EventBridge target reliability, configure a retry policy and an authorized SQS DLQ; keep consumers idempotent.",
+      "references": [
+        "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html"
+      ]
+    },
+    {
+      "id": "SIM-C-25",
+      "domain": 2,
+      "task": "2.1",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A serverless image pipeline receives unpredictable uploads in S3. It must create three derivatives, tolerate duplicate events, isolate poison images, and never overwhelm a third-party moderation API limited to 50 concurrent calls. Which architecture best meets all requirements?",
+      "options": {
+        "A": "Use one Lambda directly from S3 with unreserved concurrency and delete failed objects immediately.",
+        "B": "Invoke the moderation API synchronously from the S3 upload client and retry forever in the browser.",
+        "C": "Route S3 events to SQS, process with Lambda using idempotency, cap event-source concurrency, and configure a DLQ or redrive path for repeated failures.",
+        "D": "Run a single EC2 instance that scans the bucket once per day and stores progress on instance store."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. Unbounded concurrency can overload the API, while object deletion loses recoverable evidence.",
+        "B": "Incorrect. Client-side synchronous retries tightly couple uploads to the dependency and provide no durable poison-message handling.",
+        "C": "Correct. The queue buffers bursts, concurrency protects the dependency, idempotency handles duplicates, and redrive isolates poison work.",
+        "D": "Incorrect. The design has a single failure domain, high delay, and ephemeral checkpoint state."
+      },
+      "central_requirement": "Absorb bursts, protect a constrained dependency, handle duplicates, and isolate poison work.",
+      "decisive_words": "unpredictable uploads, duplicate events, 50 concurrent, poison images",
+      "reusable_rule": "Buffer asynchronous serverless work in SQS, bound consumer concurrency, make effects idempotent, and design an observable redrive path.",
+      "references": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html"
+      ]
+    },
+    {
+      "id": "SIM-C-26",
+      "domain": 2,
+      "task": "2.1",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose ONE.",
+      "stem": "Orders for the same customer must be processed in order, while orders for different customers should be processed concurrently on an SQS FIFO queue. What should the producer use as the MessageGroupId?",
+      "options": {
+        "A": "Use the queue URL because FIFO derives order from the endpoint.",
+        "B": "Use one constant value for every customer to maximize parallelism.",
+        "C": "Use a new random value for every order from the same customer.",
+        "D": "Use the customer identifier so each customer is an ordered lane and different customers can run in parallel."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. The queue URL identifies the queue and does not define independent ordered message groups.",
+        "B": "Incorrect. One global group serializes all messages and removes the desired cross-customer concurrency.",
+        "C": "Incorrect. Random groups permit same-customer orders to be processed concurrently and lose required ordering.",
+        "D": "Correct. FIFO ordering is enforced within each message group, so per-customer groups preserve the required scope of ordering."
+      },
+      "central_requirement": "Choose the FIFO message-group scope that preserves only required ordering.",
+      "decisive_words": "same customer ordered, different customers concurrent",
+      "reusable_rule": "Set MessageGroupId to the smallest business entity that requires ordering; excessive grouping reduces FIFO parallelism.",
+      "references": [
+        "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html"
+      ]
+    },
+    {
+      "id": "SIM-C-27",
+      "domain": 2,
+      "task": "2.1",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "Telemetry producers emit hundreds of thousands of ordered records per second. Several consumers need independent replay from their own checkpoints, and new analytics consumers may be added later. Which service is the best ingestion backbone?",
+      "options": {
+        "A": "Use Amazon Kinesis Data Streams with partition-key planning and a retention period that covers replay.",
+        "B": "Use one SQS Standard queue with all consumers competing for each message and set a long retention period for later consumer replays.",
+        "C": "Use Amazon SNS without durable subscriptions or downstream queues.",
+        "D": "Write records directly to one EC2 instance store volume."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. Kinesis provides an ordered retained log per shard and supports multiple consumers with independent positions.",
+        "B": "Incorrect. Competing consumers divide messages, so each analytics application would not receive the complete record stream.",
+        "C": "Incorrect. SNS alone does not provide the retained replay log and per-consumer checkpoints requested.",
+        "D": "Incorrect. Instance store is ephemeral, host-bound, and not a scalable multi-consumer streaming backbone."
+      },
+      "central_requirement": "Provide high-throughput ordered stream retention and independent consumer replay.",
+      "decisive_words": "hundreds of thousands, ordered records, independent checkpoints, replay",
+      "reusable_rule": "Choose a retained stream such as Kinesis when multiple consumers need ordered partitions and independent replay positions.",
+      "references": [
+        "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+      ]
+    },
+    {
+      "id": "SIM-C-28",
+      "domain": 2,
+      "task": "2.1",
+      "format": "multi-2",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose TWO.",
+      "stem": "An order table in DynamoDB must trigger independent fraud, fulfillment, and analytics processing. Each consumer must retry without blocking the others, and events older than seven days are not needed. Which two components form the most decoupled design?",
+      "options": {
+        "A": "Have one Lambda synchronously call all three consumers in sequence.",
+        "B": "Capture item changes with DynamoDB Streams as the ordered per-item change source.",
+        "C": "Make the DynamoDB table public so consumers can poll every partition.",
+        "D": "Store each event only in Lambda temporary storage for seven days.",
+        "E": "Use an EventBridge Pipes or Lambda fan-out path that delivers to separate durable queues for each consumer."
+      },
+      "answers": [
+        "B",
+        "E"
+      ],
+      "rationales": {
+        "A": "Incorrect. Sequential synchronous fan-out couples failure and latency across independent consumers.",
+        "B": "Correct. DynamoDB Streams records item-level changes and preserves order for modifications to the same item.",
+        "C": "Incorrect. Public access is unnecessary and polling partitions is inefficient and insecure.",
+        "D": "Incorrect. Lambda temporary storage is execution-environment local and cannot provide a durable shared event history.",
+        "E": "Correct. Independent queues give each consumer its own backlog, retry pace, and failure isolation."
+      },
+      "central_requirement": "Fan out DynamoDB changes to consumers with independent durability and retry behavior.",
+      "decisive_words": "three independent consumers, retry without blocking, item changes",
+      "reusable_rule": "Use DynamoDB Streams as the change source, then fan out into one durable buffer per independent consumer when failure isolation matters.",
+      "references": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html"
+      ]
+    },
+    {
+      "id": "SIM-C-29",
+      "domain": 2,
+      "task": "2.1",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A mobile API accepts video-processing requests that take up to forty minutes. Clients need an immediate request ID, processing must continue if the client disconnects, and status must be queryable without holding an HTTP connection. Which pattern is best?",
+      "options": {
+        "A": "Increase the API Gateway integration timeout to forty minutes and keep the client socket open.",
+        "B": "Return an accepted response with a job ID, enqueue work durably, and expose a status resource backed by persistent state.",
+        "C": "Run the job inside a standard Lambda function with a forty-minute timeout.",
+        "D": "Store the job identifier and pending status only in browser local storage, then ask the client to resubmit after any disconnect."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. Long synchronous waits exceed common integration limits and couple completion to client connectivity.",
+        "B": "Correct. An asynchronous job pattern decouples client lifetime from processing and provides durable status tracking.",
+        "C": "Incorrect. Standard Lambda functions have a maximum execution duration below forty minutes.",
+        "D": "Incorrect. Client-local state is not durable server-side work and can cause duplicate uncontrolled submissions."
+      },
+      "central_requirement": "Decouple long-running processing from the client request and provide durable status.",
+      "decisive_words": "forty minutes, immediate ID, client disconnect, queryable status",
+      "reusable_rule": "For long asynchronous work, acknowledge quickly, queue durably, process independently, and expose persisted job status.",
+      "references": [
+        "https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/async-request-reply.html"
+      ]
+    },
+    {
+      "id": "SIM-C-30",
+      "domain": 2,
+      "task": "2.2",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A global serverless API writes region-local data and must survive a complete regional outage with an RPO measured in seconds and an RTO under five minutes. Clients should fail over automatically, and writes must not create uncontrolled multi-writer conflicts. Which design best fits?",
+      "options": {
+        "A": "Use one regional RDS instance with Multi-AZ and assume it survives a regional outage.",
+        "B": "Back up one regional table nightly and ask clients to change endpoints manually after an outage.",
+        "C": "Use DynamoDB global tables with a deliberate conflict-safe data model, deploy the API in both Regions, and route through Route 53 or Global Accelerator health-based failover.",
+        "D": "Send every write to both Regions synchronously from the client without idempotency or conflict design."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. Multi-AZ improves Availability Zone resilience within one Region and is not cross-Region recovery.",
+        "B": "Incorrect. Nightly backups and manual changes cannot meet seconds of RPO or a five-minute RTO.",
+        "C": "Correct. Global tables replicate with low latency, while dual deployments and health routing meet rapid regional recovery when write semantics are designed safely.",
+        "D": "Incorrect. Uncoordinated dual writes create partial failure and conflict risks and shift recovery complexity to clients."
+      },
+      "central_requirement": "Meet aggressive regional RPO/RTO for a serverless API without unsafe write behavior.",
+      "decisive_words": "regional outage, seconds RPO, under five minutes, conflict-safe",
+      "reusable_rule": "Global active-active data requires both replication technology and an application data model that tolerates concurrent regional writes.",
+      "references": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html"
+      ]
+    },
+    {
+      "id": "SIM-C-31",
+      "domain": 2,
+      "task": "2.2",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose ONE.",
+      "stem": "A business states that after a disaster it can lose no more than fifteen minutes of committed data. Which disaster-recovery metric expresses this limit?",
+      "options": {
+        "A": "A deployment interval of fifteen minutes.",
+        "B": "A recovery time objective of fifteen minutes.",
+        "C": "A mean time between failures of fifteen minutes.",
+        "D": "A recovery point objective of fifteen minutes."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. Release cadence does not define disaster-recovery data-loss tolerance.",
+        "B": "Incorrect. RTO measures how long service restoration may take, not how much committed data may be lost.",
+        "C": "Incorrect. MTBF describes reliability frequency and does not set an acceptable recovery data point.",
+        "D": "Correct. RPO measures the maximum acceptable amount of data loss expressed as time before the disruption."
+      },
+      "central_requirement": "Identify the metric that represents maximum acceptable data loss in time.",
+      "decisive_words": "lose data, fifteen minutes, disaster",
+      "reusable_rule": "RPO answers how much data can be lost; RTO answers how long the service can remain unavailable.",
+      "references": [
+        "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/plan-for-disaster-recovery-dr.html"
+      ]
+    },
+    {
+      "id": "SIM-C-32",
+      "domain": 2,
+      "task": "2.2",
+      "format": "multi-2",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose TWO.",
+      "stem": "An internet-facing application runs in an Auto Scaling group behind an Application Load Balancer. It must remain available after one Availability Zone fails and replace instances that pass EC2 status checks but fail application health checks. Which two configurations are required?",
+      "options": {
+        "A": "Put every instance in one large subnet to simplify routing.",
+        "B": "Use only EC2 status checks because they verify every application endpoint.",
+        "C": "Place the Auto Scaling group and ALB subnets across at least two Availability Zones.",
+        "D": "Configure the Auto Scaling group to use Elastic Load Balancing health checks with an appropriate grace period.",
+        "E": "Disable ALB cross-zone behavior and register only one target at a time."
+      },
+      "answers": [
+        "C",
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. One subnet belongs to one Availability Zone and leaves a zonal single point of failure.",
+        "B": "Incorrect. EC2 checks detect infrastructure health but do not validate the application's target response.",
+        "C": "Correct. Multi-AZ placement preserves load-balancer and compute capacity after a zonal failure.",
+        "D": "Correct. ELB health integration lets Auto Scaling replace instances that fail application target health.",
+        "E": "Incorrect. A single registered target undermines the availability and scaling requirements."
+      },
+      "central_requirement": "Provide zonal redundancy and application-aware instance replacement.",
+      "decisive_words": "Availability Zone fails, ALB, application health checks",
+      "reusable_rule": "For resilient EC2 fleets, distribute load balancer and Auto Scaling capacity across AZs and feed target health into replacement decisions.",
+      "references": [
+        "https://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html"
+      ]
+    },
+    {
+      "id": "SIM-C-33",
+      "domain": 2,
+      "task": "2.2",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A write-heavy relational application uses Aurora in one Region. Recovery requires read-local reporting in a second Region, cross-Region replication with low lag, and managed promotion during a regional incident. The application can tolerate a short DNS change but not hours of restore. Which architecture is best?",
+      "options": {
+        "A": "Use an Aurora global database with a secondary cluster in the recovery Region and rehearse managed switchover or failover.",
+        "B": "Take monthly manual snapshots and copy them after the primary Region fails.",
+        "C": "Use Multi-AZ DB instances only in the primary Region.",
+        "D": "Replicate SQL statements through CloudWatch Logs to an EC2 database."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. Aurora global databases provide cross-Region storage replication, local secondary reads, and managed promotion workflows.",
+        "B": "Incorrect. Post-incident snapshot copying and restore cannot meet low-lag replication or rapid recovery.",
+        "C": "Incorrect. Multi-AZ protects against zonal failures and does not create a readable cross-Region cluster.",
+        "D": "Incorrect. Log delivery is not a supported relational replication or promotion mechanism."
+      },
+      "central_requirement": "Provide low-lag cross-Region relational replication, local reads, and rapid managed promotion.",
+      "decisive_words": "Aurora, second Region reads, low lag, managed promotion",
+      "reusable_rule": "Choose Aurora global database when relational workloads require cross-Region read locality and low-RPO regional recovery, then test promotion and routing.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+      ]
+    },
+    {
+      "id": "SIM-C-34",
+      "domain": 2,
+      "task": "2.2",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A media company stores source videos in S3. A regional outage must not prevent access to newly uploaded originals, and replication must occur automatically to a separately governed recovery account. The workload can accept asynchronous replication. What should be configured?",
+      "options": {
+        "A": "Use an S3 Lifecycle rule to transition source objects to Glacier in the same Region.",
+        "B": "Configure S3 Cross-Region Replication to a versioned destination bucket in the recovery account with an authorized replication role.",
+        "C": "Mount the bucket as an EBS volume and enable Multi-Attach in the recovery Region.",
+        "D": "Create a Route 53 record for the source bucket without copying any objects."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. Lifecycle transition changes storage class and does not create a cross-Region recovery copy.",
+        "B": "Correct. CRR asynchronously copies eligible new object versions across Regions and can target another account with the required permissions.",
+        "C": "Incorrect. EBS Multi-Attach is regional block storage behavior and cannot mount or replicate an S3 bucket.",
+        "D": "Incorrect. DNS routing cannot make unavailable regional object data exist in another Region."
+      },
+      "central_requirement": "Automatically create cross-account, cross-Region copies of newly uploaded S3 objects.",
+      "decisive_words": "S3 originals, regional outage, recovery account, asynchronous",
+      "reusable_rule": "Use S3 replication for asynchronous object copies, and remember versioning, role permissions, ownership, and KMS settings when applicable.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html"
+      ]
+    },
+    {
+      "id": "SIM-C-35",
+      "domain": 2,
+      "task": "2.2",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A customer-facing platform has an RTO of ten minutes and an RPO under one minute. The recovery Region must be continuously usable for health checks but running full production capacity there at all times is too expensive. Which DR strategy best balances the objectives?",
+      "options": {
+        "A": "Keep only infrastructure templates with no running services or replicated data.",
+        "B": "Use backup and restore from weekly snapshots after declaring the disaster.",
+        "C": "Maintain a warm standby deployment with continuously replicated data, reduced application capacity, tested automation to scale, and health-based traffic failover.",
+        "D": "Run full production capacity active-active in every Region despite the explicit cost constraint."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. A pilot-light-like control plane without required core data and services would miss the aggressive recovery objectives.",
+        "B": "Incorrect. Weekly backups and restore provisioning cannot meet the stated RPO or ten-minute RTO.",
+        "C": "Correct. Warm standby keeps a functional reduced environment and can scale quickly, fitting tighter objectives at lower cost than full active-active.",
+        "D": "Incorrect. Active-active may meet recovery goals but conflicts with the requirement to avoid full duplicate capacity."
+      },
+      "central_requirement": "Select a DR strategy that meets tight recovery objectives without full duplicate capacity.",
+      "decisive_words": "ten-minute RTO, under one-minute RPO, reduced capacity, cost",
+      "reusable_rule": "Warm standby is a functional scaled-down regional copy; match strategy cost to measured RTO/RPO and rehearse scaling and routing.",
+      "references": [
+        "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+      ]
+    },
+    {
+      "id": "SIM-C-36",
+      "domain": 2,
+      "task": "2.2",
+      "format": "multi-2",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose TWO.",
+      "stem": "A public endpoint uses Route 53 failover routing between a primary and secondary Region. Which two elements are fundamental for automatic DNS failover?",
+      "options": {
+        "A": "Set both records to simple routing because simple records have implicit health ordering.",
+        "B": "Use a network ACL as the authoritative DNS health checker.",
+        "C": "Create primary and secondary failover records for the same name and record type.",
+        "D": "Lower TTL to zero and omit all health checks.",
+        "E": "Associate an appropriate health evaluation with the primary record or supported alias target."
+      },
+      "answers": [
+        "C",
+        "E"
+      ],
+      "rationales": {
+        "A": "Incorrect. Simple routing does not define primary and secondary failover roles.",
+        "B": "Incorrect. A network ACL filters subnet traffic and does not provide Route 53 endpoint health evaluation.",
+        "C": "Correct. The paired record roles tell Route 53 which answer is primary and which is the failover destination.",
+        "D": "Incorrect. TTL affects resolver caching but cannot detect that the primary endpoint is unhealthy.",
+        "E": "Correct. Route 53 needs health information to stop returning an unhealthy primary endpoint automatically."
+      },
+      "central_requirement": "Identify the DNS record roles and health signal needed for automated failover.",
+      "decisive_words": "Route 53, primary, secondary, automatic failover",
+      "reusable_rule": "DNS failover requires explicit failover records plus trustworthy health evaluation; TTL tunes convergence but does not detect failure.",
+      "references": [
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html"
+      ]
+    },
+    {
+      "id": "SIM-C-37",
+      "domain": 2,
+      "task": "2.2",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A ransomware recovery policy requires centrally managed backups from member accounts, immutable retention in a logically isolated vault, and cross-account recovery copies that workload administrators cannot delete. Which design best meets the requirement?",
+      "options": {
+        "A": "Enable termination protection on EC2 instances and treat it as immutable backup retention.",
+        "B": "Let each workload owner create untagged manual snapshots in the same account.",
+        "C": "Export CloudTrail Event history as the only database backup.",
+        "D": "Use AWS Backup policies with cross-account copy and logically air-gapped vault controls, separating backup administration from workload accounts."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. Termination protection does not create recovery points and can be disabled by authorized principals.",
+        "B": "Incorrect. Manual same-account snapshots lack centralized enforcement and remain exposed to compromised workload administrators.",
+        "C": "Incorrect. CloudTrail records API activity and does not contain recoverable database or volume data.",
+        "D": "Correct. AWS Backup centralizes supported resource policies and vault governance while cross-account copies reduce compromise of the workload account."
+      },
+      "central_requirement": "Centralize protected backup retention outside compromised workload administration.",
+      "decisive_words": "ransomware, member accounts, immutable vault, cross-account",
+      "reusable_rule": "For cyber-resilient backups, separate backup administration and copies from workload accounts, enforce retention, and regularly test restores.",
+      "references": [
+        "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html"
+      ]
+    },
+    {
+      "id": "SIM-C-38",
+      "domain": 3,
+      "task": "3.1",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A scientific workload performs tightly coupled MPI calculations requiring low-latency, high-bandwidth node-to-node communication and fast shared parallel file access. Jobs run in one Availability Zone and can be resubmitted after failure. Which architecture is most appropriate?",
+      "options": {
+        "A": "Use compute-optimized EC2 instances in a cluster placement group with Elastic Fabric Adapter and Amazon FSx for Lustre.",
+        "B": "Spread instances across Regions behind CloudFront and store scratch data in S3 Glacier Deep Archive.",
+        "C": "Run each MPI rank as an independent Lambda function communicating through API Gateway.",
+        "D": "Place instances in a spread placement group across many racks, use EFS One Zone for shared files, and carry MPI traffic over the regular VPC network."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. Cluster placement, EFA, and a parallel file system address tightly coupled network latency and high-throughput shared storage.",
+        "B": "Incorrect. Cross-Region distance and archival retrieval latency conflict with tightly coupled computation.",
+        "C": "Incorrect. Lambda and API Gateway do not provide the required low-latency tightly coupled network fabric.",
+        "D": "Incorrect. Spread placement prioritizes failure isolation rather than the lowest inter-node latency, and file storage is not the MPI network."
+      },
+      "central_requirement": "Optimize tightly coupled HPC compute, network fabric, and parallel storage together.",
+      "decisive_words": "MPI, low latency, high bandwidth, shared parallel file",
+      "reusable_rule": "For tightly coupled HPC, co-design instance type, cluster placement, EFA networking, and a high-throughput parallel file system.",
+      "references": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html"
+      ]
+    },
+    {
+      "id": "SIM-C-39",
+      "domain": 3,
+      "task": "3.1",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "An Auto Scaling web fleet experiences predictable weekday peaks at 09:00 and unpredictable bursts during promotions. The team wants capacity ready before the known peak while retaining automatic response to unexpected demand. Which scaling design is best?",
+      "options": {
+        "A": "Use only a fixed desired capacity sized for the largest possible promotion throughout the entire month to avoid any scaling events.",
+        "B": "Combine scheduled scaling for the known ramp with target tracking scaling for the live workload metric.",
+        "C": "Use scale-in protection on every instance and never allow scale out.",
+        "D": "Trigger scaling from the number of IAM users in the account."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. Permanent peak capacity wastes cost and still lacks policy-driven adaptation.",
+        "B": "Correct. Scheduled actions pre-position capacity, while target tracking adapts to unplanned changes around the baseline.",
+        "C": "Incorrect. Scale-in protection prevents selected termination and does not add capacity during demand.",
+        "D": "Incorrect. IAM user count is unrelated to real-time web request demand."
+      },
+      "central_requirement": "Handle both predictable and unpredictable demand without permanent peak capacity.",
+      "decisive_words": "weekday 09:00, promotions, ready before, automatic response",
+      "reusable_rule": "Combine proactive scheduled or predictive capacity for known patterns with dynamic policies tied to a workload-relevant metric.",
+      "references": [
+        "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html"
+      ]
+    },
+    {
+      "id": "SIM-C-40",
+      "domain": 3,
+      "task": "3.1",
+      "format": "multi-2",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose TWO.",
+      "stem": "Users worldwide upload large files to a regional application. They need static anycast entry addresses, traffic must enter the AWS network near users, and only healthy regional endpoints should receive traffic. The existing application uses ALBs. Which two components meet the requirements?",
+      "options": {
+        "A": "Replace the upload API with CloudFront signed cookies only.",
+        "B": "Publish one changing ALB IP address as a permanent client allow-list entry.",
+        "C": "Use an S3 gateway endpoint in each user's home network.",
+        "D": "Place AWS Global Accelerator in front of the regional ALB endpoints.",
+        "E": "Configure endpoint groups and health-aware traffic dials for the deployed Regions."
+      },
+      "answers": [
+        "D",
+        "E"
+      ],
+      "rationales": {
+        "A": "Incorrect. Signed cookies authorize CloudFront content access and do not provide the required static anycast TCP entry design by themselves.",
+        "B": "Incorrect. ALB node addresses can change and are not stable anycast client endpoints.",
+        "C": "Incorrect. Gateway endpoints are VPC route-table targets and are not public global entry points for end users.",
+        "D": "Correct. Global Accelerator provides static anycast IP addresses and routes traffic over the AWS global network to healthy endpoints.",
+        "E": "Correct. Endpoint groups control regional distribution and use endpoint health to avoid unhealthy destinations."
+      },
+      "central_requirement": "Provide static global entry addresses and health-aware routing to regional ALBs.",
+      "decisive_words": "worldwide uploads, static anycast, AWS network, healthy Regions",
+      "reusable_rule": "Use Global Accelerator when clients need static anycast IPs and optimized health-aware routing for supported regional endpoints.",
+      "references": [
+        "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html"
+      ]
+    },
+    {
+      "id": "SIM-C-41",
+      "domain": 3,
+      "task": "3.2",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose ONE.",
+      "stem": "A Lambda function receives 120 requests each second, and each invocation runs for an average of 2 seconds. Ignoring burst variation, approximately how much concurrent execution is required in steady state?",
+      "options": {
+        "A": "Exactly 120 concurrent executions regardless of duration.",
+        "B": "Approximately 60 concurrent executions.",
+        "C": "Approximately 240 concurrent executions.",
+        "D": "Exactly 2 concurrent executions because the duration is 2 seconds."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. Concurrency depends on both arrival rate and how long each invocation remains active.",
+        "B": "Incorrect. Dividing the request rate by duration understates the number of overlapping invocations.",
+        "C": "Correct. Concurrency is request rate multiplied by average duration: 120 invocations per second times 2 seconds.",
+        "D": "Incorrect. Execution duration alone does not determine the number of overlapping requests."
+      },
+      "central_requirement": "Estimate steady-state Lambda concurrency from request rate and duration.",
+      "decisive_words": "120 requests per second, 2 seconds, concurrency",
+      "reusable_rule": "For a steady stream, concurrency is approximately requests per second multiplied by average execution duration in seconds.",
+      "references": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+      ]
+    },
+    {
+      "id": "SIM-C-42",
+      "domain": 3,
+      "task": "3.2",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A small team runs a spiky containerized API on ECS. It has no Kubernetes dependency, must scale to zero tasks overnight, and the team does not want to patch or size EC2 cluster hosts. Which compute option has the lowest operational overhead?",
+      "options": {
+        "A": "Package the container as an Amazon Machine Image and launch it manually for every request.",
+        "B": "Run ECS on a fixed fleet of On-Demand EC2 instances sized for the annual peak.",
+        "C": "Migrate to Amazon EKS solely to avoid managing worker infrastructure.",
+        "D": "Run the ECS tasks on AWS Fargate and use service scaling for demand."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. Manual instance launches are slow, operationally heavy, and do not provide a managed service scaling model.",
+        "B": "Incorrect. A fixed peak fleet creates idle cost and requires host lifecycle management.",
+        "C": "Incorrect. EKS adds Kubernetes control and operational concepts despite no Kubernetes requirement.",
+        "D": "Correct. Fargate removes host provisioning and patching while retaining ECS task and service controls."
+      },
+      "central_requirement": "Run bursty containers without Kubernetes or EC2 host administration.",
+      "decisive_words": "spiky, scale to zero tasks, no Kubernetes, no host patching",
+      "reusable_rule": "Choose Fargate when ECS container semantics are needed but managing the underlying EC2 capacity is not a requirement.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+      ]
+    },
+    {
+      "id": "SIM-C-43",
+      "domain": 3,
+      "task": "3.2",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A global product catalog serves mostly cacheable reads through API Gateway and Lambda, but a personalized endpoint must query DynamoDB. Latency spikes from cold starts and repeated database reads are breaching the SLA. Which redesign best targets both paths without caching private responses globally?",
+      "options": {
+        "A": "Cache public catalog responses at CloudFront, use provisioned concurrency for the latency-critical Lambda path, and add DynamoDB DAX only if the personalized access pattern benefits from read-through caching.",
+        "B": "Cache every personalized response at CloudFront with a single shared cache key.",
+        "C": "Increase Lambda ephemeral storage and disable DynamoDB partition keys.",
+        "D": "Move all catalog data to instance store on one EC2 instance in one Region."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. The design separates safe edge caching, initialization latency control, and database read acceleration instead of applying one cache to private data.",
+        "B": "Incorrect. A shared key can leak personalized data and ignores authorization-specific cache variation.",
+        "C": "Incorrect. Ephemeral storage does not remove cold starts or repeated database reads, and DynamoDB requires a primary key.",
+        "D": "Incorrect. A single ephemeral host reduces global resilience and creates operational and durability risks."
+      },
+      "central_requirement": "Reduce global public-read latency and personalized compute/data latency without unsafe caching.",
+      "decisive_words": "cacheable public reads, personalized endpoint, cold starts, repeated DynamoDB reads",
+      "reusable_rule": "Optimize each latency layer independently: edge-cache shareable data, control Lambda initialization, and accelerate only proven database read patterns.",
+      "references": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html"
+      ]
+    },
+    {
+      "id": "SIM-C-44",
+      "domain": 3,
+      "task": "3.3",
+      "format": "multi-2",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose TWO.",
+      "stem": "A DynamoDB table receives IoT writes with deviceId as the partition key. One fleet gateway represents 40 percent of devices and causes throttling, while operators also need to query recent alarms by severity. Which two design changes address the hot write path and new query pattern?",
+      "options": {
+        "A": "Increase partition-key cardinality by distributing the gateway workload across deterministic write shards.",
+        "B": "Create a global secondary index whose partition and sort keys support severity and event-time queries.",
+        "C": "Create a local secondary index after the table is already in production with severity as a new partition key.",
+        "D": "Increase item size so DynamoDB allocates more partitions to the gateway key.",
+        "E": "Use a strongly consistent Scan for every recent alarm request."
+      },
+      "answers": [
+        "A",
+        "B"
+      ],
+      "rationales": {
+        "A": "Correct. Write sharding spreads a dominant logical key across physical partitions so provisioned or on-demand capacity can be used.",
+        "B": "Correct. A GSI supplies the alternate query key without scanning the base table.",
+        "C": "Incorrect. LSIs must be created with the table and retain the base table partition key.",
+        "D": "Incorrect. Larger items consume more capacity and do not remove concentration on one logical partition key.",
+        "E": "Incorrect. Scans consume broad capacity and do not create the scalable severity access pattern."
+      },
+      "central_requirement": "Remove a hot DynamoDB key and support an alternate severity-time query.",
+      "decisive_words": "40 percent gateway, throttling, query by severity, recent",
+      "reusable_rule": "Design DynamoDB keys from traffic distribution and access patterns; shard hot writes and use a GSI for a new alternate partition key.",
+      "references": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-sharding.html"
+      ]
+    },
+    {
+      "id": "SIM-C-45",
+      "domain": 3,
+      "task": "3.3",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A multi-tenant SaaS platform uses PostgreSQL and has unpredictable connection bursts from Lambda. Tenants require relational transactions, read scaling, and automatic capacity growth without a planned migration window. Which architecture best balances performance and operations?",
+      "options": {
+        "A": "Use one DynamoDB table and emulate every multi-row relational transaction in the browser.",
+        "B": "Use Aurora PostgreSQL-Compatible with Aurora Serverless v2 capacity ranges, reader instances or endpoints, and RDS Proxy for Lambda connection pooling.",
+        "C": "Run PostgreSQL on a single EC2 Spot Instance with local NVMe as the only database copy.",
+        "D": "Create a new full Aurora cluster for every request and delete it after the transaction."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. This abandons the required relational model and moves consistency logic into untrusted clients.",
+        "B": "Correct. The combination preserves PostgreSQL transactions, scales compute incrementally, adds read capacity, and protects connections from serverless bursts.",
+        "C": "Incorrect. Spot interruption and ephemeral storage conflict with durability, availability, and managed scaling requirements.",
+        "D": "Incorrect. Cluster lifecycle time and cost make per-request database provisioning impractical."
+      },
+      "central_requirement": "Combine relational consistency, elastic capacity, read scaling, and safe Lambda connectivity.",
+      "decisive_words": "PostgreSQL, unpredictable bursts, transactions, read scaling, Lambda",
+      "reusable_rule": "For bursty relational serverless access, separate database capacity scaling, read scaling, and connection pooling rather than treating them as one control.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+      ]
+    },
+    {
+      "id": "SIM-C-46",
+      "domain": 3,
+      "task": "3.3",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "basic",
+      "instruction": "Choose ONE.",
+      "stem": "An RDS database needs additional capacity for read-only reporting queries. The reporting workload may accept replication lag and does not need to become the synchronous standby automatically. Which feature directly addresses the requirement?",
+      "options": {
+        "A": "Increase backup retention and query the automated backups.",
+        "B": "Enable Multi-AZ and direct reporting queries to the standby endpoint.",
+        "C": "Create an RDS read replica and direct reporting connections to it.",
+        "D": "Create an RDS event subscription for SELECT statements."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. Backups are recovery artifacts and cannot serve live reporting SQL traffic.",
+        "B": "Incorrect. A traditional Multi-AZ standby is maintained for failover and is not a general read-scaling target.",
+        "C": "Correct. A read replica asynchronously copies data and can offload read-only traffic from the primary.",
+        "D": "Incorrect. Event subscriptions report service events and do not execute or scale database reads."
+      },
+      "central_requirement": "Select the database feature intended to offload asynchronous read traffic.",
+      "decisive_words": "read-only reporting, accepts lag, no automatic standby",
+      "reusable_rule": "Use read replicas for read scaling; use Multi-AZ deployments primarily for availability and failover unless the specific cluster architecture says otherwise.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+      ]
+    },
+    {
+      "id": "SIM-C-47",
+      "domain": 3,
+      "task": "3.4",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "Private subnets send large DynamoDB API traffic through NAT Gateways. The application must keep traffic on the AWS network and reduce recurring NAT processing charges without changing the SDK calls. Which network change is most appropriate?",
+      "options": {
+        "A": "Peer the VPC with itself and send DynamoDB traffic through the peering route.",
+        "B": "Create a public IPv4 address for every application instance.",
+        "C": "Deploy an interface endpoint for an unrelated service and route DynamoDB through it.",
+        "D": "Create a DynamoDB gateway VPC endpoint, associate the private route tables, and restrict the endpoint policy as required."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. Self-peering is not a DynamoDB service path and does not remove the NAT dependency.",
+        "B": "Incorrect. Public addressing increases exposure and does not meet the private-path requirement.",
+        "C": "Incorrect. VPC endpoints are service-specific and cannot proxy arbitrary AWS service traffic.",
+        "D": "Correct. The gateway endpoint changes the route for DynamoDB traffic, requires no NAT, and has no hourly endpoint charge."
+      },
+      "central_requirement": "Remove high-volume DynamoDB traffic from NAT while preserving private AWS connectivity.",
+      "decisive_words": "private subnets, DynamoDB, NAT charges, no SDK change",
+      "reusable_rule": "For S3 and DynamoDB from a VPC, evaluate no-additional-charge gateway endpoints before paying for NAT processing.",
+      "references": [
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html"
+      ]
+    },
+    {
+      "id": "SIM-C-48",
+      "domain": 3,
+      "task": "3.4",
+      "format": "multi-2",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose TWO.",
+      "stem": "A trading company needs a dedicated path from its datacenter to AWS with predictable performance and IPsec encryption. It also requires an independent backup path that can fail over if the dedicated circuit is unavailable. Which two components form the primary and backup design?",
+      "options": {
+        "A": "Use only a NAT Gateway as the datacenter customer gateway.",
+        "B": "Configure a separate Site-to-Site VPN over the internet as the independent backup path.",
+        "C": "Use AWS Direct Connect for the dedicated primary transport and an appropriate virtual interface.",
+        "D": "Establish AWS Site-to-Site VPN over an appropriate Direct Connect public virtual interface for IPsec on the primary path.",
+        "E": "Use VPC peering as the physical circuit between the datacenter and AWS."
+      },
+      "answers": [
+        "C",
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. A NAT Gateway is a VPC egress service and cannot terminate the on-premises VPN or dedicated circuit.",
+        "B": "Incorrect. This is a useful backup, but the question asks for two components forming the encrypted dedicated primary; selecting it would omit one primary requirement.",
+        "C": "Correct. Direct Connect provides the dedicated network path and more consistent performance than internet-only connectivity.",
+        "D": "Correct. VPN over Direct Connect combines the dedicated transport with IPsec encryption when designed with the supported routing model.",
+        "E": "Incorrect. VPC peering connects VPCs and does not provide on-premises physical connectivity."
+      },
+      "central_requirement": "Build an IPsec-encrypted dedicated primary path while recognizing the need for separate backup connectivity.",
+      "decisive_words": "dedicated path, predictable, IPsec, backup",
+      "reusable_rule": "Direct Connect supplies dedicated transport; VPN can add IPsec, and a truly independent backup should avoid the same physical failure domain.",
+      "references": [
+        "https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-plus-vpn.html"
+      ]
+    },
+    {
+      "id": "SIM-C-49",
+      "domain": 3,
+      "task": "3.4",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A company has eighty VPCs, several Site-to-Site VPNs, and separate development and production routing domains. It needs transitive hub routing with centralized inspection while preventing development routes from reaching production. Which service is best?",
+      "options": {
+        "A": "Use AWS Transit Gateway with separate route tables, controlled associations and propagations, and inspection attachments.",
+        "B": "Create a full mesh of VPC peering connections and designate selected peer VPCs as transit hubs for transitive routing across every connected network.",
+        "C": "Use one Internet Gateway as a private transit router for all VPCs and VPNs.",
+        "D": "Attach every VPC to one NAT Gateway and use security groups as route tables."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. Transit Gateway provides regional transitive routing and route-table segmentation for hub-and-spoke connectivity.",
+        "B": "Incorrect. VPC peering is non-transitive, and a full mesh creates substantial route and connection operations.",
+        "C": "Incorrect. Internet Gateways provide internet connectivity and are not private multi-VPC transit hubs.",
+        "D": "Incorrect. NAT Gateways translate egress traffic, security groups do not route, and neither supplies transitive segmentation."
+      },
+      "central_requirement": "Centralize transitive hybrid and VPC routing while preserving environment segmentation.",
+      "decisive_words": "eighty VPCs, VPNs, transitive hub, separate routing domains",
+      "reusable_rule": "Use Transit Gateway route-table associations and propagations as explicit segmentation controls; connectivity does not imply universal reachability.",
+      "references": [
+        "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html"
+      ]
+    },
+    {
+      "id": "SIM-C-50",
+      "domain": 3,
+      "task": "3.5",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "advanced",
+      "instruction": "Choose ONE.",
+      "stem": "A gaming platform emits clickstream events worldwide. It needs subsecond anomaly aggregates, durable raw delivery to partitioned S3 for later SQL, schema discovery, and independent replay during an incident. Which architecture best meets the combined requirements?",
+      "options": {
+        "A": "Send all events directly to S3 Glacier Deep Archive and run one annual Athena query.",
+        "B": "Ingest through Kinesis Data Streams, process stateful windows with Managed Service for Apache Flink, and deliver a separate stream path to Firehose for partitioned S3 storage cataloged by Glue.",
+        "C": "Put all consumers on one SQS queue and assume each receives a complete replayable copy.",
+        "D": "Write events to an RDS instance through synchronous global client connections."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. Archive retrieval and annual batch processing cannot meet subsecond anomaly detection.",
+        "B": "Correct. The retained stream supports replay, Flink supplies stateful low-latency computation, and Firehose plus S3 and Glue serve durable analytics.",
+        "C": "Incorrect. Competing SQS consumers divide work and do not provide the retained multi-consumer stream model.",
+        "D": "Incorrect. Synchronous relational writes create coupling and do not naturally provide independent stream replay or scalable window processing."
+      },
+      "central_requirement": "Combine low-latency stateful streaming, replay, and durable queryable raw storage.",
+      "decisive_words": "subsecond aggregates, raw S3, schema, independent replay",
+      "reusable_rule": "Use a retained stream for replay, a stateful stream processor for windows, and a separate delivery path for durable lake storage and cataloging.",
+      "references": [
+        "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+      ]
+    },
+    {
+      "id": "SIM-C-51",
+      "domain": 3,
+      "task": "3.5",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "Analysts run occasional SQL queries directly against partitioned Parquet files in Amazon S3 and do not want to administer a database cluster. Which service is the most direct fit?",
+      "options": {
+        "A": "Use Amazon ElastiCache as the authoritative SQL engine for Parquet.",
+        "B": "Use Amazon RDS for Oracle and copy every object into a relational table first.",
+        "C": "Use Amazon Athena and pay according to the data scanned by queries.",
+        "D": "Use Amazon SNS message filtering to execute SELECT statements."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. ElastiCache is an in-memory cache and does not provide serverless SQL over S3 files.",
+        "B": "Incorrect. A provisioned relational database adds administration and unnecessary ingestion for occasional lake queries.",
+        "C": "Correct. Athena is serverless SQL over data in S3 and avoids provisioning a persistent database cluster.",
+        "D": "Incorrect. SNS routes notifications and is not an analytical SQL query engine."
+      },
+      "central_requirement": "Identify the serverless query service for SQL directly over S3 data.",
+      "decisive_words": "occasional SQL, Parquet, S3, no cluster",
+      "reusable_rule": "Use Athena for ad hoc serverless SQL over S3; optimize cost with columnar formats, compression, and useful partition pruning.",
+      "references": [
+        "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+      ]
+    },
+    {
+      "id": "SIM-C-52",
+      "domain": 3,
+      "task": "3.5",
+      "format": "multi-3",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Select THREE.",
+      "stem": "A data lake receives daily CSV exports and continuous JSON events. The company needs managed transformation into partitioned Parquet, a shared catalog for Athena, and fine-grained cross-account table permissions. Which three components meet the requirements?",
+      "options": {
+        "A": "Use AWS Glue jobs or appropriate Glue serverless ETL capabilities to transform source data into Parquet.",
+        "B": "Use AWS Glue Data Catalog for table schemas and partition metadata.",
+        "C": "Use AWS Lake Formation to govern supported table, column, and cross-account data permissions.",
+        "D": "Use Amazon Route 53 hosted zones as the schema registry.",
+        "E": "Use EBS snapshots as the cross-account permission system for S3 tables.",
+        "F": "Use Amazon Polly to convert JSON events into Parquet files."
+      },
+      "answers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "rationales": {
+        "A": "Correct. Glue provides managed data integration and Spark-based transformation without self-managing a cluster.",
+        "B": "Correct. The shared catalog stores technical metadata that Athena and other analytics services can use.",
+        "C": "Correct. Lake Formation centralizes fine-grained data-lake permissions on cataloged resources.",
+        "D": "Incorrect. DNS records do not store analytical schemas or partition metadata.",
+        "E": "Incorrect. Block-storage snapshots neither govern S3 tables nor provide column-level permissions.",
+        "F": "Incorrect. Polly performs text-to-speech and is unrelated to data format transformation."
+      },
+      "central_requirement": "Transform heterogeneous inputs, catalog the lake, and govern fine-grained cross-account access.",
+      "decisive_words": "CSV and JSON, Parquet, shared catalog, fine-grained permissions",
+      "reusable_rule": "A governed lake separates transformation, metadata catalog, and authorization into Glue processing, Glue Data Catalog, and Lake Formation.",
+      "references": [
+        "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+      ]
+    },
+    {
+      "id": "SIM-C-53",
+      "domain": 4,
+      "task": "4.1",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A compliance archive ingests objects into S3 Standard, reads most during the first month, rarely reads them for six years, and must delete them after year seven. Retrieval after month one can take hours. Which design minimizes storage cost while preserving automated retention?",
+      "options": {
+        "A": "Move objects to S3 One Zone-IA even if the archive requires resilience to loss of an Availability Zone.",
+        "B": "Keep every object in S3 Standard for seven years because lifecycle transitions always reduce durability.",
+        "C": "Copy every object to EC2 instance store after one month.",
+        "D": "Use an S3 Lifecycle policy to transition eligible objects to an appropriate Glacier class after the active period and expire them after the required retention boundary."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. One Zone-IA stores data in one AZ and is inappropriate when the archive cannot be recreated after a zonal loss.",
+        "B": "Incorrect. S3 storage classes are designed for different access patterns and retain documented durability; Standard wastes cost for cold data.",
+        "C": "Incorrect. Instance store is ephemeral, host-bound, and unsuitable for a seven-year compliance archive.",
+        "D": "Correct. Lifecycle automation aligns storage class with access age and performs expiration without manual object-by-object operations."
+      },
+      "central_requirement": "Align automatic storage transitions and expiration with a known access and retention timeline.",
+      "decisive_words": "first month active, six years rare, hours acceptable, delete year seven",
+      "reusable_rule": "When object age predicts access, use S3 Lifecycle transitions and expiration; validate minimum storage duration and retrieval requirements.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+      ]
+    },
+    {
+      "id": "SIM-C-54",
+      "domain": 4,
+      "task": "4.1",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A database uses a 2 TiB gp2 EBS volume only to obtain sufficient baseline IOPS, but actual capacity needs are 500 GiB. Performance monitoring shows 6,000 IOPS and 250 MiB/s are adequate. Which change is most cost-effective?",
+      "options": {
+        "A": "Migrate to a properly sized gp3 volume and provision the required IOPS and throughput independently of capacity.",
+        "B": "Increase the gp2 volume to 4 TiB so baseline IOPS doubles.",
+        "C": "Move the database files to EC2 instance store without replication.",
+        "D": "Create hourly EBS snapshots and use snapshots as the live database volume."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. gp3 decouples performance settings from volume size, allowing lower capacity while meeting measured IOPS and throughput.",
+        "B": "Incorrect. Increasing unused capacity raises cost and ignores a volume type that decouples performance from size.",
+        "C": "Incorrect. Instance store is ephemeral and would endanger database durability after stop, termination, or host failure.",
+        "D": "Incorrect. Snapshots are point-in-time backups and cannot directly serve as the attached live filesystem."
+      },
+      "central_requirement": "Reduce EBS overprovisioning while retaining measured IOPS and throughput.",
+      "decisive_words": "gp2 sized for IOPS, unused capacity, 6000 IOPS, 250 MiB/s",
+      "reusable_rule": "Use gp3 when independent capacity, IOPS, and throughput sizing avoids paying for unused gp2 storage.",
+      "references": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html"
+      ]
+    },
+    {
+      "id": "SIM-C-55",
+      "domain": 4,
+      "task": "4.1",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A document repository has unpredictable object access: some files are opened weekly, others become cold for months, and access patterns change without notice. The team wants automatic savings without retrieval fees or operational analysis of each object. Which class is best?",
+      "options": {
+        "A": "Put every object immediately into S3 Glacier Deep Archive.",
+        "B": "Use S3 Intelligent-Tiering and enable the archive tiers only if their retrieval behavior is acceptable.",
+        "C": "Keep all objects permanently in S3 Standard, manually review every access log each day, and change storage classes by hand.",
+        "D": "Store the repository on one EC2 instance store volume."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. Deep Archive has long retrieval times and minimum-duration considerations that conflict with unpredictable weekly reads.",
+        "B": "Correct. Intelligent-Tiering moves objects among access tiers based on observed activity without retrieval fees for the automatic frequent and infrequent tiers.",
+        "C": "Incorrect. This preserves performance but fails the automatic savings and low-operations requirements.",
+        "D": "Incorrect. Instance store is ephemeral and is not durable managed object storage."
+      },
+      "central_requirement": "Optimize unpredictable S3 access automatically without per-object analysis.",
+      "decisive_words": "unpredictable access, changes, automatic savings, no retrieval fees",
+      "reusable_rule": "Use Intelligent-Tiering when access patterns are unknown or changing; evaluate monitoring charges, object size, and optional archive retrieval times.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+      ]
+    },
+    {
+      "id": "SIM-C-56",
+      "domain": 4,
+      "task": "4.1",
+      "format": "multi-3",
+      "type": "fundamental",
+      "difficulty": "intermediate",
+      "instruction": "Select THREE.",
+      "stem": "A storage review must distinguish durable block, shared file, and archival object options before optimization. Which three statements are correct?",
+      "options": {
+        "A": "Amazon EBS volumes provide persistent block storage for supported EC2 attachment patterns within an Availability Zone.",
+        "B": "EC2 instance store is the preferred durable system of record after an instance is stopped or terminated.",
+        "C": "A NAT Gateway is a shared POSIX file system for private subnets.",
+        "D": "Amazon EFS provides managed shared file access for multiple Linux clients across Availability Zones in a Region.",
+        "E": "S3 Glacier storage classes are object-storage archival tiers with retrieval-time and minimum-duration tradeoffs.",
+        "F": "CloudFront edge caches are authoritative block-device backups for EBS volumes."
+      },
+      "answers": [
+        "A",
+        "D",
+        "E"
+      ],
+      "rationales": {
+        "A": "Correct. EBS is durable block storage scoped to an Availability Zone and supports snapshots for backup or migration.",
+        "B": "Incorrect. Instance store data is ephemeral and can be lost on stop, termination, or host failure.",
+        "C": "Incorrect. NAT Gateways translate network egress and do not expose file-system semantics.",
+        "D": "Correct. EFS is a regional managed NFS file service designed for concurrent client access.",
+        "E": "Correct. Glacier classes reduce storage cost for cold objects while introducing retrieval and duration considerations.",
+        "F": "Incorrect. CloudFront caches delivered content and is not an EBS backup or block-storage service."
+      },
+      "central_requirement": "Recognize the storage model and durability role of EBS, EFS, and S3 archival classes.",
+      "decisive_words": "block, shared file, archival object, optimization",
+      "reusable_rule": "Choose storage by access protocol, scope, durability, and retrieval profile before comparing price; caches and ephemeral disks are not backups.",
+      "references": [
+        "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/storage-services.html"
+      ]
+    },
+    {
+      "id": "SIM-C-57",
+      "domain": 4,
+      "task": "4.2",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A company runs steady EC2 and Fargate production workloads in several Regions, but instance families may change during modernization. It can commit to a consistent hourly compute spend for three years. Which discount model offers the most flexibility?",
+      "options": {
+        "A": "Use Spot Instances for every production task regardless of interruption tolerance.",
+        "B": "Purchase Standard Reserved Instances for one exact family and assume they cover Fargate.",
+        "C": "Purchase a Compute Savings Plan sized to the conservative baseline spend.",
+        "D": "Prepay three years of NAT Gateway hourly charges as a Savings Plan."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. Spot discounts require interruption-tolerant workloads and do not represent a guaranteed baseline commitment.",
+        "B": "Incorrect. Standard RIs are less flexible and do not provide the requested cross-service Fargate coverage.",
+        "C": "Correct. Compute Savings Plans apply across eligible EC2 families, Regions, operating systems, and supported Fargate or Lambda usage.",
+        "D": "Incorrect. Savings Plans apply to eligible compute usage, not NAT Gateway charges."
+      },
+      "central_requirement": "Discount a stable compute baseline while retaining family, Region, and service flexibility.",
+      "decisive_words": "steady EC2 and Fargate, families may change, three-year commitment",
+      "reusable_rule": "Buy flexible commitments only for a conservative usage baseline; keep variable or interruption-tolerant demand on appropriate on-demand or Spot capacity.",
+      "references": [
+        "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+      ]
+    },
+    {
+      "id": "SIM-C-58",
+      "domain": 4,
+      "task": "4.2",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A rendering platform has a steady queue plus large overnight bursts. Jobs checkpoint every five minutes and can be retried on interruption. The company wants guaranteed baseline completion capacity and the lowest cost for burst capacity. Which design is best?",
+      "options": {
+        "A": "Move the render queue to Glacier Deep Archive and retrieve it before each job.",
+        "B": "Run every worker on one Spot instance type in one Availability Zone with no interruption handling.",
+        "C": "Reserve peak On-Demand capacity all day even though bursts occur only overnight.",
+        "D": "Run the baseline on On-Demand or committed compute and scale the retryable burst workers on EC2 Spot capacity diversified across instance types and Availability Zones."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. An archival object tier is not a compute-capacity or queue-scaling mechanism.",
+        "B": "Incorrect. Single-pool Spot capacity is fragile, and lack of checkpoint or interruption response wastes work.",
+        "C": "Incorrect. Permanent peak capacity meets performance but wastes substantial idle compute cost.",
+        "D": "Correct. Stable capacity protects deadlines while diversified Spot handles interruption-tolerant bursts at lower cost."
+      },
+      "central_requirement": "Blend reliable baseline compute with discounted interruption-tolerant burst capacity.",
+      "decisive_words": "steady queue, overnight bursts, checkpoint, retry, lowest cost",
+      "reusable_rule": "Use stable capacity for the noninterruptible baseline and diversified Spot for elastic fault-tolerant work, with checkpointing and rebalance handling.",
+      "references": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
+      ]
+    },
+    {
+      "id": "SIM-C-59",
+      "domain": 4,
+      "task": "4.2",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A Lambda image transformation function uses 512 MB and runs for 12 seconds. Testing shows that 1,536 MB finishes in 3 seconds, and both configurations meet correctness requirements. What should the team do before choosing the cheaper setting?",
+      "options": {
+        "A": "Compare measured GB-seconds, request charges, and downstream effects for both configurations, then select the best cost-performance point.",
+        "B": "Always select the minimum memory because Lambda price depends only on configured memory.",
+        "C": "Always select maximum memory because shorter execution is automatically free.",
+        "D": "Move the function to a public subnet because public subnets reduce Lambda GB-second pricing."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. Lambda allocates CPU with memory and bills duration, so higher memory can reduce total cost when execution time falls enough.",
+        "B": "Incorrect. Billing depends on both memory and duration, and more memory also changes available CPU performance.",
+        "C": "Incorrect. Higher memory has a higher per-duration rate and must be evaluated against the measured speedup.",
+        "D": "Incorrect. Subnet selection does not change the Lambda compute billing formula and does not automatically provide a public IP."
+      },
+      "central_requirement": "Optimize Lambda memory and duration using measured total cost rather than one dimension.",
+      "decisive_words": "512 MB 12 seconds, 1536 MB 3 seconds, cost-performance",
+      "reusable_rule": "Benchmark representative Lambda memory sizes because CPU scales with memory and the cheapest configuration depends on memory-duration product and workload behavior.",
+      "references": [
+        "https://docs.aws.amazon.com/lambda/latest/operatorguide/computing-power.html"
+      ]
+    },
+    {
+      "id": "SIM-C-60",
+      "domain": 4,
+      "task": "4.3",
+      "format": "multi-3",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Select THREE.",
+      "stem": "A database estate includes predictable production RDS instances, an Aurora cluster with high I/O charges, and development databases idle every night. Which three actions should be evaluated for cost optimization without violating workload requirements?",
+      "options": {
+        "A": "Delete automated backups for production because recovery does not affect cost architecture.",
+        "B": "Purchase appropriate Reserved DB Instances for the stable, well-measured RDS baseline.",
+        "C": "Scale every database to the largest instance class to reduce query duration.",
+        "D": "Compare Aurora I/O-Optimized with the standard configuration using the cluster's actual I/O-to-compute cost profile.",
+        "E": "Convert relational workloads with joins and constraints to ElastiCache without application analysis.",
+        "F": "Schedule supported nonproduction DB instances to stop and start during verified idle windows."
+      },
+      "answers": [
+        "B",
+        "D",
+        "F"
+      ],
+      "rationales": {
+        "A": "Incorrect. Removing required recovery points violates resilience and may create unacceptable business risk.",
+        "B": "Correct. Reserved DB Instance pricing can discount eligible steady database instance usage when the commitment matches the workload.",
+        "C": "Incorrect. Oversizing raises cost and may not improve bottlenecks unrelated to CPU or memory.",
+        "D": "Correct. I/O-Optimized can reduce total cost for I/O-intensive Aurora workloads but is not automatically cheaper for every cluster.",
+        "E": "Incorrect. A cache is not a durable relational system of record and cannot replace required SQL semantics.",
+        "F": "Correct. Stopping eligible development databases avoids instance charges during planned idle periods while storage charges continue."
+      },
+      "central_requirement": "Reduce database cost through commitments, pricing-model analysis, and idle-environment scheduling.",
+      "decisive_words": "predictable RDS, Aurora I/O charges, development idle",
+      "reusable_rule": "Optimize database cost only after separating steady commitments, measured I/O economics, idle schedules, and mandatory resilience requirements.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+      ]
+    },
+    {
+      "id": "SIM-C-61",
+      "domain": 4,
+      "task": "4.3",
+      "format": "single",
+      "type": "fundamental",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A new DynamoDB application has unknown and highly variable request traffic. The team wants to avoid capacity forecasting and throttling caused by an incorrect initial provisioned setting. Which capacity mode is the simplest starting choice?",
+      "options": {
+        "A": "Use provisioned capacity fixed permanently at one read and one write unit.",
+        "B": "Use DynamoDB on-demand capacity mode.",
+        "C": "Use an EC2 Auto Scaling group to add DynamoDB partitions manually.",
+        "D": "Use S3 Intelligent-Tiering as the table capacity controller."
+      },
+      "answers": [
+        "B"
+      ],
+      "rationales": {
+        "A": "Incorrect. A tiny fixed allocation risks throttling and directly conflicts with unknown variable demand.",
+        "B": "Correct. On-demand automatically accommodates variable traffic within service behavior and charges per request without initial capacity planning.",
+        "C": "Incorrect. DynamoDB is managed and does not expose partitions as EC2 instances for customers to scale.",
+        "D": "Incorrect. S3 storage tiers do not control DynamoDB request capacity."
+      },
+      "central_requirement": "Choose a DynamoDB mode that removes initial capacity forecasting for variable demand.",
+      "decisive_words": "new application, unknown variable traffic, avoid forecasting",
+      "reusable_rule": "Start unpredictable DynamoDB workloads on on-demand capacity, then evaluate provisioned plus auto scaling when traffic becomes stable and savings justify it.",
+      "references": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html"
+      ]
+    },
+    {
+      "id": "SIM-C-62",
+      "domain": 4,
+      "task": "4.3",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "An Aurora workload's monthly I/O charges consistently exceed its instance charges, and load testing confirms the same high read and write volume after query tuning. The team wants predictable database cost without reducing throughput. What should it evaluate?",
+      "options": {
+        "A": "Move all tables to one Lambda execution environment's temporary storage and rely on environment reuse to persist the database between invocations.",
+        "B": "Disable database backups and transaction logging to remove I/O.",
+        "C": "Compare the cluster's measured break-even point with Aurora I/O-Optimized and switch if the total cost is lower.",
+        "D": "Add more cross-Region replicas solely to reduce primary I/O billing."
+      },
+      "answers": [
+        "C"
+      ],
+      "rationales": {
+        "A": "Incorrect. Lambda temporary storage is ephemeral, not shared, and cannot replace a transactional database.",
+        "B": "Incorrect. Disabling recovery protections violates durability and is not an appropriate cost optimization.",
+        "C": "Correct. I/O-Optimized removes per-I/O charges in exchange for different compute and storage pricing, benefiting sufficiently I/O-intensive workloads.",
+        "D": "Incorrect. Additional replicas add cost and replication I/O and do not automatically reduce the workload's write volume."
+      },
+      "central_requirement": "Evaluate Aurora pricing configuration from the workload's measured I/O cost profile.",
+      "decisive_words": "I/O charges exceed instances, tuned workload, preserve throughput",
+      "reusable_rule": "Compare Aurora Standard and I/O-Optimized with real compute, storage, and I/O usage; choose by total cost, not one line item.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-storage-iopt.html"
+      ]
+    },
+    {
+      "id": "SIM-C-63",
+      "domain": 4,
+      "task": "4.4",
+      "format": "single",
+      "type": "integrated",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A global download service sends large immutable objects from an S3 origin to users on five continents. Costs are dominated by repeated origin transfer, NAT processing from private application hosts, and cross-AZ calls to a centralized NAT Gateway. Which redesign best improves both cost and resilience?",
+      "options": {
+        "A": "Copy the objects to EBS volumes attached to a single web server.",
+        "B": "Assign public IPv4 addresses to every private host and bypass all security controls.",
+        "C": "Route all Regions through one NAT Gateway in the origin Region.",
+        "D": "Serve cacheable objects through CloudFront, use an S3 gateway endpoint for private host access, and route remaining egress through zonally aligned NAT Gateways where volume and resilience justify them."
+      },
+      "answers": [
+        "D"
+      ],
+      "rationales": {
+        "A": "Incorrect. A single block-storage origin is operationally fragile and cannot match global object caching.",
+        "B": "Incorrect. Public exposure is not a safe cost optimization and creates ongoing IPv4 charges.",
+        "C": "Incorrect. NAT Gateways are regional resources, and cross-Region centralization would add latency, transfer cost, and failure risk.",
+        "D": "Correct. Caching reduces repeated origin delivery, the endpoint removes S3 from NAT, and same-AZ NAT paths avoid cross-AZ dependency and transfer."
+      },
+      "central_requirement": "Reduce repeated content delivery, NAT processing, and cross-AZ egress dependency together.",
+      "decisive_words": "global downloads, repeated origin, S3 through NAT, centralized NAT",
+      "reusable_rule": "Optimize network cost by changing traffic paths: edge caching for repeated content, service endpoints for AWS APIs, and zonally resilient egress for the remainder.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+      ]
+    },
+    {
+      "id": "SIM-C-64",
+      "domain": 4,
+      "task": "4.4",
+      "format": "multi-3",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Select THREE.",
+      "stem": "A multi-AZ application transfers terabytes each month to S3, sends static responses globally, and uses interface endpoints for services that support gateway endpoints. Which three actions directly target recurring network charges?",
+      "options": {
+        "A": "Send S3 traffic through a NAT Gateway in a different Availability Zone.",
+        "B": "Disable compression for all text responses.",
+        "C": "Use an S3 gateway endpoint for VPC-to-S3 traffic and associate the required route tables.",
+        "D": "Add public IPv4 addresses to all instances solely to avoid endpoint hourly charges.",
+        "E": "Cache eligible static content with CloudFront and tune cache keys and TTLs.",
+        "F": "Review endpoint type and consolidate or remove unnecessary interface endpoints while preserving required private connectivity."
+      },
+      "answers": [
+        "C",
+        "E",
+        "F"
+      ],
+      "rationales": {
+        "A": "Incorrect. This retains NAT processing and adds cross-AZ transfer and a zonal dependency.",
+        "B": "Incorrect. Larger payloads generally increase transfer rather than reduce it.",
+        "C": "Correct. S3 gateway endpoints avoid NAT processing and have no additional endpoint hourly charge.",
+        "D": "Incorrect. Public addresses add cost and exposure and do not provide an appropriate private service path.",
+        "E": "Correct. A higher cache-hit ratio reduces repeated origin requests and data transfer from the origin path.",
+        "F": "Correct. Interface endpoints incur hourly and data-processing charges, so architecture and AZ placement should match actual needs."
+      },
+      "central_requirement": "Reduce recurring service-path, origin-delivery, and unnecessary endpoint charges.",
+      "decisive_words": "terabytes to S3, static global, interface versus gateway endpoints",
+      "reusable_rule": "Network cost optimization starts with flow visibility, then replaces expensive paths with gateway endpoints, caching, compression, or right-sized private endpoints.",
+      "references": [
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+      ]
+    },
+    {
+      "id": "SIM-C-65",
+      "domain": 4,
+      "task": "4.4",
+      "format": "single",
+      "type": "situational",
+      "difficulty": "intermediate",
+      "instruction": "Choose ONE.",
+      "stem": "A company exports 8 TB of analytics data from AWS to the same on-premises facility every month. The transfer is steady, internet performance is inconsistent, and finance wants a predictable private connectivity model. Which option should be evaluated first?",
+      "options": {
+        "A": "Evaluate AWS Direct Connect capacity and data-transfer pricing against the steady volume and required redundancy.",
+        "B": "Create a larger NAT Gateway because NAT provides a dedicated circuit to the facility, and assign it a fixed public IP for deterministic routing.",
+        "C": "Use an S3 gateway endpoint from the on-premises network through Transit Gateway.",
+        "D": "Send the monthly dataset through Route 53 Resolver outbound endpoints."
+      },
+      "answers": [
+        "A"
+      ],
+      "rationales": {
+        "A": "Correct. Direct Connect can provide more consistent private connectivity and different transfer economics for sustained hybrid traffic.",
+        "B": "Incorrect. A NAT Gateway is internet egress translation and does not create a private dedicated on-premises circuit.",
+        "C": "Incorrect. Gateway endpoints cannot be extended from on-premises through VPN, Direct Connect, peering, or Transit Gateway.",
+        "D": "Incorrect. Resolver endpoints forward DNS queries, not bulk analytics data."
+      },
+      "central_requirement": "Evaluate predictable private hybrid connectivity for sustained outbound data volume.",
+      "decisive_words": "8 TB monthly, same facility, inconsistent internet, predictable private",
+      "reusable_rule": "For steady high-volume hybrid transfer, compare Direct Connect port, provider, redundancy, and data-transfer economics with internet or VPN alternatives.",
+      "references": [
+        "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+      ]
+    }
+  ]
+}

@@ -13,12 +13,14 @@ durante a rotina normal de estudo.
 - **Blocos de conteúdo:** B01–B25 completos, cada um com capítulo,
   laboratório, 10 questões, gabarito comentado e checklist D+2/D+7.
 - **Fase final:** 7 dias adicionais de consolidação, com `SIM-A` em 26/08,
-  Practice Udemy em 28/08 e `SIM-C` em 31/08. O `SIM-B` autoral privado fica
-  como tentativa extra após o ciclo ou substituto se a Udemy estiver
-  indisponível; o repositório publica apenas o manifesto, o gerador e as regras
-  de validação dos bancos autorais.
+  Practice Udemy em 28/08 e `SIM-C` em 31/08. O `SIM-B` autoral fica como
+  tentativa extra após o ciclo ou substituto se a Udemy estiver indisponível.
+  Os três [pacotes completos](04_Questoes_e_Revisoes/Simulados/README.md) estão
+  versionados; não abra bancos ou gabaritos antes da tentativa correspondente.
 - **Questões autorais do curso:** 250, com 190 `single`, 45 `multi-2`, 15
   `multi-3` e 250 respostas comentadas em arquivos separados.
+- **Simulados autorais:** 195 questões em inglês distribuídas entre SIM-A,
+  SIM-B e SIM-C, com [questões, gabaritos e relatórios](04_Questoes_e_Revisoes/Simulados/README.md).
 - **Último progresso capturado da Udemy:** 13 de 425 itens; aula atual 14.
 - **Escopo oficial:** 189 itens individuais de Knowledge/Skills do SAA-C03 e
   listas de serviços revalidados em 01/08/2026.

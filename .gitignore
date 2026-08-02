@@ -2,11 +2,6 @@
 /01_Fontes/Udemy/html do curso/
 /01_Fontes/Udemy/Descricao_Curso_Udemy.txt
 
-# Simulados autorais: banco, questões, gabaritos e resultados ficam locais para
-# não antecipar respostas em um repositório público. O gerador e o manifesto
-# auditável permanecem versionados em 04_Questoes_e_Revisoes/Simulados/.
-/04_Questoes_e_Revisoes/Simulados_Privados/
-
 # Credenciais, chaves e configurações locais.
 .env
 .env.*

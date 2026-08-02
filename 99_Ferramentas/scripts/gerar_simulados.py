@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Valida e renderiza os três simulados autorais mantidos fora do Git.
+"""Valida e renderiza os três simulados autorais versionados no projeto.
 
-O repositório é público. Por isso, este script e o manifesto são versionados,
-mas os bancos JSON, cadernos de questões, gabaritos e relatórios permanecem na
-pasta ``Simulados_Privados``, ignorada pelo Git.
+Os bancos JSON, cadernos de questões, gabaritos e relatórios ficam organizados
+em ``04_Questoes_e_Revisoes/Simulados``. O conteúdo do practice exam da Udemy
+não é lido, copiado nem reproduzido por este script.
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ import json
 import re
 import sys
 from collections import Counter
+from datetime import date
 from difflib import SequenceMatcher
 from itertools import combinations
 from pathlib import Path
@@ -47,6 +48,16 @@ FORMAT_RULES = {
 }
 QUESTION_TYPES = {"fundamental", "situational", "integrated"}
 DIFFICULTIES = {"basic", "intermediate", "advanced"}
+ANSWER_KEY_QUALITY_CONTROLS = {
+    "single_position_spread_max": 1,
+    "single_unique_longest_ratio_max": 0.55,
+    "multi_2_same_set_max": 2,
+    "multi_3_sets_must_be_unique": True,
+    "multi_2_common_letter_frequency_min": 4,
+    "multi_3_common_letter_frequency_min": 2,
+    "multi_answer_letter_frequency_max": 8,
+    "blind_modal_score_max": 16,
+}
 OFFICIAL_REFERENCE_RE = re.compile(
     r"^https://(?:docs\.aws\.amazon\.com|aws\.amazon\.com)/"
 )
@@ -89,17 +100,24 @@ def read_json(path: Path) -> dict[str, Any]:
 
 
 def write_json(path: Path, value: dict[str, Any]) -> None:
-    path.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    with path.open("w", encoding="utf-8", newline="\n") as stream:
+        stream.write(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
 
 
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+def write_text_lf(path: Path, value: str) -> None:
+    with path.open("w", encoding="utf-8", newline="\n") as stream:
+        stream.write(value)
+
+
+def canonical_json_sha256(path: Path) -> str:
+    """Hash JSON semantics independently of formatting and line endings."""
+    canonical = json.dumps(
+        read_json(path),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
 
 
 def normalize(text: str) -> str:
@@ -227,7 +245,10 @@ def validate_question(
 
 
 def validate_bank(
-    bank: dict[str, Any], spec: dict[str, Any], errors: list[str]
+    bank: dict[str, Any],
+    spec: dict[str, Any],
+    errors: list[str],
+    quality_controls: dict[str, Any] = ANSWER_KEY_QUALITY_CONTROLS,
 ) -> list[dict[str, Any]]:
     sim_id = spec["id"]
     if bank.get("id") != sim_id:
@@ -246,19 +267,23 @@ def validate_bank(
             f"{sim_id}: {len(questions)} questões; esperado {spec['questions']}"
         )
 
+    valid_questions: list[dict[str, Any]] = []
     for number, question in enumerate(questions, start=1):
         if not isinstance(question, dict):
             errors.append(f"{sim_id}-{number:02d}: questão não é um objeto JSON")
             continue
+        valid_questions.append(question)
         validate_question(question, sim_id, number, errors)
 
     distributions = {
-        "domain_counts": Counter(str(question.get("domain")) for question in questions),
-        "task_counts": Counter(question.get("task") for question in questions),
-        "format_counts": Counter(question.get("format") for question in questions),
-        "type_counts": Counter(question.get("type") for question in questions),
+        "domain_counts": Counter(
+            str(question.get("domain")) for question in valid_questions
+        ),
+        "task_counts": Counter(question.get("task") for question in valid_questions),
+        "format_counts": Counter(question.get("format") for question in valid_questions),
+        "type_counts": Counter(question.get("type") for question in valid_questions),
         "difficulty_counts": Counter(
-            question.get("difficulty") for question in questions
+            question.get("difficulty") for question in valid_questions
         ),
     }
     for key, actual in distributions.items():
@@ -266,11 +291,143 @@ def validate_bank(
         if actual != expected:
             errors.append(f"{sim_id}: {key}={dict(actual)}; esperado {dict(expected)}")
 
-    represented_tasks = {question.get("task") for question in questions}
+    represented_tasks = {question.get("task") for question in valid_questions}
     missing_tasks = VALID_TASKS - represented_tasks
     if missing_tasks:
         errors.append(f"{sim_id}: tarefas sem questão {sorted(missing_tasks)}")
-    return questions
+    validate_answer_position_bias(valid_questions, sim_id, quality_controls, errors)
+    return valid_questions
+
+
+def validate_answer_position_bias(
+    questions: list[dict[str, Any]],
+    sim_id: str,
+    quality_controls: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """Reject answer-position and option-length shortcuts in a simulator."""
+    def first_answer(question: dict[str, Any]) -> str | None:
+        answers = question.get("answers")
+        return answers[0] if isinstance(answers, list) and answers else None
+
+    single = [question for question in questions if question.get("format") == "single"]
+    if len(single) == 49:
+        single_counts = Counter(first_answer(question) for question in single)
+        counts = [single_counts.get(letter, 0) for letter in "ABCD"]
+        if max(counts) - min(counts) > quality_controls["single_position_spread_max"]:
+            errors.append(
+                f"{sim_id}: posições corretas das questões single desbalanceadas "
+                f"{dict(zip('ABCD', counts))}"
+            )
+
+        uniquely_longest = 0
+        for question in single:
+            options = question.get("options", {})
+            answers = question.get("answers", [])
+            if (
+                not isinstance(options, dict)
+                or not isinstance(answers, list)
+                or len(answers) != 1
+            ):
+                continue
+            answer = answers[0]
+            lengths = {letter: len(str(text).strip()) for letter, text in options.items()}
+            if answer in lengths and lengths[answer] > max(
+                (length for letter, length in lengths.items() if letter != answer),
+                default=-1,
+            ):
+                uniquely_longest += 1
+        longest_ratio_max = quality_controls["single_unique_longest_ratio_max"]
+        if uniquely_longest / len(single) > longest_ratio_max:
+            errors.append(
+                f"{sim_id}: resposta correta é a única alternativa mais longa em "
+                f"{uniquely_longest}/{len(single)} questões single; "
+                f"máximo {longest_ratio_max:.0%}"
+            )
+
+    multi_groups: dict[str, list[tuple[str, ...]]] = {"multi-2": [], "multi-3": []}
+    for question in questions:
+        question_format = question.get("format")
+        if question_format in multi_groups:
+            answers = question.get("answers")
+            multi_groups[question_format].append(
+                tuple(answers) if isinstance(answers, list) else ()
+            )
+
+    multi_two_counts = Counter(multi_groups["multi-2"])
+    multi_two_max = quality_controls["multi_2_same_set_max"]
+    if multi_two_counts and max(multi_two_counts.values()) > multi_two_max:
+        errors.append(
+            f"{sim_id}: um mesmo conjunto correto de multi-2 aparece mais de "
+            f"{multi_two_max} vezes"
+        )
+    multi_three_counts = Counter(multi_groups["multi-3"])
+    if (
+        quality_controls["multi_3_sets_must_be_unique"]
+        and multi_three_counts
+        and max(multi_three_counts.values()) > 1
+    ):
+        errors.append(
+            f"{sim_id}: os quatro conjuntos corretos de multi-3 devem ser distintos"
+        )
+
+    for question_format, control_key in (
+        ("multi-2", "multi_2_common_letter_frequency_min"),
+        ("multi-3", "multi_3_common_letter_frequency_min"),
+    ):
+        formatted_questions = [
+            question
+            for question in questions
+            if question.get("format") == question_format
+            and isinstance(question.get("options"), dict)
+        ]
+        common_letters = (
+            set.intersection(
+                *(set(question["options"]) for question in formatted_questions)
+            )
+            if formatted_questions
+            else set()
+        )
+        answer_letter_counts = Counter(
+            letter for answer_set in multi_groups[question_format] for letter in answer_set
+        )
+        minimum = quality_controls[control_key]
+        underrepresented = {
+            letter: answer_letter_counts.get(letter, 0)
+            for letter in sorted(common_letters)
+            if answer_letter_counts.get(letter, 0) < minimum
+        }
+        if underrepresented:
+            errors.append(
+                f"{sim_id}: letras sub-representadas em {question_format} "
+                f"{underrepresented}; mínimo {minimum}"
+            )
+
+    multi_letter_counts = Counter(
+        letter
+        for answer_set in multi_groups["multi-2"] + multi_groups["multi-3"]
+        for letter in answer_set
+    )
+    multi_letter_max = quality_controls["multi_answer_letter_frequency_max"]
+    if multi_letter_counts and max(multi_letter_counts.values()) > multi_letter_max:
+        errors.append(
+            f"{sim_id}: uma posição aparece em mais de {multi_letter_max} das "
+            "36 respostas múltiplas "
+            f"{dict(sorted(multi_letter_counts.items()))}"
+        )
+
+    if single and multi_two_counts and multi_three_counts:
+        blind_modal_score = (
+            max(Counter(first_answer(question) for question in single).values())
+            + max(multi_two_counts.values())
+            + max(multi_three_counts.values())
+        )
+        blind_modal_max = quality_controls["blind_modal_score_max"]
+        if blind_modal_score > blind_modal_max:
+            errors.append(
+                f"{sim_id}: estratégia cega pelas posições modais acertaria "
+                f"{blind_modal_score}/65; máximo {blind_modal_max}"
+            )
 
 
 def validate_simulator_similarity(
@@ -305,17 +462,70 @@ def load_and_validate(
     errors: list[str] = []
     loaded: list[tuple[dict[str, Any], dict[str, Any], Path]] = []
     all_questions: list[dict[str, Any]] = []
-    for spec in manifest.get("simulators", []):
-        source = ROOT / spec["source"]
+    specs = manifest.get("simulators")
+    if not isinstance(specs, list):
+        return loaded, ["manifesto: simulators deve ser uma lista"]
+    if len(specs) != 3 or {
+        spec.get("id") for spec in specs if isinstance(spec, dict)
+    } != {"SIM-A", "SIM-B", "SIM-C"}:
+        errors.append("manifesto: esperado exatamente SIM-A, SIM-B e SIM-C")
+    if manifest.get("visibility") != "public-versioned":
+        errors.append("manifesto: visibility deve ser public-versioned")
+    if manifest.get("answer_key_quality_controls") != ANSWER_KEY_QUALITY_CONTROLS:
+        errors.append("manifesto: controles de qualidade do gabarito divergentes")
+    required_spec_keys = {
+        "id",
+        "questions",
+        "duration_minutes",
+        "language",
+        "domain_counts",
+        "task_counts",
+        "format_counts",
+        "type_counts",
+        "difficulty_counts",
+        "source",
+        "outputs",
+    }
+    for spec in specs:
+        if not isinstance(spec, dict):
+            errors.append("manifesto: cada simulado deve ser um objeto")
+            continue
+        sim_id = spec.get("id")
+        missing_keys = sorted(required_spec_keys - set(spec))
+        if missing_keys:
+            errors.append(f"{sim_id}: chaves obrigatórias ausentes {missing_keys}")
+            continue
+        expected_source = (
+            f"04_Questoes_e_Revisoes/Simulados/Bancos/{sim_id}.json"
+        )
+        expected_outputs = [
+            f"04_Questoes_e_Revisoes/Simulados/{sim_id}/Questoes.md",
+            f"04_Questoes_e_Revisoes/Simulados/{sim_id}/Gabarito.md",
+            f"04_Questoes_e_Revisoes/Simulados/{sim_id}/Relatorio.md",
+        ]
+        if spec.get("source") != expected_source:
+            errors.append(f"{sim_id}: caminho do banco fora do layout público")
+        if spec.get("outputs") != expected_outputs:
+            errors.append(f"{sim_id}: saídas fora do layout público")
+    if errors:
+        return loaded, errors
+
+    for spec in specs:
+        source = ROOT / str(spec["source"])
         if not source.is_file():
-            errors.append(f"{spec['id']}: banco privado ausente em {spec['source']}")
+            errors.append(f"{spec['id']}: banco autoral ausente em {spec['source']}")
             continue
         try:
             bank = read_json(source)
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
             errors.append(f"{spec['id']}: não foi possível ler o banco: {exc}")
             continue
-        questions = validate_bank(bank, spec, errors)
+        if not isinstance(bank, dict):
+            errors.append(f"{spec['id']}: banco JSON deve ser um objeto")
+            continue
+        questions = validate_bank(
+            bank, spec, errors, manifest["answer_key_quality_controls"]
+        )
         all_questions.extend(questions)
         loaded.append((spec, bank, source))
     if len(loaded) == 3:
@@ -323,14 +533,50 @@ def load_and_validate(
     return loaded, errors
 
 
+def validate_rendered_state(
+    manifest: dict[str, Any],
+    loaded: list[tuple[dict[str, Any], dict[str, Any], Path]],
+    errors: list[str],
+) -> None:
+    """Confirm manifest hashes and generated Markdown match their JSON banks."""
+    if manifest.get("status") != "validated-versioned":
+        errors.append("manifesto: status deve ser validated-versioned")
+    for spec, bank, source in loaded:
+        if spec.get("validated") is not True:
+            errors.append(f"{spec['id']}: campo validated deve ser true")
+        digest = canonical_json_sha256(source)
+        if spec.get("source_sha256") != digest:
+            errors.append(f"{spec['id']}: hash canônico diverge do banco")
+        expected_renderings = [
+            render_questions(bank),
+            render_answers(bank),
+            render_report(bank),
+        ]
+        for output, expected_text in zip(spec["outputs"], expected_renderings):
+            output_path = ROOT / output
+            if not output_path.is_file():
+                errors.append(f"{spec['id']}: saída versionada ausente {output}")
+                continue
+            try:
+                actual_text = output_path.read_text(encoding="utf-8")
+            except (OSError, UnicodeError) as exc:
+                errors.append(f"{spec['id']}: falha ao ler {output}: {exc}")
+                continue
+            if actual_text != expected_text:
+                errors.append(f"{spec['id']}: saída desatualizada {output}")
+
+
 def render_questions(bank: dict[str, Any]) -> str:
     sim_id = bank["id"]
     lines = [
         f"# {sim_id} — Questions",
         "",
-        "**Time:** 130 minutes  ",
-        "**Language:** English  ",
-        "**Rules:** Closed book. Complete all 65 questions before opening the answer key.",
+        "**Navigation:** [Simulators index](../README.md) | "
+        "[Result report](Relatorio.md)",
+        "",
+        "- **Time:** 130 minutes",
+        "- **Language:** English",
+        "- **Rules:** Closed book. Complete all 65 questions before opening the answer key.",
         "",
         "## Question metadata",
         "",
@@ -363,6 +609,9 @@ def render_answers(bank: dict[str, Any]) -> str:
     sim_id = bank["id"]
     lines = [
         f"# {sim_id} — Commented answer key",
+        "",
+        "**Navigation:** [Questions](Questoes.md) | "
+        "[Commented answer key](Gabarito.md) | [Result report](Relatorio.md)",
         "",
         "Open this file only after completing the timed attempt.",
         "",
@@ -402,10 +651,13 @@ def render_report(bank: dict[str, Any]) -> str:
     lines = [
         f"# {sim_id} — Result report",
         "",
-        "**Date:** ____-__-__  ",
-        "**Time used:** ___ / 130 minutes  ",
-        "**Correct answers:** ___ / 65  ",
-        "**Score:** ___%  ",
+        "**Navigation:** [Simulators index](../README.md) | "
+        "[Questions](Questoes.md)",
+        "",
+        "- **Date:** ____-__-__",
+        "- **Time used:** ___ / 130 minutes",
+        "- **Correct answers:** ___ / 65",
+        "- **Score:** ___%",
         "",
         "A multi-response question counts as correct only when the entire answer set matches.",
         "",
@@ -451,12 +703,13 @@ def render_all(
         output_paths = [ROOT / value for value in spec["outputs"]]
         for output in output_paths:
             output.parent.mkdir(parents=True, exist_ok=True)
-        output_paths[0].write_text(render_questions(bank), encoding="utf-8")
-        output_paths[1].write_text(render_answers(bank), encoding="utf-8")
-        output_paths[2].write_text(render_report(bank), encoding="utf-8")
-        spec["source_sha256"] = sha256(source)
+        write_text_lf(output_paths[0], render_questions(bank))
+        write_text_lf(output_paths[1], render_answers(bank))
+        write_text_lf(output_paths[2], render_report(bank))
+        spec["source_sha256"] = canonical_json_sha256(source)
         spec["validated"] = True
-    manifest["status"] = "validated-private"
+    manifest["validation_date"] = date.today().isoformat()
+    manifest["status"] = "validated-versioned"
     write_json(MANIFEST_PATH, manifest)
 
 
@@ -465,25 +718,43 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--validate-only",
         action="store_true",
-        help="Valida os bancos privados sem reescrever os cadernos ou o manifesto.",
+        help="Valida os bancos versionados sem reescrever os cadernos ou o manifesto.",
     )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    manifest = read_json(MANIFEST_PATH)
+    try:
+        manifest = read_json(MANIFEST_PATH)
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        print(f"FALHA: manifesto inválido ou ilegível: {exc}", file=sys.stderr)
+        return 1
+    if not isinstance(manifest, dict):
+        print("FALHA: manifesto deve ser um objeto JSON.", file=sys.stderr)
+        return 1
     loaded, errors = load_and_validate(manifest)
+    if not errors and args.validate_only:
+        validate_rendered_state(manifest, loaded, errors)
     if errors:
-        print(f"FALHA: {len(errors)} problema(s) nos simulados privados.", file=sys.stderr)
+        print(f"FALHA: {len(errors)} problema(s) nos simulados autorais.", file=sys.stderr)
         for error in errors:
             print(f"- {error}", file=sys.stderr)
         return 1
     if not args.validate_only:
         render_all(manifest, loaded)
+        validate_rendered_state(manifest, loaded, errors)
+        if errors:
+            print("FALHA: renderização não ficou sincronizada.", file=sys.stderr)
+            for error in errors:
+                print(f"- {error}", file=sys.stderr)
+            return 1
     total = sum(len(bank["questions"]) for _, bank, _ in loaded)
     action = "validadas" if args.validate_only else "validadas e renderizadas"
-    print(f"OK: 3 simulados, {total} questões privadas {action}; nenhum conteúdo foi publicado.")
+    print(
+        f"OK: {len(loaded)} simulados, {total} questões autorais {action}; "
+        "pacote versionável validado."
+    )
     return 0
 
 

@@ -338,8 +338,8 @@ BLOCKS = (
         "`394–396`, por serem encerramento, trilhas e bônus",
         (
             "O practice exam não pertence ao B25; ele está reservado ao evento "
-            "**Practice Udemy** de 28/08. Não confundir com o banco autoral privado "
-            "`SIM-B`, que é um recurso adicional e permanece fechado durante essa tentativa.",
+            "**Practice Udemy** de 28/08. Não confundir com o `SIM-B` autoral "
+            "versionado; não abra seu caderno, gabarito ou JSON durante essa tentativa.",
         ),
     ),
 )
@@ -588,10 +588,10 @@ def render(inventory: list[dict[str, str]]) -> str:
             "- **31/08 — SIM C:** nenhuma aula nova; simulado autoral e decisão de "
             "prontidão.",
             "",
-            "O `SIM-B` autoral privado pode ser usado depois da correção do SIM C "
+            "O `SIM-B` autoral versionado pode ser usado depois da correção do SIM C "
             "ou como substituto somente se o practice exam da Udemy estiver "
             "indisponível. Não realize os dois no mesmo dia e não abra previamente "
-            "nenhum dos bancos.",
+            "as questões, o gabarito ou o banco JSON.",
             "",
             "> O practice exam aparece somente no evento Practice Udemy de 28/08. "
             "Ele não deve ser aberto durante o B25 nem durante a revisão anterior.",

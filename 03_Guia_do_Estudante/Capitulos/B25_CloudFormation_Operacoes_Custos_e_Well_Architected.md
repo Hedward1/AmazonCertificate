@@ -32,7 +32,7 @@
 | 386 e 389–393 | Consultar perto da prova |
 | 387–388 | Checkpoint e exam tips |
 | 394–396 | Pular |
-| Practice exam | Reservado ao evento Practice Udemy de 28/08; não confundir com o `SIM-B` autoral privado |
+| Practice exam | Reservado ao evento Practice Udemy de 28/08; não confundir com o `SIM-B` autoral versionado |
 
 Use aulas, capítulo, laboratório e questões nessa ordem. Não copie credenciais nem crie recursos pagos para reproduzir telas.
 
@@ -232,8 +232,8 @@ Cobertura do Trusted Advisor depende do plano.
 ### 5.46 Ponto 46
 
 Practice exam fica inédito até o evento Practice Udemy de 28/08. O `SIM-B`
-autoral privado permanece fechado como tentativa extra posterior ou substituto
-se a Udemy estiver indisponível.
+autoral está versionado como tentativa extra posterior ou substituto se a Udemy
+estiver indisponível; não abra suas questões, gabarito ou banco antes do uso.
 
 ### Cápsula de decisão — AWS Compute Optimizer
 

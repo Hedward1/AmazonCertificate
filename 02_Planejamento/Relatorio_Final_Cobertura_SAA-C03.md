@@ -12,16 +12,17 @@
 estudante ainda não está pronto para realizar a prova hoje.**
 
 O pacote cobre os 189 itens individuais de Knowledge/Skills do guia vigente,
-contém teoria, aplicação, questões e revisão, e oferece três simulados privados
+contém teoria, aplicação, questões e revisão, e oferece três simulados autorais
 com pesos próximos aos domínios oficiais. A decisão sobre marcar a prova depende
 agora de evidência pessoal: concluir os laboratórios, manter o Caderno de Erros e
-atingir resultado estável nos simulados fechados. Como o perfil inicial é de
+atingir resultado estável nas tentativas sem consulta. Como o perfil inicial é de
 quem nunca trabalhou com AWS, a existência do material não substitui a prática.
 
 Critério recomendado para mudar a decisão para **pronto para a prova**:
 
 - concluir B01–B25 e os laboratórios previstos, sempre validando o cleanup;
-- realizar SIM-A, SIM-B e SIM-C em 130 minutos, sem consulta;
+- realizar SIM-A e SIM-C em 130 minutos, sem consulta, usando SIM-B como extra
+  ou substituto conforme o fluxo planejado;
 - obter pelo menos 80% em dois simulados consecutivos e nenhum domínio abaixo
   de 75%;
 - revisar todos os erros e acertos de baixa confiança em D+2 e D+7.
@@ -210,11 +211,10 @@ define SIM-A, SIM-B e SIM-C. Cada simulado tem:
 - 10 básicas, 35 intermediárias e 20 avançadas;
 - todas as 14 tarefas, gabarito separado e relatório por domínio/tarefa.
 
-Os bancos, gabaritos e relatórios ficam em
-`04_Questoes_e_Revisoes/Simulados_Privados/`, ignorado pelo Git. O repositório
-público contém apenas contrato, manifesto, gerador, hashes e validação. O
-practice exam da Udemy não foi copiado nem exposto e continua reservado até a
-data do cronograma.
+Os bancos, cadernos, gabaritos e relatórios estão organizados e versionados em
+`04_Questoes_e_Revisoes/Simulados/`. O README oferece navegação separada para
+cada artefato e alerta contra spoilers. O practice exam da Udemy não foi
+copiado nem exposto e continua reservado até a data do cronograma.
 
 ## Resultado dos validadores
 
@@ -222,8 +222,8 @@ Comandos de auditoria:
 
 ```powershell
 python .\99_Ferramentas\scripts\gerar_matriz_competencias_oficiais.py --check
-python .\99_Ferramentas\scripts\gerar_simulados_privados.py --validate-only
-python .\99_Ferramentas\scripts\validar_material_completo.py --require-private
+python .\99_Ferramentas\scripts\gerar_simulados.py --validate-only
+python .\99_Ferramentas\scripts\validar_material_completo.py
 ```
 
 **Resultado final: aprovado após as correções da auditoria.** A revisão
@@ -234,18 +234,28 @@ Outposts/hybrid compute e disponibilidade por criticidade de workload.
 
 No estado final, foram validados 25 blocos, 250 questões e respostas, 189
 competências com cobertura completa e zero lacunas em teoria, aplicação,
-questão ou revisão D+2/D+7, além de três simulados/195 questões privadas, 743
-links locais, 135 arquivos editoriais, o cronograma e as marcações de conteúdo
+questão ou revisão D+2/D+7, além de três simulados/195 questões autorais, 785
+links locais, 145 arquivos editoriais, o cronograma e as marcações de conteúdo
 opcional. O validador não usa número de linhas ou palavras como evidência de
 cobertura. Ele também rejeita formatos de múltipla resposta inconsistentes,
 títulos ou chaves duplicados, análise vazia de qualquer alternativa, perguntas
 sobre o procedimento do curso, classificação integrada/avançada sem cenário
 técnico suficiente e similaridade elevada entre quaisquer questões do banco.
 
+A revisão para publicação também encontrou um viés crítico nos gabaritos: uma
+estratégia cega pelas letras modais acertaria 86,2% do SIM-B e 96,9% do SIM-C.
+As alternativas foram reordenadas, distratores excessivamente curtos foram
+aprimorados e os três bancos passaram a ter posições simples balanceadas,
+conjuntos múltiplos variados e limite para a pista de comprimento. O gerador
+agora rejeita regressões desse tipo, usa hash JSON canônico independente de
+CRLF/LF e confirma que questões, gabaritos e relatórios correspondem aos bancos.
+
 ## Riscos restantes
 
 - Os relatórios de SIM-A/B/C ainda começam em branco; falta evidência real de
   desempenho do estudante.
+- Como gabaritos e bancos estão publicados, abrir esses arquivos antes da
+  tentativa compromete a validade do resultado; use somente `Questoes.md`.
 - Os laboratórios precisam ser executados na conta do estudante e ter cleanup
   conferido; o pequeno orçamento mensal não autoriza deixar recursos ociosos.
 - O domínio 4 é pouco representado no banco sequencial B01–B25. Use os três

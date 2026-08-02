@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import hashlib
 import json
 import re
 import sys
@@ -984,19 +983,31 @@ def validate_competency_matrix(
     }
 
 
-def validate_simulators(require_private: bool, errors: list[str]) -> dict[str, int | str]:
+def validate_simulators(errors: list[str]) -> dict[str, int | str]:
     if not SIMULATOR_MANIFEST.is_file():
         errors.append("manifesto dos simulados ausente")
-        return {"simulators": 0, "questions": 0, "private": "ausente"}
+        return {"simulators": 0, "questions": 0, "status": "ausente"}
     try:
         manifest = json.loads(read_text(SIMULATOR_MANIFEST))
-    except json.JSONDecodeError as exc:
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         errors.append(f"manifesto dos simulados inválido: {exc}")
-        return {"simulators": 0, "questions": 0, "private": "inválido"}
+        return {"simulators": 0, "questions": 0, "status": "inválido"}
+    if not isinstance(manifest, dict):
+        errors.append("manifesto dos simulados deve ser um objeto JSON")
+        return {"simulators": 0, "questions": 0, "status": "inválido"}
+    if manifest.get("visibility") != "public-versioned":
+        errors.append("manifesto: visibility deve ser public-versioned")
     specs = manifest.get("simulators", [])
+    if not isinstance(specs, list):
+        errors.append("manifesto: simulators deve ser uma lista")
+        return {"simulators": 0, "questions": 0, "status": "inválido"}
+    if any(not isinstance(spec, dict) for spec in specs):
+        errors.append("manifesto: cada simulado deve ser um objeto")
+        return {"simulators": len(specs), "questions": 0, "status": "inválido"}
     if len(specs) != 3 or {spec.get("id") for spec in specs} != {"SIM-A", "SIM-B", "SIM-C"}:
         errors.append("manifesto: esperado SIM-A, SIM-B e SIM-C")
     for spec in specs:
+        sim_id = spec.get("id")
         if spec.get("questions") != 65 or spec.get("duration_minutes") != 130:
             errors.append(f"{spec.get('id')}: quantidade ou duração incorreta")
         if spec.get("language") != "English":
@@ -1024,32 +1035,49 @@ def validate_simulators(require_private: bool, errors: list[str]) -> dict[str, i
             "advanced": 20,
         }:
             errors.append(f"{spec.get('id')}: distribuição de dificuldade incorreta")
+        expected_source = (
+            f"04_Questoes_e_Revisoes/Simulados/Bancos/{sim_id}.json"
+        )
+        expected_outputs = [
+            f"04_Questoes_e_Revisoes/Simulados/{sim_id}/Questoes.md",
+            f"04_Questoes_e_Revisoes/Simulados/{sim_id}/Gabarito.md",
+            f"04_Questoes_e_Revisoes/Simulados/{sim_id}/Relatorio.md",
+        ]
+        if spec.get("source") != expected_source:
+            errors.append(f"{sim_id}: caminho do banco fora do layout público")
+        if spec.get("outputs") != expected_outputs:
+            errors.append(f"{sim_id}: saídas fora do layout público")
     sources = [ROOT / spec.get("source", "") for spec in specs]
-    private_present = bool(sources) and all(path.is_file() for path in sources)
-    if require_private and not private_present:
-        errors.append("simulados privados obrigatórios, mas um ou mais bancos estão ausentes")
-    if private_present:
+    sources_present = bool(sources) and all(path.is_file() for path in sources)
+    if not sources_present:
+        errors.append("um ou mais bancos autorais versionados estão ausentes")
+    if sources_present:
         try:
-            from gerar_simulados_privados import load_and_validate
+            from gerar_simulados import (
+                ANSWER_KEY_QUALITY_CONTROLS,
+                load_and_validate,
+                validate_rendered_state,
+            )
         except ImportError as exc:
             errors.append(f"não foi possível carregar o validador de simulados: {exc}")
         else:
+            if manifest.get("answer_key_quality_controls") != ANSWER_KEY_QUALITY_CONTROLS:
+                errors.append("manifesto: controles de qualidade do gabarito divergentes")
             loaded, simulator_errors = load_and_validate(manifest)
             errors.extend(f"simulados: {error}" for error in simulator_errors)
             if not simulator_errors:
-                for spec, _, source in loaded:
-                    digest = hashlib.sha256(source.read_bytes()).hexdigest()
-                    if spec.get("source_sha256") != digest:
-                        errors.append(f"{spec['id']}: hash público diverge do banco privado")
-                    for output in spec.get("outputs", []):
-                        if not (ROOT / output).is_file():
-                            errors.append(f"{spec['id']}: saída privada ausente {output}")
-                if manifest.get("status") != "validated-private":
-                    errors.append("manifesto: bancos existem, mas status não é validated-private")
+                rendered_errors: list[str] = []
+                validate_rendered_state(manifest, loaded, rendered_errors)
+                errors.extend(f"simulados: {error}" for error in rendered_errors)
     return {
         "simulators": len(specs),
-        "questions": sum(int(spec.get("questions", 0)) for spec in specs),
-        "private": "validado" if private_present else "não disponível neste clone",
+        "questions": sum(
+            value
+            for spec in specs
+            if isinstance((value := spec.get("questions")), int)
+            and not isinstance(value, bool)
+        ),
+        "status": "versionados e validados" if sources_present else "ausentes",
     }
 
 
@@ -1057,7 +1085,7 @@ def validate_local_links(errors: list[str]) -> int:
     checked = 0
     for path in ROOT.rglob("*.md"):
         parts = set(path.relative_to(ROOT).parts)
-        if ".git" in parts or "html do curso" in path.as_posix() or "Simulados_Privados" in parts:
+        if ".git" in parts or "html do curso" in path.as_posix():
             continue
         text = read_text(path)
         for match in LOCAL_LINK_RE.finditer(text):
@@ -1118,9 +1146,16 @@ def validate_indexes(blocks: list[dict[str, Path]], errors: list[str]) -> None:
 
 def validate_text_files(errors: list[str]) -> int:
     checked = 0
-    directories = (CHAPTERS, LABS, QUESTION_BLOCKS, PROGRESS, ROOT / "02_Planejamento")
+    directories = (
+        CHAPTERS,
+        LABS,
+        QUESTION_BLOCKS,
+        PROGRESS,
+        ROOT / "02_Planejamento",
+        SIMULATOR_MANIFEST.parent,
+    )
     for directory in directories:
-        for path in directory.glob("*.md"):
+        for path in directory.rglob("*.md"):
             checked += 1
             try:
                 lines = read_text(path).splitlines()
@@ -1136,11 +1171,7 @@ def validate_text_files(errors: list[str]) -> int:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--require-private",
-        action="store_true",
-        help="Falha se os bancos privados SIM-A/B/C não estiverem presentes.",
-    )
+    parser.add_argument("--require-private", action="store_true", help=argparse.SUPPRESS)
     return parser.parse_args()
 
 
@@ -1163,7 +1194,7 @@ def main() -> int:
     validate_optional_classification(errors)
     validate_data_transfer_terminal(errors)
     matrix = validate_competency_matrix(records, errors)
-    simulators = validate_simulators(args.require_private, errors)
+    simulators = validate_simulators(errors)
     local_links = validate_local_links(errors)
     validate_schedule(errors)
     if len(blocks) == 25:
@@ -1183,8 +1214,8 @@ def main() -> int:
         f"dificuldades {dict(distributions['difficulties'])}; "
         f"domínios {dict(distributions['domains'])}; tarefas {len(distributions['tasks'])}; "
         f"{matrix['rows']} competências ({dict(matrix['status'])}); "
-        f"{simulators['simulators']} simulados/{simulators['questions']} questões privadas "
-        f"({simulators['private']}); {local_links} links e {text_files} arquivos editoriais."
+        f"{simulators['simulators']} simulados/{simulators['questions']} questões autorais "
+        f"({simulators['status']}); {local_links} links e {text_files} arquivos editoriais."
     )
     return 0
 

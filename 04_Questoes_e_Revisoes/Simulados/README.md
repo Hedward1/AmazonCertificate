@@ -1,100 +1,97 @@
-# Simulados finais — entrega privada
+# Simulados finais — pacote autoral versionado
 
-Este diretório público contém somente o contrato de geração e o manifesto dos
-simulados autorais. As questões, respostas e relatórios ficam em
-`../Simulados_Privados/`, caminho ignorado pelo Git, para que o estudante não
-veja o conteúdo antes da execução.
+Este diretório contém os três simulados autorais completos. Questões,
+gabaritos, relatórios e bancos estruturados estão no GitHub por decisão do
+estudante.
 
-## Pacote previsto
+> **Evite spoilers:** para realizar uma tentativa válida, abra somente
+> `Questoes.md`. Deixe `Gabarito.md` e o banco JSON fechados até terminar os
+> 130 minutos e registrar suas respostas.
 
-Cada um de `SIM-A`, `SIM-B` e `SIM-C` possui:
+## Acesso rápido
+
+| Simulado | Uso planejado | Questões | Relatório |
+|---|---|---|---|
+| SIM-A | 26/08 — tentativa agendada | [Iniciar](SIM-A/Questoes.md) | [Preencher](SIM-A/Relatorio.md) |
+| SIM-B | Extra após SIM-C ou substituto da Udemy | [Iniciar](SIM-B/Questoes.md) | [Preencher](SIM-B/Relatorio.md) |
+| SIM-C | 31/08 — tentativa e decisão de prontidão | [Iniciar](SIM-C/Questoes.md) | [Preencher](SIM-C/Relatorio.md) |
+
+<details>
+<summary><strong>Depois da tentativa: gabaritos e bancos estruturados</strong></summary>
+
+| Simulado | Gabarito comentado | Banco JSON |
+|---|---|---|
+| SIM-A | [Abrir](SIM-A/Gabarito.md) | [JSON](Bancos/SIM-A.json) |
+| SIM-B | [Abrir](SIM-B/Gabarito.md) | [JSON](Bancos/SIM-B.json) |
+| SIM-C | [Abrir](SIM-C/Gabarito.md) | [JSON](Bancos/SIM-C.json) |
+
+</details>
+
+O [manifesto auditável](manifesto_simulados.json) registra caminhos, hashes,
+distribuições e estado de validação.
+
+## Composição de cada simulado
 
 - 65 questões inéditas em inglês;
 - 130 minutos;
 - 20 questões do domínio 1, 17 do domínio 2, 15 do domínio 3 e 13 do domínio 4;
-- todas as 14 tarefas, com a distribuição explícita registrada no manifesto;
+- cobertura das 14 tarefas oficiais;
 - 49 questões `single`, 12 `multi-2` e 4 `multi-3`;
-- gabarito comentado separado;
-- relatório de resultado por domínio e tarefa.
+- 13 fundamentais, 29 situacionais e 23 integradas;
+- 10 básicas, 35 intermediárias e 20 avançadas;
+- gabarito comentado com análise individual de todas as alternativas;
+- relatório por domínio, tarefa e questão.
 
-Essa composição aproxima os pesos 30%/26%/24%/20% sem afirmar uma proporção
-oficial de formatos. A AWS publica os pesos dos domínios e informa apenas que o
-exame contém questões de múltipla escolha e múltiplas respostas.
-
-O contrato aceita quatro opções/uma resposta, cinco ou seis opções/duas
-respostas (`Choose TWO`) e seis opções/três respostas (`Select THREE`).
+Essa composição aproxima os pesos 30%/26%/24%/20% sem apresentar uma
+proporção de formatos como oficial. A AWS publica os pesos dos domínios e
+informa que o exame contém questões de múltipla escolha e múltiplas respostas.
 
 ## Ordem da fase final
 
-- **26/08 — `SIM-A`:** tentativa autoral privada agendada.
-- **28/08 — Practice Udemy:** tentativa da plataforma, mantida inédita até o
-  horário previsto; ela não é o `SIM-B`.
-- **31/08 — `SIM-C`:** tentativa autoral privada agendada e decisão de
-  prontidão.
-- **`SIM-B`:** tentativa autoral privada adicional, para depois da correção do
-  `SIM-C`, ou substituto somente se o practice exam da Udemy estiver
-  indisponível.
+- **26/08 — SIM-A:** primeira tentativa autoral agendada.
+- **28/08 — Practice Udemy:** tentativa da plataforma; ela não é o SIM-B.
+- **31/08 — SIM-C:** segunda tentativa autoral agendada e decisão de prontidão.
+- **SIM-B:** tentativa adicional depois da correção do SIM-C, ou substituto
+  somente se o practice exam da Udemy estiver indisponível.
 
-Não execute Practice Udemy e `SIM-B` no mesmo dia e não abra previamente
-questões ou gabaritos de nenhuma tentativa.
+Não execute Practice Udemy e SIM-B no mesmo dia.
 
-## Arquivos privados esperados
-
-O gerador lê:
+## Organização
 
 ```text
-04_Questoes_e_Revisoes/Simulados_Privados/Bancos/SIM-A.json
-04_Questoes_e_Revisoes/Simulados_Privados/Bancos/SIM-B.json
-04_Questoes_e_Revisoes/Simulados_Privados/Bancos/SIM-C.json
+Simulados/
+├── README.md
+├── manifesto_simulados.json
+├── Bancos/
+│   ├── SIM-A.json
+│   ├── SIM-B.json
+│   └── SIM-C.json
+├── SIM-A/{Questoes,Gabarito,Relatorio}.md
+├── SIM-B/{Questoes,Gabarito,Relatorio}.md
+└── SIM-C/{Questoes,Gabarito,Relatorio}.md
 ```
 
-E grava, para cada simulado:
+## Geração e validação
 
-```text
-SIM-X_Questoes.md
-SIM-X_Gabarito.md
-SIM-X_Relatorio.md
-```
-
-Use:
+Execute a partir da raiz:
 
 ```powershell
-python .\99_Ferramentas\scripts\gerar_simulados_privados.py
-python .\99_Ferramentas\scripts\gerar_simulados_privados.py --validate-only
+python .\99_Ferramentas\scripts\gerar_simulados.py
+python .\99_Ferramentas\scripts\gerar_simulados.py --validate-only
+python .\99_Ferramentas\scripts\validar_material_completo.py
 ```
 
-O segundo comando não renderiza novamente. Ambos verificam contagem, domínio,
-tarefa, formato, alternativas, respostas, análise de todos os distratores,
-fontes oficiais e repetição literal ou similaridade excessiva entre quaisquer
-questões dos três simulados.
-
-## Esquema mínimo de uma questão
-
-```json
-{
-  "id": "SIM-A-01",
-  "domain": 1,
-  "task": "1.1",
-  "format": "single",
-  "type": "situational",
-  "difficulty": "intermediate",
-  "instruction": "Choose ONE.",
-  "stem": "Scenario and requirements...",
-  "options": {"A": "...", "B": "...", "C": "...", "D": "..."},
-  "answers": ["B"],
-  "rationales": {"A": "...", "B": "...", "C": "...", "D": "..."},
-  "central_requirement": "...",
-  "decisive_words": "...",
-  "reusable_rule": "...",
-  "references": ["https://docs.aws.amazon.com/..."]
-}
-```
+Os validadores conferem contagens, domínios, tarefas, formatos, alternativas,
+respostas, análises, fontes oficiais, hashes e semelhança entre as 195
+questões. Também rejeitam concentração previsível das letras corretas,
+conjuntos repetitivos em múltiplas respostas e excesso de alternativas
+corretas identificáveis apenas por serem as mais longas.
 
 ## Practice exam da Udemy
 
-O practice exam reservado da Udemy não é copiado, extraído nem reproduzido. Ele
-continua inédito até 28/08. O `SIM-B` autoral é um recurso privado adicional e
-não substitui o direito autoral nem o conteúdo do practice exam da plataforma.
+O practice exam reservado da Udemy não foi copiado, extraído nem reproduzido.
+A publicação deste diretório abrange somente SIM-A, SIM-B e SIM-C, produzidos
+para este projeto a partir do escopo oficial.
 
 ## Referências oficiais
 

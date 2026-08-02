@@ -583,10 +583,10 @@ Entregas:
 Foco:
 
 - revisão dirigida pelo Caderno de Erros;
-- `SIM-A` autoral em 26/08 e `SIM-C` autoral em 31/08, ambos privados;
+- `SIM-A` autoral em 26/08 e `SIM-C` autoral em 31/08, ambos versionados;
 - Practice Udemy reservado para 28/08, sem exposição prévia;
-- `SIM-B` autoral privado somente como tentativa extra após o ciclo ou
-  substituto se o practice exam estiver indisponível;
+- `SIM-B` autoral versionado, mas reservado como tentativa extra após o ciclo
+  ou substituto se o practice exam estiver indisponível;
 - correção aprofundada;
 - retomada dos tópicos fracos;
 - decisão sobre prontidão para a prova.
@@ -805,7 +805,7 @@ estruturadas.
 4. definir o teto monetário mensal dos laboratórios;
 5. definir a data da prova;
 6. usar o desempenho real para ajustar o cronograma semanalmente;
-7. adicionar as questões e os resultados dos simulados na fase final.
+7. realizar os simulados já publicados e registrar os resultados na fase final.
 
 **Novo estado do documento:** produção de B01–B25 concluída; material pronto
 para execução e acompanhamento do desempenho real.
@@ -920,8 +920,9 @@ QuickSuite/Amazon Quick/Amazon Quick Sight foram revalidados em 01/08/2026.
 
 Um validador editorial passou sobre os 25 blocos, cobrindo estrutura, densidade,
 idiomas, distribuição de respostas, datas, referências oficiais, navegação,
-UTF-8 e links locais. Os simulados permanecem intencionalmente sem questões até
-o momento de execução, conforme a decisão do estudante.
+UTF-8 e links locais. Os três simulados autorais completos estão versionados;
+para preservar a tentativa, o estudante deve abrir somente `Questoes.md` e
+manter gabarito e banco JSON fechados até concluir o tempo.
 
 **Próximo passo:** começar pelo B01, registrar desempenho real e ajustar somente
 as lacunas demonstradas pelos quizzes, questões, revisões e simulados.

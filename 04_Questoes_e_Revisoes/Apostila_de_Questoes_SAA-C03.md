@@ -105,6 +105,6 @@ A preencher.
 | [B23](Blocos/B23_Questoes.md) | Redes avançadas e conectividade híbrida | 10 questões prontas |
 | [B24](Blocos/B24_Questoes.md) | Custos de rede, DR e migração | 10 questões prontas |
 | [B25](Blocos/B25_Questoes.md) | CloudFormation, operações, custos e Well-Architected | 10 questões prontas |
-| SIM-A | Simulado autoral de 65 questões | Não iniciado |
-| SIM-B | Simulado autoral de 65 questões | Não iniciado |
-| SIM-C | Simulado autoral de 65 questões | Não iniciado |
+| [SIM-A](Simulados/SIM-A/Questoes.md) | Simulado autoral de 65 questões | Pronto; tentativa não iniciada |
+| [SIM-B](Simulados/SIM-B/Questoes.md) | Simulado autoral de 65 questões | Pronto; tentativa não iniciada |
+| [SIM-C](Simulados/SIM-C/Questoes.md) | Simulado autoral de 65 questões | Pronto; tentativa não iniciada |

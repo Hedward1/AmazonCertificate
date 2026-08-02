@@ -1,9 +1,19 @@
 {
   "schema_version": 1,
-  "visibility": "private-local",
+  "visibility": "public-versioned",
   "validation_date": "2026-08-01",
-  "status": "validated-private",
-  "policy": "Question banks, answer keys, and reports are local and gitignored; only this manifest, the generator, hashes, and validation rules are public.",
+  "status": "validated-versioned",
+  "policy": "Authorial question banks, question booklets, answer keys, and result reports are versioned. Students should avoid opening answer keys and structured banks before each timed attempt. The Udemy practice exam is not copied or reproduced.",
+  "answer_key_quality_controls": {
+    "single_position_spread_max": 1,
+    "single_unique_longest_ratio_max": 0.55,
+    "multi_2_same_set_max": 2,
+    "multi_3_sets_must_be_unique": true,
+    "multi_2_common_letter_frequency_min": 4,
+    "multi_3_common_letter_frequency_min": 2,
+    "multi_answer_letter_frequency_max": 8,
+    "blind_modal_score_max": 16
+  },
   "official_exam_guide": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html",
   "udemy_practice_exam": {
     "copied": false,
@@ -69,13 +79,13 @@
         "intermediate": 35,
         "advanced": 20
       },
-      "source": "04_Questoes_e_Revisoes/Simulados_Privados/Bancos/SIM-A.json",
+      "source": "04_Questoes_e_Revisoes/Simulados/Bancos/SIM-A.json",
       "outputs": [
-        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-A_Questoes.md",
-        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-A_Gabarito.md",
-        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-A_Relatorio.md"
+        "04_Questoes_e_Revisoes/Simulados/SIM-A/Questoes.md",
+        "04_Questoes_e_Revisoes/Simulados/SIM-A/Gabarito.md",
+        "04_Questoes_e_Revisoes/Simulados/SIM-A/Relatorio.md"
       ],
-      "source_sha256": "c220921a1bd2d97c0a8ed262c8172317bd11014df0cc1214f620b778f3c5d12c",
+      "source_sha256": "acd809960c5bc6afdb604c68bf929856f5affc08b7992c5ec97e2a0c12dfae89",
       "validated": true
     },
     {
@@ -120,13 +130,13 @@
         "intermediate": 35,
         "advanced": 20
       },
-      "source": "04_Questoes_e_Revisoes/Simulados_Privados/Bancos/SIM-B.json",
+      "source": "04_Questoes_e_Revisoes/Simulados/Bancos/SIM-B.json",
       "outputs": [
-        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-B_Questoes.md",
-        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-B_Gabarito.md",
-        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-B_Relatorio.md"
+        "04_Questoes_e_Revisoes/Simulados/SIM-B/Questoes.md",
+        "04_Questoes_e_Revisoes/Simulados/SIM-B/Gabarito.md",
+        "04_Questoes_e_Revisoes/Simulados/SIM-B/Relatorio.md"
       ],
-      "source_sha256": "0e82598734a8b8279c6f2d871815e29f5634777d92a1f523d20ff2790a6fa9bd",
+      "source_sha256": "e4f687666a1642db5e32258a3d967e22c3f43570e742cfecfc128c10fe7bbbea",
       "validated": true
     },
     {
@@ -171,13 +181,13 @@
         "intermediate": 35,
         "advanced": 20
       },
-      "source": "04_Questoes_e_Revisoes/Simulados_Privados/Bancos/SIM-C.json",
+      "source": "04_Questoes_e_Revisoes/Simulados/Bancos/SIM-C.json",
       "outputs": [
-        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-C_Questoes.md",
-        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-C_Gabarito.md",
-        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-C_Relatorio.md"
+        "04_Questoes_e_Revisoes/Simulados/SIM-C/Questoes.md",
+        "04_Questoes_e_Revisoes/Simulados/SIM-C/Gabarito.md",
+        "04_Questoes_e_Revisoes/Simulados/SIM-C/Relatorio.md"
       ],
-      "source_sha256": "cc53d92e6bde49e9932137297879178c6579c5ff1b84c701cf56f69093ffd688",
+      "source_sha256": "41549dbc2bff9b76d92e14f7bed323368ca14f2e0c477dffdc9565f5801b254d",
       "validated": true
     }
   ]

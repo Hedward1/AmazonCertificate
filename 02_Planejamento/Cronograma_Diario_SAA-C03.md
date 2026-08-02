@@ -532,8 +532,9 @@ Se D+2 cair no domingo, a revisão passa para a segunda-feira seguinte. Isso oco
 - **SIM — 180 min:** 10 min de recuperação D+7 de B24; 130 min para o practice exam de 65 questões da seção 32 da Udemy, em inglês e sem consulta; 40 min de triagem.
 - **Revisões:** D+7 de B24.
 - **Saída do dia:** comparar nota, tempo e distribuição de erros com o SIM A.
-  O banco privado `SIM-B` autoral continua fechado e serve como tentativa extra
-  após o ciclo ou como substituto se o practice exam estiver indisponível.
+  O `SIM-B` autoral está versionado e serve como tentativa extra após o ciclo
+  ou como substituto se o practice exam estiver indisponível. Não abra seu
+  caderno, gabarito ou JSON antes de decidir usá-lo.
 
 #### 29/08 — sábado
 
