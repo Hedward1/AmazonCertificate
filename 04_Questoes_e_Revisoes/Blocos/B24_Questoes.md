@@ -2,24 +2,24 @@
 
 **Quantidade:** 10 questões autorais<br>
 **Idioma:** 10 em inglês<br>
-**Regra:** selecione uma resposta<br>
+**Regra:** selecione a quantidade indicada em cada questão<br>
 **Tempo sugerido:** 18 minutos<br>
 **Gabarito:** [arquivo separado](B24_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B24-01 | 2.2 | RTO and RPO | Situacional | Basic | Inglês |
-| B24-02 | 2.2 | Backup and restore | Situacional | Intermediate | Inglês |
-| B24-03 | 2.2 | Warm standby | Situacional | Intermediate | Inglês |
-| B24-04 | 2.2 | Elastic Disaster Recovery | Situacional | Basic | Inglês |
-| B24-05 | 3.5 | Application Migration Service | Situacional | Basic | Inglês |
-| B24-06 | 3.5 | DMS full load and CDC | Situacional | Intermediate | Inglês |
-| B24-07 | 2.2 | AWS Backup | Situacional | Intermediate | Inglês |
-| B24-08 | 3.5 | Large data transfer | Situacional | Intermediate | Inglês |
-| B24-09 | 4.4 | Network cost optimization | Situacional | Intermediate | Inglês |
-| B24-10 | 2.2 | EC2 high availability | Situacional | Advanced | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B24-01 | 2.2 | RTO and RPO | single | fundamental | básica | Inglês |
+| B24-02 | 2.2 | Backup and restore | single | situacional | intermediária | Inglês |
+| B24-03 | 2.2 | Warm standby | single | situacional | intermediária | Inglês |
+| B24-04 | 2.2 | Elastic Disaster Recovery | multi-2 | situacional | avançada | Inglês |
+| B24-05 | 3.5 | Application Migration Service | single | situacional | intermediária | Inglês |
+| B24-06 | 3.5 | DMS full load and CDC | single | integrada | avançada | Inglês |
+| B24-07 | 2.2 | AWS Backup | single | integrada | avançada | Inglês |
+| B24-08 | 3.5 | Large data transfer | single | integrada | avançada | Inglês |
+| B24-09 | 4.4 | Network cost optimization | multi-3 | integrada | avançada | Inglês |
+| B24-10 | 2.2 | EC2 high availability | single | integrada | avançada | Inglês |
 
 ## Questões
 
@@ -36,8 +36,6 @@
 - C. Both values are RTO.
 - D. Both values are RPO.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B24-02
 
 **Context:** A noncritical application accepts an RTO of many hours and an RPO of several hours.
@@ -50,8 +48,6 @@
 - B. Warm standby.
 - C. Backup and restore with tested infrastructure automation.
 - D. Full-size hot standby.
-
-**Before moving on:** record decisive words and confidence.
 
 ### B24-03
 
@@ -66,22 +62,17 @@
 - C. Backup and restore.
 - D. Tape archive only.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B24-04
 
-**Context:** A company needs continuous block-level replication of servers to a low-cost staging area and orchestrated recovery instances.
+**Context:** A company needs continuous block-level replication of servers to a low-cost staging area, orchestrated recovery instances, and non-disruptive recovery drills with point-in-time selection.
 
-**Requirement:** The primary goal is server disaster recovery.
+**Requirement:** Implement ongoing server disaster recovery rather than a one-time migration. **Choose TWO.**
 
-**Question:** Which service should be used?
-
-- A. AWS Database Migration Service.
-- B. AWS Application Migration Service only for one-time cutover.
-- C. AWS Elastic Disaster Recovery.
-- D. Amazon Quick Sight.
-
-**Before moving on:** record decisive words and confidence.
+- A. Use AWS Elastic Disaster Recovery for continuous replication and recovery orchestration.
+- B. Use AWS Database Migration Service as the operating-system block replicator.
+- C. Regularly launch drill instances through the service and validate recovery without affecting the source.
+- D. Use AWS Application Migration Service only and treat cutover as the recurring DR test mechanism.
+- E. Use Amazon Quick Sight to create recovery instances.
 
 ### B24-05
 
@@ -96,67 +87,74 @@
 - C. Amazon Macie.
 - D. AWS WAF.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B24-06
 
-**Context:** A database must move to AWS while the source continues processing transactions.
+**Context:** A self-managed commercial database must move to an AWS-managed
+open-source engine. The source will continue taking writes for several days;
+the team needs an initial copy, continuous delta replication, schema/code
+assessment for the heterogeneous change, validation, and a short final cutover.
 
-**Requirement:** The team wants an initial copy followed by ongoing changes until a short cutover.
+**Requirement:** Separate schema conversion work from low-downtime data
+replication.
 
-**Question:** Which AWS DMS migration mode should be used?
+**Question:** Which migration plan best meets the requirement?
 
-- A. CDC only with no initial state.
-- B. Full load only and ignore later writes.
-- C. Full load plus change data capture.
-- D. AWS MGN block replication.
-
-**Before moving on:** record decisive words and confidence.
+- A. Start CDC with no baseline copy or schema preparation, then create missing tables during cutover.
+- B. Run a one-time full load, ignore later source writes, and use DNS TTL as the reconciliation mechanism.
+- C. Assess/convert the heterogeneous schema as required, then use AWS DMS full load plus CDC, monitor validation/lag, quiesce writes, and cut over after the delta closes.
+- D. Use AWS Application Migration Service block replication as logical row-level database conversion.
 
 ### B24-07
 
-**Context:** A company needs centrally managed backup schedules, retention, vaults, and cross-account copies for supported resources.
+**Context:** An organization needs centrally governed backup schedules and
+retention for supported resources in many accounts. Recovery points must be
+copied to a security account, protected against premature deletion, and
+periodically restore-tested. The design is for recoverability, not server
+migration.
 
-**Requirement:** The service must govern backups rather than migrate servers.
+**Requirement:** Minimize account-by-account scheduling code while separating
+backup policy, vault protection, copies, and restore verification.
 
-**Question:** Which service should be selected?
+**Question:** Which service should anchor the design?
 
-- A. AWS Backup.
-- B. AWS DMS.
-- C. AWS Direct Connect.
-- D. Amazon EventBridge only.
-
-**Before moving on:** record decisive words and confidence.
+- A. AWS Backup with organization backup policies/plans, cross-account copies
+  to vaults in the security account, AWS Backup Vault Lock in compliance mode
+  on the destination vaults with a reviewed cooling-off period, and scheduled
+  restore testing for supported resources.
+- B. Use EventBridge and Lambda in every account to schedule native snapshots, then maintain custom retention, copy, immutability, inventory, and restore-test code.
+- C. Use Amazon Data Lifecycle Manager for every resource type and assume its narrower snapshot/AMI scope supplies organization-wide cross-service backup governance.
+- D. Use AWS Backup plans in each workload account but keep every recovery point and KMS dependency inside the same account, with no protected cross-account copy or restore testing.
 
 ### B24-08
 
-**Context:** An existing AWS Snowball Edge customer must move petabytes to AWS before commercial support ends on December 31, 2026, but its network cannot finish the transfer within the deadline.
+**Context:** An existing Snowball Edge customer remains eligible to order a
+device and must seed petabytes into S3 before commercial support ends on
+December 31, 2026. Its WAN cannot finish the baseline in time, but a smaller
+delta must continue during shipping and be synchronized before cutover.
 
-**Requirement:** The account is still eligible to order the rugged AWS physical appliance during the remaining support window.
+**Requirement:** Use the still-supported physical path only for this qualified
+legacy baseline and include an online delta/cutover plan rather than treating
+the appliance as continuous replication.
 
-**Question:** Which service fits this explicitly qualified legacy scenario?
+**Question:** Which plan fits?
 
-- A. Amazon CloudFront.
-- B. AWS Snowball Edge.
-- C. AWS WAF.
-- D. AWS IAM Identity Center.
-
-**Before moving on:** record decisive words and confidence.
+- A. Use Direct Connect and DataSync for the entire baseline, despite the stated WAN/deadline constraint, and skip offline transfer.
+- B. Order Snowball Edge while the existing account remains eligible, import the baseline, use an appropriate online synchronization method such as DataSync for the changing delta, validate, and cut over before the support deadline.
+- C. Use Data Transfer Terminal without confirming Enterprise eligibility or a usable location, and assume AWS supplies/ships the customer's transfer equipment like Snowball.
+- D. Ship only the Snowball Edge baseline and freeze no writes, run no online delta synchronization, and cut over without validating the imported target.
 
 ### B24-09
 
-**Context:** Private instances send large amounts of data to Amazon S3 through a NAT Gateway.
+**Context:** Private instances in three Availability Zones send high-volume S3 traffic through one NAT Gateway, and customers download large static objects directly from the regional origin.
 
-**Requirement:** The company wants to reduce NAT data processing cost while keeping S3 access private.
+**Requirement:** Reduce NAT processing, avoid cross-AZ NAT dependency, and reduce repeated origin transfer while preserving resilience. **Select THREE.**
 
-**Question:** What should the company do?
-
-- A. Create an S3 gateway endpoint and update the private route tables.
-- B. Add more public IPv4 addresses.
-- C. Send traffic through a second NAT Gateway in another Region.
-- D. Create a CloudHSM cluster.
-
-**Before moving on:** record decisive words and confidence.
+- A. Assign public IPv4 addresses to all private instances.
+- B. Create an S3 gateway endpoint and associate it with the private route tables.
+- C. Route every AZ through a single NAT Gateway in another AZ to consolidate hourly charges.
+- D. Serve cacheable static objects through Amazon CloudFront.
+- E. Replace S3 with EBS volumes attached to the web fleet.
+- F. For remaining internet-bound traffic, deploy NAT Gateways per AZ and route each subnet to its same-AZ NAT Gateway.
 
 ### B24-10
 
@@ -170,8 +168,6 @@
 - B. Place instances in a cluster placement group in one AZ.
 - C. Deploy an ALB and Auto Scaling group across multiple AZs and externalize session state.
 - D. Create a single NAT instance.
-
-**Before moving on:** record decisive words and confidence.
 
 ## Registro antes de corrigir
 

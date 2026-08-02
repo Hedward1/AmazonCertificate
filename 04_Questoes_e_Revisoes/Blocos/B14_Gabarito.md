@@ -9,12 +9,12 @@ Abra somente depois das [questões B14](B14_Questoes.md).
 | B14-01 | A | 2.1 |
 | B14-02 | D | 2.1 |
 | B14-03 | B | 2.1 |
-| B14-04 | C | 2.1 |
+| B14-04 | C,E | 2.1 |
 | B14-05 | A | 2.1 |
 | B14-06 | B | 2.1 |
-| B14-07 | D | 2.1 |
+| B14-07 | B,D | 2.1 |
 | B14-08 | C | 2.1 |
-| B14-09 | B | 3.2 |
+| B14-09 | A,C,E | 3.2 |
 | B14-10 | A | 2.1 |
 
 ## B14-01 — Resposta A
@@ -56,18 +56,18 @@ Abra somente depois das [questões B14](B14_Questoes.md).
 - **Reference:** [Visibility timeout](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html).
 - **Common trap:** solving a timeout problem by raising retry count.
 
-## B14-04 — Answer C
+## B14-04 — Answer C,E
 
-- **Central requirement:** isolate repeatedly failing messages for investigation.
-- **Decisive words:** *malformed*, *failed many times*, *investigation*.
-- **A:** unlimited retries waste capacity and hide the problem.
-- **B:** email alone is neither a durable redrive workflow nor the requested isolation.
-- **C:** correct; a DLQ, alarm, and controlled redrive create an operable failure path.
-- **D:** delete-at-receive can permanently lose recoverable work.
-- **Reusable rule:** persistent processing failure → DLQ + alarm + diagnosed redrive.
+- **Central requirement:** isolate poison messages without losing evidence and make failures operationally visible.
+- **Decisive words:** *valid messages keep flowing*, *available for diagnosis*, *operators know*.
+- **A:** incorrect; zero visibility causes immediate concurrent redelivery.
+- **B:** incorrect; deleting on first failure loses the durable diagnostic payload.
+- **C:** correct; the source redrive policy moves repeatedly failing messages after the chosen receive threshold.
+- **D:** incorrect; indefinite retries consume capacity and never isolate poison messages.
+- **E:** correct; sufficient DLQ retention, an alarm, and controlled redrive provide evidence and an operable recovery path.
+- **Reusable rule:** poison-message handling requires isolation plus monitoring and diagnosed redrive; a DLQ alone is incomplete.
 - **Lessons:** 185.
-- **Reference:** [SQS DLQs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html).
-- **Common trap:** creating a DLQ without monitoring it.
+- **Reference:** [Amazon SQS dead-letter queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html).
 
 ## B14-05 — Answer A
 
@@ -95,54 +95,55 @@ Abra somente depois das [questões B14](B14_Questoes.md).
 - **Reference:** [SNS to SQS fan-out](https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html).
 - **Common trap:** expecting three workers on one queue to receive three copies.
 
-## B14-07 — Answer D
+## B14-07 — Answer B,D
 
-- **Central requirement:** restrict an SQS subscription to one SNS topic.
-- **Decisive words:** *reject any other topic*, *queue*.
-- **A:** CORS applies to browser cross-origin behavior.
-- **B:** an S3 policy cannot authorize an SQS queue.
-- **C:** encryption does not repair a public send policy.
-- **D:** correct; resource policy plus `aws:SourceArn` scopes `SendMessage`.
-- **Reusable rule:** service-to-service resource policy → allow action and constrain source.
+- **Central requirement:** authorize only one SNS topic and permit delivery to a KMS-encrypted SQS queue.
+- **Decisive words:** *reject every other publisher*, *customer managed KMS key*, *SNS deliver*.
+- **A:** incorrect; CORS controls browser behavior, not service-to-service authorization.
+- **B:** correct; the queue policy grants `SendMessage` to SNS and `aws:SourceArn` binds the grant to the expected topic.
+- **C:** incorrect; encryption does not compensate for public write authorization.
+- **D:** correct; the customer managed key policy must permit the SNS service to perform the data-key operations required for encrypted delivery.
+- **E:** incorrect; a queue resource policy, not an IAM user attached to a URL, controls the SNS service principal.
+- **Reusable rule:** encrypted SNS-to-SQS delivery needs both destination authorization and usable KMS key permissions.
 - **Lessons:** 189–190.
-- **Reference:** [Subscribe SQS to SNS](https://docs.aws.amazon.com/sns/latest/dg/subscribe-sqs-queue-to-sns-topic.html).
-- **Common trap:** allowing the SNS service principal without a source condition.
+- **Reference:** [Fanout to encrypted SQS queues](https://docs.aws.amazon.com/sns/latest/dg/sns-enable-encryption-for-topic-sqs-queue-subscriptions.html).
 
 ## B14-08 — Answer C
 
-- **Central requirement:** identify the SQS acknowledgement lifecycle.
-- **Decisive words:** *ReceiveMessage*, *correct*.
-- **A:** receive does not permanently remove a message.
-- **B:** receive does not move data to SNS.
-- **C:** correct; receive hides temporarily and delete acknowledges completion.
-- **D:** the application must still design idempotent effects.
-- **Reusable rule:** receive → invisible; success → delete; no delete → redelivery.
+- **Central requirement:** preserve at-least-once delivery without repeating the external payment effect.
+- **Decisive words:** *crash before acknowledging*, *avoid lost orders*, *not charge twice*.
+- **A:** deleting before the durable business commit can lose the order if processing fails afterward.
+- **B:** adequate visibility reduces premature parallel work but cannot cover the crash window after a successful charge; timeout alone is not idempotency.
+- **C:** correct; visibility protects in-flight work, an idempotency key protects the charge, and delete acknowledges only a completed transaction.
+- **D:** FIFO producer deduplication helps repeated sends, but a consumer can still be redelivered after charging and before delete; the payment effect remains unsafe.
+- **Reusable rule:** for at-least-once messaging, combine delete-after-commit, adequate visibility, and idempotent business effects.
 - **Lessons:** 183–185.
 - **Reference:** [Visibility timeout](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html).
-- **Common trap:** confusing receipt with acknowledgement.
+- **Common trap:** treating queue acknowledgement as a distributed transaction with the payment system.
 
-## B14-09 — Answer B
+## B14-09 — Answer A,C,E
 
-- **Central requirement:** scale workers by the actual queue workload.
-- **Decisive words:** *low CPU*, *age and backlog increase*.
-- **A:** bucket size does not represent worker demand.
-- **B:** correct; backlog per worker measures capacity and age protects the SLA.
-- **C:** IAM user count is unrelated.
-- **D:** snapshot count is unrelated.
-- **Reusable rule:** asynchronous worker scaling → backlog/capacity and oldest age.
-- **Lessons:** 188.
-- **Reference:** [SQS backlog per instance](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html).
-- **Common trap:** using CPU for an I/O-bound worker pool.
+- **Central requirement:** scale on queue pressure, protect message-age SLA, and make long at-least-once processing safe.
+- **Decisive words:** *CPU remains low*, *backlog and age*, *more than once*, *longer than visibility*.
+- **A:** correct; backlog per in-service worker expresses the capacity each worker must absorb.
+- **B:** incorrect; CPU is poorly correlated with this I/O-bound queue workload.
+- **C:** correct; oldest-message age exposes latency/SLA risk that backlog alone can hide.
+- **D:** incorrect; one FIFO group serializes the workload and limits parallelism.
+- **E:** correct; visibility extension prevents premature parallel work, while idempotency protects against unavoidable redelivery.
+- **F:** incorrect; delete-before-success can permanently lose work after a worker failure.
+- **Reusable rule:** asynchronous scaling uses backlog/capacity and age; delivery correctness still needs visibility management and idempotency.
+- **Lessons:** 183–188.
+- **Reference:** [Scaling based on Amazon SQS](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html).
 
 ## B14-10 — Answer A
 
-- **Central requirement:** increase parallelism while retaining per-customer order.
-- **Decisive words:** *one group*, *order only per customer*.
-- **A:** correct; each customer becomes an ordered lane processed alongside other groups.
-- **B:** silently moving to Standard violates the ordering requirement.
-- **C:** visibility does not create group parallelism.
-- **D:** self-subscription is invalid and would create a loop conceptually.
-- **Reusable rule:** choose the smallest entity requiring order as message group.
+- **Central requirement:** preserve per-customer order, scale across customers, and suppress retried producer commands.
+- **Decisive words:** *per customer*, *parallel*, *retried producer*, *second order*.
+- **A:** correct; customer-scoped groups create parallel ordered lanes, while stable deduplication and consumer idempotency protect the business effect.
+- **B:** post-processing sort cannot undo out-of-order or duplicated payment execution on a Standard queue.
+- **C:** high-throughput FIFO improves supported throughput dimensions but cannot create parallel processing inside one ordered message group.
+- **D:** per-customer queues can isolate/order work, but dynamic queue, policy, monitoring, quota, and cleanup management is unnecessary compared with message groups.
+- **Reusable rule:** partition FIFO ordering by the smallest required business key and retain end-to-end idempotency.
 - **Lessons:** 187.
 - **Reference:** [FIFO message groups](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html).
 - **Common trap:** one group ID for the whole workload.

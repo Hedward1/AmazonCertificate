@@ -2,57 +2,24 @@
 
 **Quantidade:** 10 questões inéditas<br>
 **Idioma:** 6 em português e 4 em inglês<br>
-**Regra:** uma resposta por questão<br>
+**Formato:** questões single-answer e multi-answer; siga a instrução de cada questão<br>
 **Tempo sugerido:** 15 minutos<br>
 **Gabarito:** [arquivo separado](B05_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B05-01 | 3.1 | Instance store | Situacional | Básica | Português |
-| B05-02 | 3.1 | EBS volume types | Situacional | Intermediária | Português |
-| B05-03 | 3.1 | EBS Multi-Attach | Situacional | Avançada | Português |
-| B05-04 | 1.3 | EBS encryption | Situacional | Intermediária | Português |
-| B05-05 | 3.1 | EFS Regional | Situacional | Básica | Português |
-| B05-06 | 2.2 | HA e escalabilidade | Fundamental | Intermediária | Português |
-| B05-07 | 3.1 | EBS scope | Situacional | Básica | Inglês |
-| B05-08 | 3.1 | EFS throughput | Situacional | Intermediária | Inglês |
-| B05-09 | 4.1 | Storage cost | Situacional | Intermediária | Inglês |
-| B05-10 | 3.4 | ELB fundamentals | Fundamental | Básica | Inglês |
-
-## Como resolver este bloco
-
-Para cada questão:
-
-1. identifique se a interface pedida é bloco, arquivo ou objeto;
-2. marque o domínio de falha exigido: host, AZ ou Region;
-3. verifique se o dado é persistente ou reconstruível;
-4. procure compartilhamento simultâneo e semântica de escrita;
-5. separe IOPS, throughput e latência;
-6. elimine alternativas que resolvem rede quando a pergunta é storage;
-7. registre a palavra decisiva antes de selecionar a resposta.
-
-Não use “mais rápido” como justificativa isolada. A prova descreve um padrão de
-I/O e uma restrição operacional. Também não presuma que Multi-Attach adiciona
-coordenação de filesystem ou que um snapshot possa ser montado diretamente.
-
-## Cobertura intencional
-
-- B05-01 testa efemeridade aceita.
-- B05-02 testa escolha de volume por IOPS.
-- B05-03 testa responsabilidade de concorrência.
-- B05-04 testa controle de chave.
-- B05-05 testa compartilhamento e falha de AZ.
-- B05-06 separa capacidade de disponibilidade.
-- B05-07 testa a fronteira zonal do EBS.
-- B05-08 usa a recomendação atual de throughput EFS.
-- B05-09 testa cleanup e custo residual.
-- B05-10 prepara o vocabulário de ELB para o B06.
-
-As questões em inglês mantêm os nomes usados na prova. Não traduza mentalmente
-`throughput`, `scratch`, `listener` ou `Availability Zone` durante a primeira
-leitura; associe cada termo diretamente à regra arquitetural.
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B05-01 | 3.1 | Instance store | single | fundamental | básica | Português |
+| B05-02 | 3.1 | EBS volume types | single | fundamental | básica | Português |
+| B05-03 | 3.1 | EBS Multi-Attach | multi-2 | fundamental | intermediária | Português |
+| B05-04 | 1.3 | EBS encryption | single | situacional | intermediária | Português |
+| B05-05 | 3.1 | EFS Regional | single | situacional | intermediária | Português |
+| B05-06 | 2.2 | HA e escalabilidade | single | situacional | intermediária | Português |
+| B05-07 | 3.1 | EBS scope | single | situacional | intermediária | Inglês |
+| B05-08 | 3.1 | EFS throughput | multi-2 | situacional | intermediária | Inglês |
+| B05-09 | 4.1 | EBS sizing and cost | single | integrada | avançada | Inglês |
+| B05-10 | 3.4 | ELB fundamentals | single | situacional | intermediária | Inglês |
 
 ## Questões
 
@@ -71,12 +38,19 @@ Um banco em EC2 exige IOPS provisionadas e latência consistente para transaçõ
 - D. Instance store sem réplica.
 
 ### B05-03
-Duas instâncias na mesma AZ precisam gravar simultaneamente em um volume. A equipe propõe EBS Multi-Attach com um filesystem comum que desconhece acesso concorrente. Qual avaliação está correta?<br>
-- A. É seguro porque o EBS serializa qualquer filesystem.
-- B. Multi-Attach funciona também entre AZs.
-- C. A aplicação/filesystem precisa coordenar I/O; a proposta pode corromper
-  dados.
-- D. Multi-Attach converte bloco em NFS.
+Duas instâncias precisam gravar simultaneamente no mesmo volume EBS. Quais
+afirmações descrevem corretamente uma arquitetura com EBS Multi-Attach?<br>
+
+**Choose TWO.**
+
+- A. O volume e todas as instâncias anexadas devem permanecer na mesma
+  Availability Zone.
+- B. Multi-Attach permite anexar o mesmo volume simultaneamente a instâncias em
+  Availability Zones diferentes.
+- C. A aplicação ou o filesystem cluster-aware deve coordenar o I/O concorrente
+  para evitar corrupção.
+- D. Multi-Attach converte o volume de block storage em um compartilhamento NFS.
+- E. O EBS serializa automaticamente as gravações de qualquer filesystem comum.
 
 ### B05-04
 Uma empresa precisa controlar e auditar quem pode usar a chave que protege volumes EBS. Qual solução atende melhor?<br>
@@ -101,32 +75,75 @@ Qual afirmação distingue corretamente alta disponibilidade de escalabilidade h
 - D. Escala horizontal elimina a necessidade de health checks.
 
 ### B05-07
-An EBS volume is in `us-east-1a`, and an EC2 recovery instance is in `us-east-1b`. What should an architect do?<br>
-- A. Attach the existing volume across AZs.
-- B. Create a snapshot, restore a new volume in `us-east-1b`, and attach it.
-- C. Convert the volume to instance store.
-- D. Associate the volume with an Elastic IP.
+A latency-sensitive database runs on one EC2 instance and requires persistent
+block storage with sustained high IOPS, sub-millisecond average latency, and
+independent provisioning of capacity and performance. The instance family can
+use the Nitro System and must support the selected volume's requested
+performance. The data must survive an instance stop or replacement, and the
+application does not require a shared POSIX file system.<br>
+
+Which storage design is the best fit?<br>
+
+- A. Store the database only on instance store and rely on an Elastic IP for
+  durability.
+- B. Attach an Amazon EBS `io2 Block Express` volume to a compatible Nitro-based
+  EC2 instance, provision capacity and IOPS for the workload, and protect the
+  volume with the required snapshot or replication policy.
+- C. Convert an Amazon EFS file system into an EC2 root block device.
+- D. Put the database files in an S3 Glacier Flexible Retrieval vault and mount
+  the vault as a low-latency disk.
 
 ### B05-08
-An EFS workload is unpredictable and highly spiky. The team does not know the throughput requirement in advance. Which current throughput mode is the best starting point?<br>
-- A. Elastic throughput.
-- B. Provisioned IOPS for EBS.
-- C. Max I/O with Bursting is always mandatory.
-- D. S3 Transfer Acceleration.
+An EFS workload is unpredictable and highly spiky. The team does not know the
+throughput requirement in advance. Which statements support the best starting
+configuration?<br>
+
+**Choose TWO.**
+
+- A. Select Elastic throughput so throughput scales automatically with workload
+  activity.
+- B. Configure Provisioned IOPS, which is the EFS throughput mode for unknown
+  demand.
+- C. Select Max I/O because it is mandatory whenever Elastic throughput is
+  enabled.
+- D. Elastic throughput is designed for workloads whose throughput needs are
+  difficult to forecast or vary significantly.
+- E. Enable S3 Transfer Acceleration to scale EFS NFS throughput.
 
 ### B05-09
-A development instance has been terminated, but the monthly bill still includes block storage. Which resource is the most likely cause?<br>
-- A. A stopped listener rule.
-- B. A released private IPv4 address.
-- C. A deleted instance-store device.
-- D. An available EBS data volume or retained snapshot.
+A database currently uses `1,200 GiB` on an EBS volume. Measurements show
+growth of `80 GiB` per month, and the team will review capacity again in six
+months. The approved headroom is 20% above projected usage. The workload needs
+`8,000` sustained IOPS and `400 MiB/s`; single-digit millisecond latency is
+acceptable, and the EC2 instance supports these EBS requirements. The company
+wants the lowest-cost design that meets capacity and performance.<br>
+
+Which sizing decision is the best fit?<br>
+
+- A. Keep `1,200 GiB` until it is full and use EBS snapshots as writable
+  overflow capacity during the next six months.
+- B. Provision `8,000 GiB` because a `gp3` volume requires one GiB of capacity
+  for every provisioned IOPS.
+- C. Provision `2,100 GiB` of `io2 Block Express` at its maximum IOPS, although
+  the workload does not require sub-millisecond latency or its added durability.
+- D. Project `1,680 GiB`, apply headroom to obtain `2,016 GiB`, round up to
+  approximately `2,100 GiB` of `gp3`, and provision `8,000 IOPS` and
+  `400 MiB/s` independently while validating instance limits and regional
+  pricing.
 
 ### B05-10
-Which Elastic Load Balancing component defines the protocol and port on which a load balancer accepts client connections?<br>
-- A. Snapshot.
-- B. Listener.
-- C. Mount target.
-- D. KMS grant.
+An Application Load Balancer must accept public HTTPS on port 443 with an ACM
+certificate. Host-based rules then forward requests to separate target groups,
+whose targets listen on internal application ports and have independent health
+checks.<br>
+
+Which component owns the front-end protocol, port, certificate, and evaluation
+of those forwarding rules?<br>
+
+- A. An EBS snapshot.
+- B. The load balancer listener.
+- C. An EFS mount target.
+- D. A KMS grant.
 
 ## Registro antes de corrigir
 

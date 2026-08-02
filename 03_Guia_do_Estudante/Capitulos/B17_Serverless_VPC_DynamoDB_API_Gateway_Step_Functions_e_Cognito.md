@@ -165,6 +165,28 @@ usage plan. Escolha HTTP API. Se o requisito pedir API keys/usage plans, caching
 gerenciado ou certos recursos REST avançados, escolha REST API. WebSocket só é
 necessário para comunicação bidirecional persistente.
 
+### Cápsula de decisão — AWS AppSync
+
+- **Problema resolvido:** expor uma API GraphQL serverless que reúne uma ou mais
+  fontes de dados e entrega atualizações em tempo real a clientes web/mobile.
+- **Relação SAA-C03:** tarefas 2.1 e 3.2 — arquitetura desacoplada e compute/API
+  escalável sem administrar servidores.
+- **Quando escolher:** clientes precisam selecionar exatamente os campos, o
+  schema GraphQL é parte do contrato, resolvers acessam fontes como DynamoDB ou
+  Lambda e subscriptions/PubSub evitam operar WebSockets.
+- **Quando não escolher:** uma API HTTP/REST simples já atende, o cliente exige
+  semântica REST/usage plans específicos, ou só é necessário buffer assíncrono.
+- **Serviço semelhante:** API Gateway; ele é a escolha natural para APIs
+  HTTP/REST/WebSocket, enquanto AppSync é orientado a GraphQL e Pub/Sub.
+- **Armadilha:** AppSync não é banco de dados nem autenticação automática;
+  schema, resolvers, autorização por campo/fonte e custos de requests, mensagens
+  e cache continuam sendo decisões explícitas.
+- **Questão situacional extra (fora do banco de 250):** um app mobile consulta DynamoDB e Lambda por um
+  único schema e precisa receber atualizações em tempo real sem manter servidores
+  WebSocket. **Resposta curta:** AppSync com GraphQL, resolvers e subscriptions;
+  escolha a autorização apropriada.
+- **Referência oficial:** [What is AWS AppSync?](https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html)
+
 ## 7. Step Functions
 
 Step Functions orquestra workflows como state machines. States incluem Task,
@@ -207,6 +229,7 @@ access keys ao mobile app.
 | key-value por access pattern | DynamoDB |
 | evento de mudança de item | DynamoDB Streams |
 | endpoint HTTP gerenciado | API Gateway HTTP/REST |
+| GraphQL com múltiplas fontes/real-time | AWS AppSync |
 | workflow com retry/branch | Step Functions |
 | autenticar usuários | Cognito User Pool |
 | credenciais AWS temporárias | Cognito Identity Pool |
@@ -252,5 +275,6 @@ workflow com Retry/Catch; Cognito; custo e cleanup.
 - [DynamoDB core components](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html)
 - [DynamoDB read consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html)
 - [Escolher API Gateway HTTP, REST ou WebSocket](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html)
+- [AWS AppSync](https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html)
 - [Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html)
 - [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html)

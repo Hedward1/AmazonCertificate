@@ -1,24 +1,24 @@
 # B14 — Questões
 
-**Formato:** 10 questões autorais; uma resposta correta<br>
+**Formato:** questões de resposta única e múltipla, conforme indicado<br>
 **Idioma:** 2 em português e 8 em inglês<br>
 **Aulas:** 182–190<br>
 **Tarefa principal:** SAA-C03 2.1
 
 ## Metadados das questões
 
-| ID | Domínio | Tarefa | Aulas | Idioma |
-|---|---:|---:|---|---|
-| B14-01 | 2 | 2.1 | 183–186 | Português |
-| B14-02 | 2 | 2.1 | 187 | Português |
-| B14-03 | 2 | 2.1 | 183–185 | Inglês |
-| B14-04 | 2 | 2.1 | 185 | Inglês |
-| B14-05 | 2 | 2.1 | 186 | Inglês |
-| B14-06 | 2 | 2.1 | 189–190 | Inglês |
-| B14-07 | 2 | 2.1 | 190 | Inglês |
-| B14-08 | 2 | 2.1 | 185 | Inglês |
-| B14-09 | 3 | 3.2 | 188 | Inglês |
-| B14-10 | 2 | 2.1 | 187 | Inglês |
+| ID | Domínio | Tarefa | Aulas | Idioma | Formato | Tipo | Dificuldade |
+|---|---:|---:|---|---|---|---|---|
+| B14-01 | 2 | 2.1 | 183–186 | Português | single | fundamental | básica |
+| B14-02 | 2 | 2.1 | 187 | Português | single | fundamental | básica |
+| B14-03 | 2 | 2.1 | 183–185 | Inglês | single | situacional | intermediária |
+| B14-04 | 2 | 2.1 | 185 | Inglês | multi-2 | situacional | avançada |
+| B14-05 | 2 | 2.1 | 186 | Inglês | single | situacional | intermediária |
+| B14-06 | 2 | 2.1 | 189–190 | Inglês | single | situacional | intermediária |
+| B14-07 | 2 | 2.1 | 190 | Inglês | multi-2 | integrada | avançada |
+| B14-08 | 2 | 2.1 | 185 | Inglês | single | integrada | avançada |
+| B14-09 | 3 | 3.2 | 188 | Inglês | multi-3 | integrada | avançada |
+| B14-10 | 2 | 2.1 | 187 | Inglês | single | integrada | avançada |
 
 Responda antes de abrir o gabarito. Registre a palavra que decidiu sua escolha.
 Marque também o requisito que eliminou cada alternativa incorreta.
@@ -55,13 +55,15 @@ timeout is 30 seconds, causing simultaneous duplicate work. What should change?
 
 ### B14-04
 
-A malformed message has failed many times and blocks useful investigation among
-normal traffic. What is the best design?
+A payment queue contains occasional malformed messages. Valid messages must keep
+flowing, failed payloads must remain available for diagnosis, and operators must
+know when failures accumulate. **Choose TWO.**
 
-- A. Increase retention indefinitely and ignore it
-- B. Publish every failure to an email address only
-- C. Configure a DLQ with an appropriate `maxReceiveCount`, alarm, and controlled redrive
-- D. Disable all retries by deleting messages at receive time
+- A. Set the source queue visibility timeout to zero after every receive
+- B. Delete a message on its first failure and publish only an email notification
+- C. Configure a dead-letter queue and an appropriate `maxReceiveCount` on the source queue
+- D. Set the source queue retention to the maximum and retry every failure indefinitely
+- E. Set adequate DLQ retention, alarm on visible DLQ messages, and redrive only after remediation
 
 ### B14-05
 
@@ -85,42 +87,53 @@ different rates. They need durable buffers. Which architecture is best?
 
 ### B14-07
 
-An SNS topic sends to an SQS queue. The queue must reject messages from any
-other topic. Which control is required?
+An SNS topic publishes confidential events to an SQS queue encrypted with a
+customer managed KMS key. The queue must reject every other publisher, and SNS
+must be able to deliver to the encrypted queue. **Choose TWO.**
 
-- A. A CORS policy on the queue URL
-- B. An S3 bucket policy
-- C. A public queue policy combined with encryption
-- D. An SQS resource policy allowing `SendMessage` with the expected topic `aws:SourceArn`
+- A. Enable CORS on the queue URL for the SNS endpoint
+- B. Add an SQS resource policy that allows the SNS service to call `SendMessage` only when `aws:SourceArn` equals the expected topic ARN
+- C. Make the queue public and rely on server-side encryption for authorization
+- D. Allow the SNS service principal to use the KMS key for the required data-key operations, scoped to the expected service context
+- E. Attach an IAM user policy to the queue URL instead of a resource policy
 
 ### B14-08
 
-Which statement about SQS `ReceiveMessage` is correct?
+An order worker receives from SQS Standard, charges a payment, writes the order
+status, and can crash before acknowledging the message. The design must avoid
+lost orders and prevent a redelivery from charging the customer twice. Which
+processing sequence best meets both requirements?
 
-- A. Receiving permanently removes the message immediately
-- B. Receiving moves the message to an SNS topic
-- C. Receiving makes it temporarily invisible; successful processing must be followed by delete
-- D. Receiving automatically makes every business operation idempotent
+- A. Delete immediately after `ReceiveMessage`, then charge and update the order
+- B. Set visibility longer than the expected runtime, charge normally, and rely on the timeout alone to prevent a duplicate after a crash
+- C. Receive and hide the message, perform the charge through an idempotency key, commit the order, and delete only after success; extend visibility for long work
+- D. Switch to SQS FIFO with content-based deduplication but keep the payment API non-idempotent and delete only after charging
 
 ### B14-09
 
-An EC2 worker fleet has low CPU utilization, but queue age and backlog continue
-to increase. Which scaling signal is most aligned with the workload?
+An EC2 worker fleet processes variable-duration jobs from SQS. CPU remains low,
+but backlog and message age breach the processing SLA. Jobs can be delivered more
+than once and some take longer than the initial visibility timeout. Which actions
+produce a resilient scaling and processing design? **Select THREE.**
 
-- A. S3 bucket size
-- B. Backlog per in-service worker and age of the oldest message
-- C. Number of IAM users
-- D. EBS snapshot count
+- A. Publish backlog-per-in-service-instance and use it for target tracking
+- B. Scale only on average CPU utilization because it is an EC2 fleet
+- C. Alarm on `ApproximateAgeOfOldestMessage` to protect the latency SLA
+- D. Put every job in one FIFO message group to maximize parallelism
+- E. Extend visibility for active long jobs and make processing idempotent
+- F. Delete each message immediately after receive to prevent redelivery
 
 ### B14-10
 
-A FIFO queue uses one `MessageGroupId` for all customers and throughput is lower
-than required. Ordering is needed only per customer. What should the team do?
+A multi-tenant checkout system sends order commands to an SQS FIFO queue. Each
+customer's commands must remain ordered, different customers must run in
+parallel during sales, and a retried producer request must not create a second
+order. Which redesign best balances ordering, throughput, and duplicate safety?
 
-- A. Use a distinct customer ID as the message group to allow parallel groups
-- B. Remove all deduplication IDs and switch to Standard silently
-- C. Increase the visibility timeout to 12 hours
-- D. Subscribe the same queue to itself
+- A. Use the customer ID as `MessageGroupId`, a stable order ID for deduplication, and idempotent consumers
+- B. Use a Standard queue and sort completed orders by timestamp after charging
+- C. Keep one global message group, enable high-throughput FIFO mode, and raise visibility timeout without changing the grouping key
+- D. Provision and operate a separate FIFO queue for every customer, with independent redrive policies and lifecycle automation
 
 ## Registro antes de corrigir
 

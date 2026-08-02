@@ -8,12 +8,12 @@ Abra depois das [questões B11](B11_Questoes.md).
 |---|---|---|
 | B11-01 | B | 1.1 |
 | B11-02 | C | 2.2 |
-| B11-03 | A | 2.2 |
+| B11-03 | A,C | 2.2 |
 | B11-04 | D | 4.1 |
 | B11-05 | B | 3.1 |
 | B11-06 | C | 4.1 |
 | B11-07 | A | 3.5 |
-| B11-08 | D | 4.1 |
+| B11-08 | A,D | 4.1 |
 | B11-09 | B | 3.1 |
 | B11-10 | C | 3.1 |
 
@@ -48,14 +48,15 @@ Abra depois das [questões B11](B11_Questoes.md).
 - **Aulas:** 134–135.
 - **Referência:** [Delete markers](https://docs.aws.amazon.com/AmazonS3/latest/userguide/DeleteMarker.html).
 
-## B11-03 — Resposta A
+## B11-03 — Resposta A,C
 
 - **Requisito central:** replicar objetos existentes antes da regra live.
 - **Palavras decisivas:** *cinco anos anteriores*, *CRR hoje*.
-- **A:** correta; Batch Replication processa inventory/history elegível.
-- **B:** live replication não copia retroativamente tudo por padrão.
-- **C:** EFS muda interface e não executa CRR.
-- **D:** DNS Alias não copia objetos.
+- **A:** correta; a regra live processa novos objetos elegíveis.
+- **B:** live replication não copia retroativamente todo o histórico por padrão.
+- **C:** correta; Batch Replication processa os objetos existentes elegíveis.
+- **D:** EFS muda a interface de armazenamento e não executa CRR.
+- **E:** DNS Alias não copia objetos.
 - **Regra reutilizável:** new objects → replication rule; existing → Batch
   Replication.
 - **Variação:** source/destination versioning, IAM role e KMS permissions ainda
@@ -114,58 +115,91 @@ Abra depois das [questões B11](B11_Questoes.md).
 
 - **Requisito central:** achieve business-level exactly-once effects over
   at-least-once notification delivery.
-- **Palavras decisivas:** *duplicates*, *exactly once business perspective*.
-- **A:** correct; idempotency state prevents repeated side effects and queue/DLQ
-  improves buffering/recovery.
-- **B:** notifications can duplicate and ordering is not universally guaranteed.
-- **C:** versioning does not change delivery semantics.
-- **D:** public access is unrelated and unsafe.
-- **Regra reutilizável:** at-least-once event → idempotent consumer.
-- **Variação:** filter input/output prefixes to prevent recursive Lambda loops.
+- **Palavras decisivas:** *duplicate event*, *second ledger entry*, *commit*,
+  *visibility timeout*, *dead-letter path*.
+- **A:** correct; a conditional write on a stable idempotency key prevents a
+  repeated business side effect, acknowledgement after commit avoids message
+  loss, and visibility/DLQ settings handle worker and poison-message failures.
+- **B:** FIFO ordering or transport deduplication alone does not make an
+  unconditional downstream database side effect exactly once across every
+  retry and failure boundary.
+- **C:** a visibility timeout shorter than processing makes concurrent redelivery
+  more likely before the first worker commits.
+- **D:** deleting the message before the transaction creates an
+  acknowledgement-before-commit loss window; S3 versioning does not replay that
+  deleted queue message automatically.
+- **Regra reutilizável:** at-least-once event → durable idempotency key + commit
+  side effect before acknowledgement + retry/DLQ policy.
+- **Variação:** an outbox or transactional workflow can coordinate additional
+  downstream effects after the idempotent ledger commit.
 - **Aulas:** 145–146.
 - **Referência:** [S3 Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html).
 
-## B11-08 — Answer D
+## B11-08 — Answer A,D
 
-- **Requisito central:** allocate request/transfer charges to data consumers.
-- **Palavras decisivas:** *Requester Pays*, *who pays storage*.
-- **A:** bucket owner keeps paying storage.
-- **B:** requester must authenticate and acknowledge payer behavior.
-- **C:** applicable requester charges move when correctly requested.
-- **D:** correct; requester pays requests/transfer while owner pays storage.
-- **Regra reutilizável:** Requester Pays transfers access cost, not ownership or
-  storage cost.
-- **Variação:** bucket policies/permissions still apply; it is not public access.
+- **Requisito central:** allocate private cross-account dataset access costs to
+  authenticated consumers without changing ownership or authorization.
+- **Palavras decisivas:** *approved principals*, *consumer account pays requests
+  and transfer*, *owner pays stored capacity*, *anonymous prohibited*.
+- **A:** correct; acknowledgement on an authenticated applicable request lets S3
+  assign requester-borne charges to the requester account.
+- **B:** anonymous access cannot identify an authenticated requester account and
+  is not a supported way to allocate Requester Pays charges.
+- **C:** Requester Pays neither transfers bucket ownership nor moves the owner's
+  storage-capacity charges.
+- **D:** correct; applicable request and transfer charges shift to the requester,
+  while storage remains charged to the bucket owner.
+- **E:** IAM and bucket authorization are still evaluated; Requester Pays is a
+  billing feature, not an access grant.
+- **Regra reutilizável:** Requester Pays transfers eligible access cost, not
+  ownership, storage cost, or authorization responsibility.
+- **Variação:** a data exchange requiring subscription, entitlement, or product
+  publication should be evaluated separately from this S3 billing control.
 - **Aulas:** 144.
 - **Referência:** [Requester Pays](https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html).
 
 ## B11-09 — Answer B
 
-- **Requisito central:** execute one managed action over billions of objects.
-- **Palavras decisivas:** *manifest*, *progress*, *completion report*.
-- **A:** workstation loop lacks managed scale, retries and reporting.
-- **B:** correct; Batch Operations creates tracked jobs over manifest objects.
-- **C:** DNS routing cannot tag storage objects.
-- **D:** S3 is not attached as an EBS volume.
-- **Regra reutilizável:** bulk action over massive object set → S3 Batch
-  Operations.
-- **Variação:** review IAM role, manifest correctness, job report, priority and
-  confirmation before running a mutating job.
+- **Requisito central:** execute an auditable, least-privilege mutation over a
+  reviewed inventory of billions of objects without a workstation dependency.
+- **Palavras decisivas:** *S3 Inventory*, *reviewed manifest*, *managed retries*,
+  *progress*, *completion report*.
+- **A:** a custom Distributed Map can be engineered to call the tagging API, but
+  the team must build and operate status, throttling, retry, and audit-report
+  behavior that S3 Batch Operations provides for this native bulk action.
+- **B:** correct; Batch Operations consumes the manifest, assumes a scoped IAM
+  role, tracks the managed job, and can write a completion report.
+- **C:** a custom ECS fleet is technically capable of calling the tagging API,
+  but it adds bespoke sharding, checkpointing, retry, throttling, and reporting
+  operations despite the purpose-built managed service requirement.
+- **D:** Batch Replication copies eligible objects; it does not apply an
+  arbitrary compliance tag in place to the selected source objects.
+- **Regra reutilizável:** governed bulk action over a massive object set →
+  reviewed manifest + scoped role + S3 Batch Operations job/report.
+- **Variação:** require confirmation before a destructive operation and retain
+  the source manifest and completion report as change evidence.
 - **Aulas:** 148.
 - **Referência:** [S3 Batch Operations](https://docs.aws.amazon.com/AmazonS3/latest/userguide/batch-ops.html).
 
 ## B11-10 — Answer C
 
-- **Requisito central:** gain aggregated storage usage/activity insights.
-- **Palavras decisivas:** *account-wide*, *noncurrent versions*, *without content*.
-- **A:** Instance Connect provides EC2 access.
-- **B:** RDS Proxy pools database connections.
-- **C:** correct; Storage Lens supplies storage metrics/dashboards by scope/tier.
-- **D:** GWLB distributes virtual appliances.
-- **Regra reutilizável:** S3 organization/account storage visibility → Storage
-  Lens.
-- **Variação:** advanced metrics/recommendations and exports may add cost; Lens
-  does not inspect object contents.
+- **Requisito central:** centralize organization-level S3 usage, activity,
+  version, and optimization metrics without inspecting object payloads.
+- **Palavras decisivas:** *Organizations*, *aggregated visibility*, *noncurrent
+  versions*, *managed dashboards*, *without object contents*.
+- **A:** Instance Connect is an EC2 access mechanism and cannot aggregate S3
+  storage governance metrics.
+- **B:** RDS Proxy pools relational database connections; it is not placed in
+  front of S3 buckets.
+- **C:** correct; Storage Lens provides managed dashboards and metrics at
+  configured scopes and tiers, including organization-wide administration when
+  configured appropriately.
+- **D:** Gateway Load Balancer distributes network appliances and would not
+  provide the requested S3 storage analytics.
+- **Regra reutilizável:** S3 organization/account storage visibility and
+  recommendations → Storage Lens with the required scope, tier, and delegation.
+- **Variação:** advanced metrics, recommendations, and metrics exports can add
+  cost; evaluate them separately from standard metrics.
 - **Aulas:** 149.
 - **Referência:** [Amazon S3 Storage Lens](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens.html).
 

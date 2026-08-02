@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "visibility": "private-local",
+  "validation_date": "2026-08-01",
+  "status": "validated-private",
+  "policy": "Question banks, answer keys, and reports are local and gitignored; only this manifest, the generator, hashes, and validation rules are public.",
+  "official_exam_guide": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html",
+  "udemy_practice_exam": {
+    "copied": false,
+    "reserved_until_planned_date": true,
+    "planned_date": "2026-08-28",
+    "note": "The Udemy practice exam is neither extracted nor reproduced. It is the scheduled attempt for 2026-08-28 and is not SIM-B."
+  },
+  "planned_flow": {
+    "scheduled_authorial_attempts": {
+      "SIM-A": "2026-08-26",
+      "SIM-C": "2026-08-31"
+    },
+    "scheduled_platform_attempt": {
+      "name": "Udemy Practice Exam",
+      "date": "2026-08-28"
+    },
+    "optional_authorial_attempt": {
+      "id": "SIM-B",
+      "use": "After SIM-C, or only as a substitute if the Udemy practice exam is unavailable."
+    },
+    "pre_opening_allowed": false
+  },
+  "simulators": [
+    {
+      "id": "SIM-A",
+      "questions": 65,
+      "duration_minutes": 130,
+      "language": "English",
+      "domain_counts": {
+        "1": 20,
+        "2": 17,
+        "3": 15,
+        "4": 13
+      },
+      "task_counts": {
+        "1.1": 7,
+        "1.2": 7,
+        "1.3": 6,
+        "2.1": 9,
+        "2.2": 8,
+        "3.1": 3,
+        "3.2": 3,
+        "3.3": 3,
+        "3.4": 3,
+        "3.5": 3,
+        "4.1": 4,
+        "4.2": 3,
+        "4.3": 3,
+        "4.4": 3
+      },
+      "format_counts": {
+        "single": 49,
+        "multi-2": 12,
+        "multi-3": 4
+      },
+      "type_counts": {
+        "fundamental": 13,
+        "situational": 29,
+        "integrated": 23
+      },
+      "difficulty_counts": {
+        "basic": 10,
+        "intermediate": 35,
+        "advanced": 20
+      },
+      "source": "04_Questoes_e_Revisoes/Simulados_Privados/Bancos/SIM-A.json",
+      "outputs": [
+        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-A_Questoes.md",
+        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-A_Gabarito.md",
+        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-A_Relatorio.md"
+      ],
+      "source_sha256": "c220921a1bd2d97c0a8ed262c8172317bd11014df0cc1214f620b778f3c5d12c",
+      "validated": true
+    },
+    {
+      "id": "SIM-B",
+      "questions": 65,
+      "duration_minutes": 130,
+      "language": "English",
+      "domain_counts": {
+        "1": 20,
+        "2": 17,
+        "3": 15,
+        "4": 13
+      },
+      "task_counts": {
+        "1.1": 7,
+        "1.2": 7,
+        "1.3": 6,
+        "2.1": 9,
+        "2.2": 8,
+        "3.1": 3,
+        "3.2": 3,
+        "3.3": 3,
+        "3.4": 3,
+        "3.5": 3,
+        "4.1": 4,
+        "4.2": 3,
+        "4.3": 3,
+        "4.4": 3
+      },
+      "format_counts": {
+        "single": 49,
+        "multi-2": 12,
+        "multi-3": 4
+      },
+      "type_counts": {
+        "fundamental": 13,
+        "situational": 29,
+        "integrated": 23
+      },
+      "difficulty_counts": {
+        "basic": 10,
+        "intermediate": 35,
+        "advanced": 20
+      },
+      "source": "04_Questoes_e_Revisoes/Simulados_Privados/Bancos/SIM-B.json",
+      "outputs": [
+        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-B_Questoes.md",
+        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-B_Gabarito.md",
+        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-B_Relatorio.md"
+      ],
+      "source_sha256": "0e82598734a8b8279c6f2d871815e29f5634777d92a1f523d20ff2790a6fa9bd",
+      "validated": true
+    },
+    {
+      "id": "SIM-C",
+      "questions": 65,
+      "duration_minutes": 130,
+      "language": "English",
+      "domain_counts": {
+        "1": 20,
+        "2": 17,
+        "3": 15,
+        "4": 13
+      },
+      "task_counts": {
+        "1.1": 7,
+        "1.2": 7,
+        "1.3": 6,
+        "2.1": 9,
+        "2.2": 8,
+        "3.1": 3,
+        "3.2": 3,
+        "3.3": 3,
+        "3.4": 3,
+        "3.5": 3,
+        "4.1": 4,
+        "4.2": 3,
+        "4.3": 3,
+        "4.4": 3
+      },
+      "format_counts": {
+        "single": 49,
+        "multi-2": 12,
+        "multi-3": 4
+      },
+      "type_counts": {
+        "fundamental": 13,
+        "situational": 29,
+        "integrated": 23
+      },
+      "difficulty_counts": {
+        "basic": 10,
+        "intermediate": 35,
+        "advanced": 20
+      },
+      "source": "04_Questoes_e_Revisoes/Simulados_Privados/Bancos/SIM-C.json",
+      "outputs": [
+        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-C_Questoes.md",
+        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-C_Gabarito.md",
+        "04_Questoes_e_Revisoes/Simulados_Privados/SIM-C_Relatorio.md"
+      ],
+      "source_sha256": "cc53d92e6bde49e9932137297879178c6579c5ff1b84c701cf56f69093ffd688",
+      "validated": true
+    }
+  ]
+}

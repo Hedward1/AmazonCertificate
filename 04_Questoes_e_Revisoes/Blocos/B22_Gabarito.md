@@ -9,13 +9,13 @@ Volte às [questões B22](B22_Questoes.md) antes de corrigir.
 | B22-01 | A | 1.2 |
 | B22-02 | B | 1.3 |
 | B22-03 | C | 1.3 |
-| B22-04 | D | 1.2 |
+| B22-04 | B,D | 1.2 |
 | B22-05 | A | 1.2 |
 | B22-06 | B | 1.2 |
-| B22-07 | C | 1.2 |
+| B22-07 | A,E | 1.2 |
 | B22-08 | D | 3.4 |
-| B22-09 | A | 3.4 |
-| B22-10 | B | 3.4 |
+| B22-09 | A,C,F | 1.2 |
+| B22-10 | B | 1.2 |
 
 ## B22-01 — Answer A
 
@@ -62,20 +62,18 @@ Volte às [questões B22](B22_Questoes.md) antes de corrigir.
 - **Lessons:** 304
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html)
 
-## B22-04 — Answer D
+## B22-04 — Answer B,D
 
-- **Central requirement:** The solution must inspect HTTP requests and block matching patterns.
-- **Decisive words:** SQL injection, HTTP requests, patterns
-- **Why the correct answer works:** AWS WAF provides Layer 7 rules that can detect and block web request patterns such as SQL injection.
-- **A:** Security groups have no deny and do not inspect SQL injection.
-- **B:** A NACL filters network fields, not HTTP content.
-- **C:** Shield mitigates DDoS but is not the requested rule engine.
-- **D:** This is correct.
-- **Reusable rule:** HTTP application-layer filtering points to WAF.
-- **Cost/operation:** Web ACLs, rules, managed rule groups, and requests can incur charges.
-- **Variation:** Use count mode to validate new rules before blocking.
-- **Lessons:** 305–309
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html)
+- **Central requirement:** inspect malicious HTTP requests and enforce the same WAF policy across organization accounts.
+- **Decisive words:** *SQL injection*, *ALBs*, *many accounts*, *centrally enforced*.
+- **A:** incorrect; security groups filter connections and do not parse SQL syntax or provide deny rules.
+- **B:** correct; AWS WAF web ACLs inspect and block Layer 7 request patterns at supported resources.
+- **C:** incorrect; Shield Standard provides baseline DDoS protection but is not the SQL-injection rule engine.
+- **D:** correct; Firewall Manager centrally deploys and governs WAF policies across in-scope organization resources.
+- **E:** incorrect; route tables select network paths and cannot inspect HTTP bodies.
+- **Reusable rule:** WAF defines application rules; Firewall Manager scales consistent policy administration across accounts.
+- **Lessons:** 305–309.
+- **Official reference:** [AWS Firewall Manager WAF policies](https://docs.aws.amazon.com/waf/latest/developerguide/waf-policies.html).
 
 ## B22-05 — Answer A
 
@@ -94,74 +92,71 @@ Volte às [questões B22](B22_Questoes.md) antes de corrigir.
 
 ## B22-06 — Answer B
 
-- **Central requirement:** It does not want to build its own detection pipeline.
-- **Decisive words:** threat detection, DNS, VPC, account activity
-- **Why the correct answer works:** GuardDuty analyzes supported threat intelligence and account and network data sources to generate findings.
-- **A:** Macie focuses on sensitive data in S3.
-- **B:** This is correct.
-- **C:** Textract reads documents.
-- **D:** Batch runs jobs.
-- **Reusable rule:** Managed threat detection from account and network signals points to GuardDuty.
+- **Central requirement:** deploy managed organization-wide threat detection and aggregate its findings without conflating the two roles.
+- **Decisive words:** account/DNS/VPC signals, new organization accounts, common findings view
+- **Why the correct answer works:** GuardDuty is the detector for the described signals; organization administration scales enablement, and Security Hub CSPM aggregates findings from GuardDuty and other integrations.
+- **A:** Macie organization administration is useful for sensitive-data discovery, but Macie does not replace the stated account/DNS/VPC threat detector.
+- **B:** correct; it combines purpose-built detection with a separate centralized findings and posture view.
+- **C:** Security Hub CSPM aggregates and evaluates findings/posture, but it cannot aggregate GuardDuty network threats that were never detected.
+- **D:** Detective accelerates investigation of findings and related entities; it is not the primary detector/organization-enablement layer described.
+- **Reusable rule:** GuardDuty detects threats; Security Hub CSPM aggregates/prioritizes findings; Detective supports investigation. Keep roles distinct.
 - **Cost/operation:** GuardDuty charges based on analyzed data sources and optional protections.
-- **Variation:** Security Hub CSPM can aggregate findings but is not the detector described.
+- **Variation:** Add Detective when investigators need entity relationships and historical activity after a finding.
 - **Lessons:** 310
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html)
+- **Official reference:** [GuardDuty](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html) and [Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html)
 
-## B22-07 — Answer C
+## B22-07 — Answer A,E
 
-- **Central requirement:** Each requirement should use the specialized managed service.
-- **Decisive words:** vulnerabilities, sensitive data, S3
-- **Why the correct answer works:** Inspector assesses supported workloads for vulnerabilities, while Macie discovers sensitive data in S3.
-- **A:** The services are reversed.
-- **B:** GuardDuty has a different threat-detection role.
-- **C:** This is correct.
-- **D:** Certificates and WAF do not meet the two requirements.
-- **Reusable rule:** Inspector maps to workload vulnerabilities; Macie maps to sensitive S3 data.
-- **Cost/operation:** Both services can charge according to resources or data analyzed.
-- **Variation:** GuardDuty findings can complement these services.
-- **Lessons:** 310–312
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html)
+- **Central requirement:** investigate a threat finding in context and separately identify software vulnerabilities.
+- **Decisive words:** *GuardDuty finding*, *relationships and historical activity*, *software vulnerabilities*.
+- **A:** correct; Detective analyzes linked entities and activity to support finding investigation.
+- **B:** incorrect; Macie discovers sensitive data in S3 and does not patch compute packages.
+- **C:** incorrect; Artifact provides compliance documents rather than an investigation graph.
+- **D:** incorrect; WAF filters web requests and does not inventory CVEs.
+- **E:** correct; Inspector assesses supported workloads for software vulnerabilities and exposure.
+- **Reusable rule:** GuardDuty detects suspicious activity, Detective supports investigation, and Inspector manages vulnerability findings.
+- **Lessons:** 310–312.
+- **Official reference:** [Amazon Detective](https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html) and [Amazon Inspector](https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html).
 
 ## B22-08 — Answer D
 
-- **Central requirement:** The designer must account for addresses reserved by AWS.
-- **Decisive words:** slash 28, reserved by AWS, available
-- **Why the correct answer works:** A /28 has 16 total addresses, and AWS reserves five in each IPv4 subnet, leaving 11 usable.
-- **A:** Sixteen is the total.
-- **B:** Fourteen assumes two reserved addresses.
-- **C:** Thirteen assumes three reserved addresses.
-- **D:** This is correct.
-- **Reusable rule:** Usable IPv4 addresses in a VPC subnet equal total addresses minus five.
+- **Central requirement:** test ENI capacity against actual usable addresses and preserve scaling/replacement headroom.
+- **Decisive words:** slash 28, 12 ENIs, AWS-reserved, exhaustion
+- **Why the correct answer works:** A /28 contains 16 total IPv4 addresses and AWS reserves five, leaving only 11 assignable addresses before considering headroom.
+- **A:** sixteen is the total CIDR size, not the usable ENI capacity.
+- **B:** subtracting only network and broadcast conventions ignores AWS's five reserved addresses per IPv4 subnet.
+- **C:** thirteen uses the wrong reservation count and would still provide inadequate operational headroom.
+- **D:** correct; the requirement already exceeds usable capacity, so the architecture needs a larger valid subnet or redistributed ENIs rather than optimistic overcommit.
+- **Reusable rule:** subnet sizing must include AWS reservations, all ENI consumers, scale/replacement overlap, and future endpoints or load-balancer needs.
 - **Cost/operation:** Small subnets can exhaust addresses and force disruptive redesign.
-- **Variation:** Plan capacity for load balancers, endpoints, and scaling.
+- **Variation:** Existing subnet CIDRs cannot be resized in place; plan nonoverlapping address space before deployment.
 - **Lessons:** 313–319
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html)
 
-## B22-09 — Answer A
+## B22-09 — Answer A,C,F
 
-- **Central requirement:** The instance must receive inbound IPv4 traffic from the internet.
-- **Decisive words:** inbound IPv4, internet, additional condition
-- **Why the correct answer works:** The route makes the subnet public, but the instance still needs public addressing and security and application configuration.
-- **A:** This is correct.
-- **B:** Private addressing alone is not internet-routable.
-- **C:** NAT provides outbound translation, not inbound to the instance.
-- **D:** A DynamoDB endpoint is unrelated.
-- **Reusable rule:** Public subnet does not automatically make a resource publicly reachable.
-- **Cost/operation:** Public IPv4 addresses incur charges and increase exposure.
-- **Variation:** Prefer a public load balancer with private application instances.
-- **Lessons:** 315–323
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html)
+- **Central requirement:** combine Layer 7 exploit filtering, enhanced DDoS response, and least-privilege tier isolation.
+- **Decisive words:** *SQL injection*, *sophisticated DDoS*, *only from ALB*.
+- **A:** correct; WAF inspects supported HTTP requests and blocks SQL-injection patterns.
+- **B:** incorrect; unrestricted public instance access bypasses the load-balancer security boundary.
+- **C:** correct; Shield Advanced adds enhanced detection, response support, and eligible cost protection features.
+- **D:** incorrect; a NAT Gateway is for egress translation, not inbound HTTP load balancing or inspection.
+- **E:** incorrect; a NACL is stateless and cannot be the only application-layer control.
+- **F:** correct; security-group referencing restricts the application tier to traffic from the ALB tier.
+- **Reusable rule:** layered public application defense combines edge/application controls with explicit trust between network tiers.
+- **Lessons:** 305–323.
+- **Official reference:** [AWS WAF, Shield Advanced, and Shield network security](https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html).
 
 ## B22-10 — Answer B
 
-- **Central requirement:** Both controls must be mapped correctly.
-- **Decisive words:** stateful interface, ordered subnet deny
-- **Why the correct answer works:** Security groups are stateful allow controls on interfaces; NACLs are stateless subnet controls with ordered allow and deny rules.
-- **A:** The states are reversed.
-- **B:** This is correct.
-- **C:** Security groups do not have deny rules.
-- **D:** The association levels differ.
-- **Reusable rule:** SG is stateful allow; NACL is stateless ordered allow and deny.
+- **Central requirement:** enforce application-tier least privilege and a CIDR deny at the correct layers with correct return-path behavior.
+- **Decisive words:** ALB security group source, interface, ordered deny, ephemeral return ports
+- **Why the correct answer works:** security groups are stateful allow controls associated with ENIs and can reference another SG; NACLs are ordered stateless subnet controls with allow and deny entries.
+- **A:** public ALB node addresses can change and the option loses SG-to-SG least privilege; a one-direction NACL rule also ignores stateless return traffic.
+- **B:** correct; it uses identity-like SG referencing for the application path and handles both directions explicitly at the NACL layer.
+- **C:** Network Firewall can add centralized filtering, but permitting the whole VPC CIDR fails the explicit ALB-only application-tier requirement and adds a service beyond the requested control mapping.
+- **D:** the SG half is correct, but the NACL half breaks return flows because stateless subnet rules must cover the response path and ephemeral ports.
+- **Reusable rule:** SG = stateful ENI allow policy; NACL = ordered stateless subnet allow/deny guardrail, including return traffic.
 - **Cost/operation:** Controls themselves do not replace the cost of traffic-processing services.
 - **Variation:** NACL return traffic needs explicit ephemeral-port handling.
 - **Lessons:** 329–330 plus fundamentals 313–326

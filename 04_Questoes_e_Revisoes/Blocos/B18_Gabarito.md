@@ -9,12 +9,12 @@ Abra após responder às [questões B18](B18_Questoes.md).
 | B18-01 | A | 3.3 |
 | B18-02 | B | 3.5 |
 | B18-03 | C | 3.3 |
-| B18-04 | A | 3.3 |
+| B18-04 | B,D | 3.3 |
 | B18-05 | D | 3.3 |
 | B18-06 | B | 4.3 |
-| B18-07 | C | 3.5 |
+| B18-07 | A,C | 3.5 |
 | B18-08 | A | 3.5 |
-| B18-09 | B | 3.5 |
+| B18-09 | A,C,E | 3.5 |
 | B18-10 | C | 2.1 |
 
 ## B18-01 — Resposta A
@@ -56,18 +56,18 @@ Abra após responder às [questões B18](B18_Questoes.md).
 - **Reference:** [RDS read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html).
 - **Common trap:** assuming every standby can serve application reads.
 
-## B18-04 — Answer A
+## B18-04 — Answer B,D
 
-- **Central requirement:** efficiently traverse a highly connected fraud network.
-- **Decisive words:** *relationships*, *traverse*, *accounts/devices/IPs*.
-- **A:** correct; Neptune is purpose-built for graph traversal.
-- **B:** Keyspaces is a Cassandra-compatible wide-column database.
-- **C:** Timestream is time series.
-- **D:** Memcached is an in-memory cache.
-- **Reusable rule:** relationship traversal/path queries → Neptune.
-- **Lessons:** 237.
-- **Reference:** [Amazon Neptune](https://docs.aws.amazon.com/neptune/latest/userguide/intro.html).
-- **Common trap:** choosing a document store because nodes can be encoded as JSON.
+- **Central requirement:** use purpose-built stores for graph traversal and relational ACID transactions.
+- **Decisive words:** *graph traversals*, *relationships*, *relational constraints*, *ACID SQL*.
+- **A:** incorrect; a cache is not the durable system of record for either requirement.
+- **B:** correct; Neptune is purpose-built for graph relationships and traversals.
+- **C:** incorrect; DocumentDB does not provide relational foreign-key semantics.
+- **D:** correct; Aurora provides relational SQL transactions and constraints.
+- **E:** incorrect; OpenSearch is a search/analytics engine, not an account-balance ledger.
+- **Reusable rule:** polyglot persistence chooses the database model from each dominant access pattern and consistency requirement.
+- **Lessons:** 230–239.
+- **Reference:** [AWS purpose-built databases](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/database.html).
 
 ## B18-05 — Answer D
 
@@ -95,57 +95,58 @@ Abra após responder às [questões B18](B18_Questoes.md).
 - **Reference:** [Optimize Athena data](https://docs.aws.amazon.com/athena/latest/ug/performance-tuning-data-optimization-techniques.html).
 - **Common trap:** partitioning by a field never used in predicates.
 
-## B18-07 — Answer C
+## B18-07 — Answer A,C
 
-- **Central requirement:** managed warehouse for repeated OLAP and BI joins.
-- **Decisive words:** *data warehouse*, *OLAP*, *BI*.
-- **A:** DAX caches DynamoDB reads.
-- **B:** Object Lock enforces object retention.
-- **C:** correct; Redshift is the AWS data warehouse service.
-- **D:** Identity Pools broker AWS credentials.
-- **Reusable rule:** structured warehouse analytics/BI → Redshift.
-- **Lessons:** 242.
-- **Reference:** [Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html).
-- **Common trap:** using Redshift as the transactional order database.
+- **Central requirement:** serve repeated warehouse OLAP and occasional serverless S3 SQL without idle clusters.
+- **Decisive words:** *repeated OLAP joins*, *raw Parquet*, *ad hoc*, *no permanently provisioned cluster*.
+- **A:** correct; Redshift Serverless provides managed warehouse capacity for repeated analytical workloads.
+- **B:** incorrect; Route 53 does not execute or federate SQL.
+- **C:** correct; Athena performs serverless SQL directly over S3 and charges by scanned data.
+- **D:** incorrect; instance store is ephemeral and would add data movement and host operations.
+- **E:** incorrect; SQS is messaging, not a BI semantic or SQL engine.
+- **Reusable rule:** separate warehouse-shaped repeated analytics from occasional data-lake queries; serverless options can remove idle cluster management.
+- **Lessons:** 240–242.
+- **Reference:** [Amazon Redshift Serverless](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-whatis.html) and [Amazon Athena](https://docs.aws.amazon.com/athena/latest/ug/what-is.html).
 
 ## B18-08 — Answer A
 
-- **Central requirement:** full-text search, relevance, and log analytics.
-- **Decisive words:** *full-text*, *relevance scoring*, *indexed*.
-- **A:** correct; OpenSearch is designed for search and log analytics.
-- **B:** EBS is block storage.
-- **C:** Storage Gateway exposes hybrid storage interfaces.
-- **D:** RDS events are operational notifications.
-- **Reusable rule:** full-text/indexed search → OpenSearch Service.
+- **Central requirement:** provide one scalable, low-latency managed indexed-search layer for products and logs without consuming transactional capacity or replacing the system of record.
+- **Decisive words:** *high search traffic*, *must not consume database capacity*, *one managed indexed-search platform*, *predictable low latency*, *asynchronous indexing*.
+- **A:** correct; OpenSearch supplies the required managed indexed-search layer for product relevance and log exploration, while pipelines populate its indexes and the transactional database remains authoritative.
+- **B:** native database search plus Logs Insights separates the two query experiences and places customer search load on the transactional database, directly violating the unified-layer, capacity-isolation, and scale requirements.
+- **C:** DynamoDB serves key-value/document access patterns, but scans/filter expressions do not supply typo-tolerant relevance search and would be inefficient.
+- **D:** Athena is valuable for ad hoc SQL over S3, but per-request scans are not a low-latency relevance index for interactive search.
+- **Reusable rule:** use a transactional store for correctness and a separately populated OpenSearch index for search-oriented access patterns.
 - **Lessons:** 243.
 - **Reference:** [OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html).
-- **Common trap:** treating a search index as the source of truth for transactions.
+- **Common trap:** dual-writing without a replayable, monitored synchronization path between the source and the index.
 
-## B18-09 — Answer B
+## B18-09 — Answer A,C,E
 
-- **Central requirement:** execute custom Apache Spark on a large data lake.
-- **Decisive words:** *custom Spark jobs*, *large data lake*.
-- **A:** SNS is pub/sub notification.
-- **B:** correct; EMR runs managed big-data frameworks including Spark.
-- **C:** Cognito handles identities.
-- **D:** Global Accelerator routes network traffic.
-- **Reusable rule:** Hadoop/Spark/custom distributed framework → EMR.
-- **Lessons:** 244.
-- **Reference:** [Amazon EMR](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html).
-- **Common trap:** choosing EMR for one simple ad hoc SQL query.
+- **Central requirement:** combine Spark processing, shared metadata, and centralized fine-grained lake governance.
+- **Decisive words:** *Apache Spark*, *shared catalog*, *fine-grained permissions*, *across accounts*.
+- **A:** correct; EMR options run managed Apache Spark workloads over S3.
+- **B:** incorrect; Route 53 zones contain DNS records, not analytics table metadata.
+- **C:** correct; Glue Data Catalog provides table and schema metadata used by analytics engines.
+- **D:** incorrect; SES policies do not grant table, row, column, or lake access.
+- **E:** correct; Lake Formation centrally governs supported data lake permissions and sharing.
+- **F:** incorrect; EBS is block storage and is not a cross-account S3 data lake.
+- **Reusable rule:** a governed analytics lake separates compute, catalog metadata, and authorization into purpose-built layers.
+- **Lessons:** 240–244.
+- **Reference:** [Lake Formation permissions](https://docs.aws.amazon.com/lake-formation/latest/dg/security-data-access.html).
 
 ## B18-10 — Answer C
 
-- **Central requirement:** distribute immutable binaries globally without Lambda proxying bytes.
-- **Decisive words:** *large*, *worldwide*, *reduce compute/origin load*.
-- **A:** longer Lambda execution wastes compute and does not create a CDN.
-- **B:** cache alone is not durable global object delivery.
-- **C:** correct; S3 stores versioned objects and CloudFront caches via a private OAC origin.
-- **D:** SQS is not for large binary distribution.
-- **Reusable rule:** static/download content → object storage + CDN, not application compute.
+- **Central requirement:** deliver large private/versioned objects globally with edge caching and optional viewer authorization, without proxy compute.
+- **Decisive words:** *multi-gigabyte*, *horizontal/vertical compute scaling*, *private origin*, *time-limited*, *edge caching*.
+- **A:** presigned S3 URLs remove Lambda and preserve time-limited origin access, but clients still fetch from the regional origin and repeated downloads do not benefit from CloudFront caching.
+- **B:** CloudFront supplies edge caching, but a public website origin and absent viewer authorization violate the private-origin/customer-access controls.
+- **C:** correct; S3 provides durable versioned objects, OAC keeps the origin private, CloudFront reduces latency/origin transfer, and signed access limits viewers.
+- **D:** Global Accelerator improves network paths for supported endpoints but is not a content cache; retaining Lambda byte proxying leaves the compute scaling and cost problem.
+- **Reusable rule:** choose component scaling strategies by bottleneck: static bytes scale through durable object storage and CDN caches, not horizontal concurrency or vertical memory in application compute.
 - **Lessons:** 226–229.
 - **Reference:** [CloudFront with S3 origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html).
-- **Common trap:** routing static bytes through Lambda/API Gateway.
+- **Common trap:** securing the S3 origin but leaving CloudFront viewer access unrestricted when the files are customer-specific.
 
 ## Ação após a correção
 

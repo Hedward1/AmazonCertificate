@@ -2,24 +2,24 @@
 
 **Quantidade:** 10 questões autorais<br>
 **Idioma:** 10 em inglês<br>
-**Regra:** selecione uma resposta<br>
+**Regra:** selecione a quantidade indicada em cada questão<br>
 **Tempo sugerido:** 18 minutos<br>
 **Gabarito:** [arquivo separado](B21_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B21-01 | 1.1 | SCP behavior | Situacional | Basic | Inglês |
-| B21-02 | 1.1 | Explicit deny | Situacional | Intermediate | Inglês |
-| B21-03 | 1.1 | Role trust policy | Situacional | Intermediate | Inglês |
-| B21-04 | 1.1 | IAM Identity Center | Situacional | Basic | Inglês |
-| B21-05 | 1.1 | Directory Service | Situacional | Basic | Inglês |
-| B21-06 | 1.1 | Control Tower | Situacional | Intermediate | Inglês |
-| B21-07 | 1.3 | Envelope encryption | Situacional | Intermediate | Inglês |
-| B21-08 | 1.3 | Multi-Region KMS keys | Situacional | Advanced | Inglês |
-| B21-09 | 1.2 | Parameter Store | Situacional | Basic | Inglês |
-| B21-10 | 1.3 | Encrypted AMI sharing | Situacional | Advanced | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B21-01 | 1.1 | SCP behavior | single | fundamental | básica | Inglês |
+| B21-02 | 1.1 | Explicit deny | single | situacional | intermediária | Inglês |
+| B21-03 | 1.1 | Role trust policy | single | situacional | intermediária | Inglês |
+| B21-04 | 1.1 | Identity Center and RAM | multi-2 | situacional | avançada | Inglês |
+| B21-05 | 1.1 | Directory Service | single | situacional | intermediária | Inglês |
+| B21-06 | 1.1 | Control Tower | single | situacional | intermediária | Inglês |
+| B21-07 | 1.3 | Envelope encryption | multi-2 | integrada | avançada | Inglês |
+| B21-08 | 1.3 | Multi-Region KMS keys | single | integrada | avançada | Inglês |
+| B21-09 | 1.2 | Configuration and secrets | multi-3 | integrada | avançada | Inglês |
+| B21-10 | 1.3 | Encrypted AMI sharing | single | integrada | avançada | Inglês |
 
 ## Questões
 
@@ -36,8 +36,6 @@
 - C. Allowed only from the management account.
 - D. Allowed because implicit deny applies only to users.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B21-02
 
 **Context:** A role has AdministratorAccess, but an SCP attached to its OU explicitly denies ec2:TerminateInstances.
@@ -50,8 +48,6 @@
 - B. The action is allowed after adding a second identity-based Allow.
 - C. The action is denied because an applicable explicit Deny prevails.
 - D. The action is allowed if the instance is tagged.
-
-**Before moving on:** record decisive words and confidence.
 
 ### B21-03
 
@@ -66,22 +62,17 @@
 - C. A CloudWatch alarm policy.
 - D. A tag policy.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B21-04
 
-**Context:** Employees need single sign-on to many AWS accounts by using short-lived credentials.
+**Context:** Employees need centrally assigned, short-lived access to many AWS accounts. Application teams in those accounts must also use subnets shared from a central networking account without VPC peering.
 
-**Requirement:** Administrators want centrally assigned permission sets.
+**Requirement:** Select the managed service for workforce access and the service for sharing supported resources across the organization. **Choose TWO.**
 
-**Question:** Which service should be used?
-
-- A. AWS Directory Service alone.
-- B. AWS IAM Identity Center.
-- C. AWS KMS.
-- D. Amazon Cognito user pools.
-
-**Before moving on:** record decisive words and confidence.
+- A. Use Amazon Cognito user pools for AWS Management Console permission sets.
+- B. Use AWS IAM Identity Center for workforce access and permission sets.
+- C. Use AWS KMS grants to share VPC subnets.
+- D. Use AWS Directory Service alone to share every supported AWS resource.
+- E. Use AWS Resource Access Manager (AWS RAM) to share the supported subnets.
 
 ### B21-05
 
@@ -96,8 +87,6 @@
 - C. AWS Directory Service for Microsoft Active Directory.
 - D. AWS WAF.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B21-06
 
 **Context:** A company needs a governed multi-account landing zone with account provisioning and preventive and detective controls.
@@ -111,52 +100,47 @@
 - C. Amazon EventBridge.
 - D. AWS Batch.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B21-07
 
-**Context:** An application must encrypt a large object while using AWS KMS to protect key material.
+**Context:** An application encrypts multi-gigabyte objects and uses AWS KMS to protect key material. It must avoid sending the entire object to KMS and must retain what is needed for later decryption.
 
-**Requirement:** The design should follow envelope encryption.
+**Requirement:** Implement envelope encryption correctly. **Choose TWO.**
 
-**Question:** Which process is correct?
-
-- A. Encrypt the entire object directly with an SCP.
-- B. Use a plaintext data key to encrypt the object, store its encrypted copy, and discard the plaintext key.
-- C. Store the plaintext data key in tags.
-- D. Use a CloudWatch alarm as the encryption key.
-
-**Before moving on:** record decisive words and confidence.
+- A. Send the full object to the KMS `Encrypt` API.
+- B. Call `GenerateDataKey` and use the plaintext data key locally to encrypt the object.
+- C. Store the plaintext data key permanently in object tags.
+- D. Store the encrypted data key with the ciphertext and erase the plaintext key from memory after use.
+- E. Use an Organizations SCP as the symmetric data key.
 
 ### B21-08
 
-**Context:** Ciphertext created in one Region must be decrypted locally in another Region without a cross-Region KMS call.
+**Context:** An active-active application replicates encrypted objects between
+two Regions. Each Region must decrypt locally during an isolation event, but
+security teams need independent regional key policies, grants, aliases, and the
+ability to disable one regional key without automatically disabling the other.
 
-**Requirement:** The related keys must have interoperable key material.
+**Requirement:** Reuse compatible cryptographic material without assuming that
+KMS also replicates data or authorization configuration.
 
-**Question:** Which statement is correct?
+**Question:** Which design statement is correct?
 
-- A. Copying an alias replicates the key material.
-- B. A single-Region key automatically appears globally.
-- C. A multi-Region primary and replica share related key material, while policies and state remain independent.
-- D. Replicating the KMS key also replicates application data.
-
-**Before moving on:** record decisive words and confidence.
+- A. Copy the key alias to the second Region; aliases reproduce key material and policy automatically.
+- B. Use one single-Region KMS key because its ARN is globally callable during a regional isolation event.
+- C. Use a multi-Region primary and replica: related keys share interoperable key material, while policy, grants, aliases, enabled state, and application-data replication remain regional concerns.
+- D. Replicate the KMS key and rely on KMS to copy every encrypted S3 object and its bucket policy.
 
 ### B21-09
 
-**Context:** An application needs hierarchical configuration values and a few encrypted strings. Managed credential rotation is not required.
+**Context:** EC2 applications need hierarchical configuration and several encrypted values. Managed credential rotation is not required, and access must be limited to one application role and one KMS key.
 
-**Requirement:** The team wants a Systems Manager capability.
+**Requirement:** Use the lowest-operations Systems Manager capability with least privilege. **Select THREE.**
 
-**Question:** Which service should it choose?
-
-- A. AWS Systems Manager Parameter Store.
-- B. Amazon MSK.
-- C. AWS Shield Advanced.
-- D. Amazon Quick Sight.
-
-**Before moving on:** record decisive words and confidence.
+- A. Store the hierarchy in Systems Manager Parameter Store and encrypted values as `SecureString` parameters.
+- B. Store plaintext secrets in EC2 user data because the instances are private.
+- C. Encrypt `SecureString` values with the designated KMS key.
+- D. Grant all account roles `ssm:GetParametersByPath` on every parameter.
+- E. Use Amazon MSK as the configuration hierarchy.
+- F. Grant the application role only the required parameter ARNs and KMS decrypt permission.
 
 ### B21-10
 
@@ -172,8 +156,6 @@
 - D. AMI launch permission and permission to use the relevant customer managed
   KMS key; the snapshots referenced by the shared AMI do not need to be shared
   separately.
-
-**Before moving on:** record decisive words and confidence.
 
 ## Registro antes de corrigir
 

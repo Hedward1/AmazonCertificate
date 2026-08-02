@@ -2,31 +2,24 @@
 
 **Quantidade:** 10 questões inéditas<br>
 **Idioma:** 6 em português e 4 em inglês<br>
-**Regra:** selecione uma resposta<br>
+**Formato:** questões single-answer e multi-answer; siga a instrução de cada questão<br>
 **Tempo sugerido:** 15 minutos<br>
 **Gabarito:** [arquivo separado](B07_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B07-01 | 3.4 | ACM/TLS | Situacional | Básica | Português |
-| B07-02 | 3.4 | TLS no backend | Situacional | Intermediária | Português |
-| B07-03 | 2.2 | Deregistration | Situacional | Intermediária | Português |
-| B07-04 | 3.2 | Capacidade ASG | Fundamental | Básica | Português |
-| B07-05 | 3.2 | Target tracking | Situacional | Básica | Português |
-| B07-06 | 3.2 | Scheduled scaling | Situacional | Intermediária | Português |
-| B07-07 | 3.2 | Warmup | Fundamental | Intermediária | Inglês |
-| B07-08 | 2.2 | Health replacement | Situacional | Intermediária | Inglês |
-| B07-09 | 3.2 | Launch template | Situacional | Intermediária | Inglês |
-| B07-10 | 4.2 | Stateful scaling | Situacional | Intermediária | Inglês |
-
-## Como resolver
-
-Separe quatro planos: certificado e listener; target e draining; capacidade do
-grupo; política que altera a capacidade. Marque se a demanda é imprevisível,
-graduada, calendarizada ou previsível por histórico. Não trate warmup, grace
-period e deregistration como um único timeout.
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B07-01 | 3.4 | ACM/TLS | single | fundamental | básica | Português |
+| B07-02 | 3.4 | TLS no backend | single | fundamental | básica | Português |
+| B07-03 | 2.2 | Deregistration | multi-2 | fundamental | intermediária | Português |
+| B07-04 | 3.2 | Capacidade ASG | single | situacional | intermediária | Português |
+| B07-05 | 3.2 | Target tracking | single | situacional | intermediária | Português |
+| B07-06 | 3.2 | Scheduled scaling | single | situacional | intermediária | Português |
+| B07-07 | 3.2 | Warmup | single | situacional | intermediária | Inglês |
+| B07-08 | 2.2 | Health replacement | multi-2 | integrada | avançada | Inglês |
+| B07-09 | 3.2 | Launch template | single | integrada | avançada | Inglês |
+| B07-10 | 4.2 | Stateful scaling | single | integrada | avançada | Inglês |
 
 ## Questões
 
@@ -56,13 +49,17 @@ Qual solução atende ao requisito?
 
 Durante scale-in, downloads ativos não devem ser encerrados imediatamente.
 
-Qual ajuste é central?
+Quais ajustes ajudam a concluir os downloads antes da terminação?
 
-- A. Aumentar o TTL de todos os records do Route 53.
-- B. Configurar deregistration delay compatível com a duração das requisições e
-  alinhar o shutdown da aplicação.
-- C. Criar snapshots EBS a cada minuto.
-- D. Alterar a rotação da KMS key.
+**Choose TWO.**
+
+- A. Configurar o deregistration delay do target group de acordo com a duração
+  esperada das requisições.
+- B. Aumentar o TTL de todos os records do Route 53.
+- C. Associar o target group ao Auto Scaling group para que o scale-in
+  deregistre o target e aguarde o connection draining antes da terminação.
+- D. Criar snapshots EBS a cada minuto.
+- E. Alterar a rotação da KMS key.
 
 ### B07-04
 
@@ -116,33 +113,63 @@ instance to serve representative traffic?
 An instance is EC2-healthy but its application consistently fails the load
 balancer health check. The ASG is configured to use ELB health checks.
 
-What is expected after the applicable grace period?
+Which statements describe the expected behavior?
 
-- A. The ALB creates a database replica.
-- B. ACM renews the instance AMI.
-- C. The ASG permanently raises its maximum capacity.
-- D. The ASG can mark and replace the unhealthy instance.
+**Choose TWO.**
+
+- A. The ALB creates a database replica for the unhealthy application.
+- B. After the grace period, the ASG can mark the instance unhealthy and
+  replace it.
+- C. ACM renews the instance AMI before the ASG evaluates health.
+- D. The ASG permanently raises its maximum capacity whenever one health check
+  fails.
+- E. The health check grace period can prevent replacement while a new
+  application instance is still bootstrapping.
 
 ### B07-09
 
-What is the safest way to roll out a new AMI to an existing ASG fleet?
+A regulated web tier runs in an Auto Scaling group across three Availability
+Zones behind an Application Load Balancer. A patched AMI must replace the entire
+fleet while the service keeps at least 90% healthy capacity. The company needs
+an auditable rollout, health-based checkpoints, and automatic rollback if a
+CloudWatch alarm enters `ALARM`.
 
-- A. Change an unversioned file on one instance.
-- B. Reboot all instances because reboot adopts the newest AMI.
-- C. Create a new launch template version and perform a controlled instance
-  refresh with rollback criteria.
-- D. Modify the AMI ID property of each running instance.
+Which deployment design best meets the requirements?
+
+- A. Create a parallel Auto Scaling group from the patched AMI and shift all
+  traffic to it at once after checking only EC2 instance status, without staged
+  checkpoints or alarm-based rollback.
+- B. Set the patched launch-template version as the default but wait for normal
+  scaling and failures to replace the existing instances over time.
+- C. Create a versioned launch template that references the patched AMI, start a
+  controlled instance refresh with the required minimum healthy percentage and
+  checkpoints, and configure alarm-based rollback criteria.
+- D. Patch files in place across the running fleet and create an AMI from one
+  instance afterward, without replacing the fleet from an immutable template.
 
 ### B07-10
 
-An application keeps shopping-cart state only in the memory of each EC2
-instance. Why is this problematic for horizontal scaling?
+A shopping application runs in a Multi-AZ Auto Scaling group behind an
+Application Load Balancer. Cart state exists only in each instance's memory.
+During scale-out, load-balancer deregistration, and instance replacement, users
+either reach a different target or lose the cart. The company requires elastic
+replacement without making one instance a durable dependency.
 
-- A. New or replaced instances do not share that state; externalizing required
-  session state makes instances disposable.
-- B. An ASG always copies RAM between instances.
-- C. Stickiness guarantees durable recovery after target failure.
-- D. TLS automatically replicates sessions to EBS.
+Cart contents are business data and must remain recoverable after an instance or
+Availability Zone failure. A cache may accelerate reads but cannot be the only
+copy of the cart.
+
+Which redesign addresses the root cause?
+
+- A. Persist cart state in a shared durable database such as DynamoDB or Aurora,
+  keep EC2 targets disposable, and use ElastiCache only as an optional cache in
+  front of the durable system of record.
+- B. Enable ALB stickiness and a long deregistration delay so the instance's RAM
+  remains the authoritative cart store during scaling and replacement.
+- C. Move cart state only to a nonpersistent cache and accept eviction or cache
+  loss as the recovery behavior after an Availability Zone failure.
+- D. Replicate each session synchronously between pairs of EC2 instances and
+  keep the only durable copies on their local root volumes.
 
 ## Registro antes de corrigir
 

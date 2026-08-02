@@ -8,12 +8,12 @@ Abra depois das [questões B08](B08_Questoes.md).
 |---|---|---|
 | B08-01 | B | 2.2 |
 | B08-02 | C | 3.3 |
-| B08-03 | A | 2.2 |
+| B08-03 | A,E | 2.2 |
 | B08-04 | D | 3.3 |
 | B08-05 | B | 3.3 |
 | B08-06 | C | 2.2 |
 | B08-07 | A | 1.3 |
-| B08-08 | D | 3.3 |
+| B08-08 | A,B,E | 3.3 |
 | B08-09 | C | 4.3 |
 | B08-10 | B | 2.2 |
 
@@ -41,7 +41,7 @@ Abra depois das [questões B08](B08_Questoes.md).
 - **Aulas:** 88.
 - **Referência:** [RDS read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html).
 
-## B08-03 — Resposta A
+## B08-03 — Resposta A,E
 
 - **Requisito central:** recuperar estado anterior sem sobrescrever produção.
 - **Palavras decisivas:** *14:57*, *backups ativos*, *nova instância*.
@@ -49,7 +49,11 @@ Abra depois das [questões B08](B08_Questoes.md).
 - **B:** standby replica a exclusão lógica.
 - **C:** standby clássico não é consultável e contém a mudança replicada.
 - **D:** cache não restaura tabela do banco.
+- **E:** correta; validar a restauração antes da cópia ou troca controlada evita
+  sobrescrever prematuramente a produção.
 - **Regra reutilizável:** erro lógico em tempo conhecido → PITR + nova DB.
+- **Variação:** o RTO inclui restaurar, validar e decidir entre copiar dados
+  seletivamente ou redirecionar a aplicação.
 - **Aulas:** 94.
 - **Referência:** [Restoring to a specified time](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html).
 
@@ -101,39 +105,71 @@ Abra depois das [questões B08](B08_Questoes.md).
 - **Aulas:** 95 e 100.
 - **Referência:** [RDS VPC security](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html).
 
-## B08-08 — Answer D
+## B08-08 — Answer A,B,E
 
 - **Requisito central:** supported OS/database customization for Oracle.
 - **Palavras decisivas:** *operating-system access*, *standard RDS does not*.
-- **A:** Aurora is MySQL/PostgreSQL compatible, not custom Oracle.
-- **B:** cache does not host Oracle.
-- **C:** replica preserves the same standard-RDS constraints.
-- **D:** correct; evaluate RDS Custom and its shared responsibilities.
+- **A:** correct; RDS Custom for Oracle exposes supported OS and database
+  customization capabilities.
+- **B:** correct; that access shifts additional management and security work to
+  the customer.
+- **C:** a standard RDS read replica preserves the same operating-system access
+  constraints.
+- **D:** Aurora is MySQL/PostgreSQL compatible, not Oracle compatible.
+- **E:** correct; the support perimeter monitors whether changes preserve RDS
+  Custom automation and support.
+- **F:** ElastiCache is a cache and cannot host the Oracle database.
 - **Regra reutilizável:** supported Oracle/SQL Server customization → RDS Custom.
+- **Variação:** if OS-level customization is unnecessary, standard RDS reduces
+  operational responsibility.
+- **Lifecycle note:** AWS has announced the end of support for RDS Custom for
+  Oracle on March 31, 2027; a new long-lived design needs an explicit migration
+  path.
 - **Aulas:** 90.
-- **Referência:** [RDS Custom](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-custom.html).
+- **Referências:** [RDS Custom](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-custom.html)
+  and [RDS Custom for Oracle end-of-support notice](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/custom-cev.html).
 
 ## B08-09 — Answer C
 
-- **Requisito central:** prevent stale prices in cache-aside.
-- **Palavras decisivas:** *after an update*, *stale*.
-- **A:** changing a port does not invalidate data.
-- **B:** no expiry makes staleness unbounded.
-- **C:** correct; invalidate/update on write and use bounded TTL.
-- **D:** replica promotion is unrelated and disruptive.
-- **Regra reutilizável:** cache correctness requires explicit invalidation/TTL.
+- **Requisito central:** coordinate committed database writes with targeted cache
+  invalidation while keeping reporting replicas out of the transaction path.
+- **Palavras decisivas:** *write commits*, *next request*, *must not receive old
+  price*, *without flushing unrelated products*.
+- **A:** TTL-only expiry still permits the old value to be served during the
+  remaining TTL and therefore does not provide the required post-write
+  read-your-write behavior.
+- **B:** updating the cache before the database commits can expose a value that
+  never became authoritative if the transaction fails.
+- **C:** correct; invalidating or updating the specific key after a successful
+  write and before acknowledging the change removes the known stale value, while
+  a TTL bounds recovery from a missed invalidation.
+- **D:** pre-transaction full-cache flushing removes unrelated hot entries,
+  creates a stampede risk, and does not provide the required targeted ordering.
+- **Regra reutilizável:** cache-aside correctness requires ordering the system-of-
+  record write and targeted cache invalidation, plus a bounded TTL fallback.
+- **Variação:** highly concurrent writers may require versioning or another
+  strategy to prevent an older value from racing back into the cache.
 - **Aulas:** 97–99.
 - **Referência:** [Caching patterns](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/cache-aside.html).
 
 ## B08-10 — Answer B
 
-- **Requisito central:** understand read-replica promotion in DR.
-- **Palavras decisivas:** *cross-Region*, *promoted*, *consequence*.
-- **A:** promotion ends the read-replica relationship.
-- **B:** correct; it becomes independent/writable and endpoints/plans change.
-- **C:** promotion does not establish synchronous reversal automatically.
-- **D:** promotion is not point-in-time restore.
-- **Regra reutilizável:** promote replica → independent DB; plan DNS/failback.
+- **Requisito central:** operate application cutover and eventual failback after
+  promoting an asynchronous cross-Region replica.
+- **Palavras decisivas:** *promoted*, *DNS redirected*, *original Region
+  recovers*, *do not assume replication repaired itself*.
+- **A:** promotion creates an independent writable database with its own
+  endpoint; it does not move the original endpoint across Regions.
+- **B:** correct; clients need the promoted endpoint, and data reconciliation,
+  new replication, DNS cutback, and failback must be planned explicitly.
+- **C:** RDS Proxy targets and endpoints are explicitly configured and do not
+  discover and rebind to an independently promoted database in another Region.
+- **D:** failing back without reconciling writes or recreating replication risks
+  lost updates or divergent writable databases.
+- **Regra reutilizável:** replica promotion = independent database; pair it with
+  explicit endpoint, RPO, resynchronization, and failback procedures.
+- **Variação:** a managed global-database capability can change replication and
+  switchover operations, but its documented failover semantics still apply.
 - **Aulas:** 88 e 94.
 - **Referência:** [Promoting a read replica](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html#USER_ReadRepl.Promote).
 

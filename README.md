@@ -12,11 +12,16 @@ durante a rotina normal de estudo.
   são 25 dias de conteúdo e 7 dias de consolidação.
 - **Blocos de conteúdo:** B01–B25 completos, cada um com capítulo,
   laboratório, 10 questões, gabarito comentado e checklist D+2/D+7.
-- **Fase final:** 7 dias adicionais de consolidação, incluindo 3 simulados;
-  questões e resultados dos simulados serão adicionados quando forem feitos.
-- **Questões autorais:** 250, com 250 respostas comentadas em arquivos separados.
+- **Fase final:** 7 dias adicionais de consolidação, com `SIM-A` em 26/08,
+  Practice Udemy em 28/08 e `SIM-C` em 31/08. O `SIM-B` autoral privado fica
+  como tentativa extra após o ciclo ou substituto se a Udemy estiver
+  indisponível; o repositório publica apenas o manifesto, o gerador e as regras
+  de validação dos bancos autorais.
+- **Questões autorais do curso:** 250, com 190 `single`, 45 `multi-2`, 15
+  `multi-3` e 250 respostas comentadas em arquivos separados.
 - **Último progresso capturado da Udemy:** 13 de 425 itens; aula atual 14.
-- **Escopo oficial:** SAA-C03 e listas de serviços revalidados em 01/08/2026.
+- **Escopo oficial:** 189 itens individuais de Knowledge/Skills do SAA-C03 e
+  listas de serviços revalidados em 01/08/2026.
 - **Próximo passo de estudo:** começar pelo B01 e avançar em ordem, combinando
   as aulas selecionadas com o material do mesmo bloco.
 - **Pendências pessoais:** definir o teto mensal em USD e a data da prova.

@@ -1,22 +1,23 @@
 # B10 — Questões: Route 53 avançado, arquiteturas e Beanstalk
 
 **Quantidade:** 10 · **Idioma:** 5 português/5 inglês · **Tempo:** 15 min<br>
+**Formato:** questões single-answer e multi-answer; siga a instrução de cada questão<br>
 **Gabarito:** [arquivo separado](B10_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B10-01 | 2.2 | Failover routing | Situacional | Básica | Português |
-| B10-02 | 3.4 | Geolocation | Situacional | Intermediária | Português |
-| B10-03 | 3.4 | Multivalue | Fundamental | Intermediária | Português |
-| B10-04 | 3.4 | Resolver inbound | Situacional | Intermediária | Português |
-| B10-05 | 2.1 | Stateless architecture | Situacional | Intermediária | Português |
-| B10-06 | 3.4 | Geoproximity | Situacional | Intermediária | Inglês |
-| B10-07 | 3.4 | External registrar | Situacional | Básica | Inglês |
-| B10-08 | 3.4 | Resolver outbound | Situacional | Intermediária | Inglês |
-| B10-09 | 2.1 | Beanstalk worker | Fundamental | Intermediária | Inglês |
-| B10-10 | 4.2 | Beanstalk cost | Situacional | Básica | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B10-01 | 2.2 | Failover routing | single | fundamental | básica | Português |
+| B10-02 | 3.4 | Geolocation | single | fundamental | básica | Português |
+| B10-03 | 3.4 | Multivalue | multi-2 | fundamental | intermediária | Português |
+| B10-04 | 3.4 | Resolver inbound | single | situacional | intermediária | Português |
+| B10-05 | 2.1 | Stateless architecture | single | situacional | intermediária | Português |
+| B10-06 | 3.4 | Geoproximity | single | situacional | intermediária | Inglês |
+| B10-07 | 3.4 | External registrar | single | situacional | intermediária | Inglês |
+| B10-08 | 3.4 | Resolver outbound | multi-2 | integrada | avançada | Inglês |
+| B10-09 | 2.1 | Beanstalk worker | single | situacional | intermediária | Inglês |
+| B10-10 | 4.2 | Beanstalk cost | single | integrada | avançada | Inglês |
 
 ## Questões
 
@@ -45,10 +46,17 @@ outra Region tenha menor latência.
 Uma empresa quer retornar até oito IPs saudáveis via DNS. Ela aceita caching e
 que isso não seja um proxy de conexões.
 
-- A. Multivalue answer routing com health checks.
-- B. ALB path routing.
-- C. Geoproximity obrigatório.
-- D. MX records.
+Quais afirmações descrevem a solução adequada?
+
+**Choose TWO.**
+
+- A. Criar multivalue answer records e associar health checks aos records.
+- B. O Route 53 pode retornar até oito records saudáveis em resposta a uma
+  consulta multivalue.
+- C. Usar ALB path routing para fazer o DNS devolver os IPs dos targets.
+- D. Habilitar geoproximity, que é obrigatório para filtrar records não
+  saudáveis.
+- E. Usar MX records para representar os endpoints da aplicação.
 
 ### B10-04
 
@@ -97,32 +105,56 @@ A domain is registered with a third-party registrar. The company created a Route
 Workloads in a VPC must resolve `corp.local` by sending queries to DNS servers
 on premises over Direct Connect.
 
-- A. An inbound endpoint only.
-- B. A public ALB listener.
-- C. A multivalue record in a public zone.
-- D. An outbound Resolver endpoint, forwarding rule and network path to the
-  on-premises DNS servers.
+Which components should a solutions architect configure?
+
+**Choose TWO.**
+
+- A. An outbound Route 53 Resolver endpoint with network and security paths
+  that allow DNS traffic to the on-premises servers.
+- B. An inbound Resolver endpoint only.
+- C. A conditional forwarding rule for `corp.local` that targets the
+  on-premises DNS servers and is associated with the VPC.
+- D. A multivalue record for `corp.local` in a public hosted zone.
+- E. A public ALB listener that recursively forwards DNS queries.
 
 ### B10-09
 
-Which Elastic Beanstalk environment tier is designed to process background work
-from an Amazon SQS queue?
+An order application is deployed with AWS Elastic Beanstalk. The public web tier
+must return quickly after placing each order in Amazon SQS. A separately scalable
+managed environment must poll the queue, invoke the application code for each
+message, and expose health information without turning the background processors
+into public HTTP endpoints.
 
-- A. A Route 53 health-check environment.
-- B. Worker environment tier.
-- C. A single DNS record.
-- D. An EBS Multi-Attach tier.
+Which Elastic Beanstalk design provides the background-processing component?
+
+- A. A Route 53 health-check environment that executes the order code inside
+  authoritative DNS servers.
+- B. A worker environment tier that consumes messages from Amazon SQS and scales
+  its processing instances separately from the web tier.
+- C. A single DNS record whose resource values contain the queued order payloads.
+- D. An EBS Multi-Attach tier that converts shared block storage into an SQS
+  consumer.
 
 ### B10-10
 
-A team assumes that a load-balanced Elastic Beanstalk environment is free
-because there is no additional Beanstalk service charge. What is correct?
+A team deploys a load-balanced Elastic Beanstalk environment for a temporary
+campaign. The campaign ends, traffic falls to zero, and the team removes the
+application CNAME but leaves the environment running. A cost review must account
+for provisioned compute, load balancing, storage, logs, and retained data, while
+preserving any artifacts that have an explicit retention requirement.
 
-- A. Beanstalk environments never create AWS resources.
-- B. Only application source code can incur cost.
-- C. Underlying EC2, ELB, ASG-related capacity, EBS, logs and data can incur
-  charges and require cleanup.
-- D. Setting the environment CNAME to empty stops all charges.
+Which statement should guide the review and decommissioning plan?
+
+- A. Set the environment's Auto Scaling desired capacity to zero but retain the
+  load balancer, volumes, logs, and environment indefinitely; zero instances
+  guarantee that every billing dimension is zero.
+- B. Terminate the environment and delete its logs, snapshots, and retained data
+  immediately, before identifying ownership or applying retention requirements.
+- C. Underlying EC2, load-balancing, Auto Scaling capacity, EBS, logs, and data
+  retain their normal service pricing and may require explicit, retention-aware
+  cleanup even though Beanstalk has no additional service charge.
+- D. Remove the CNAME and archive only the application source bundle while
+  leaving the running environment and its supporting resources provisioned.
 
 ## Registro antes de corrigir
 

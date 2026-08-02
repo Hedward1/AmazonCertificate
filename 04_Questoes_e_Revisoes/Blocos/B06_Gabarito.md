@@ -8,12 +8,12 @@ Abra depois de responder às [questões B06](B06_Questoes.md).
 |---|---|---|
 | B06-01 | B | 3.4 |
 | B06-02 | B | 3.4 |
-| B06-03 | C | 3.4 |
+| B06-03 | B,D | 3.4 |
 | B06-04 | B | 2.2 |
 | B06-05 | B | 3.4 |
 | B06-06 | D | 3.4 |
 | B06-07 | C | 3.4 |
-| B06-08 | A | 2.2 |
+| B06-08 | A,D | 2.2 |
 | B06-09 | D | 3.4 |
 | B06-10 | A | 4.2 |
 
@@ -44,15 +44,18 @@ Abra depois de responder às [questões B06](B06_Questoes.md).
 - **Aulas:** 75–76.
 - **Referência:** [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html).
 
-## B06-03 — Resposta C
+## B06-03 — Resposta B,D
 
 - **Requisito central:** inserir e escalar firewalls virtuais transparentes.
 - **Palavras decisivas:** *appliance*, *transparente*, *caminho de rede*.
 - **A:** ALB termina tráfego L7 e não é gateway transparente.
-- **B:** NLB publica um serviço L4, mas não oferece o padrão completo de
-  inserção de appliances.
-- **C:** correta; GWLB, endpoints e route tables formam o caminho de inspeção.
-- **D:** uma NAT instance sem rotas não recebe o tráfego e cria ponto único.
+- **B:** correta; o GWLB distribui os fluxos aos appliances registrados no
+  target group.
+- **C:** NLB publica um serviço L4, mas não oferece o padrão completo de
+  inserção transparente de appliances.
+- **D:** correta; os endpoints e as route tables inserem o serviço no caminho do
+  tráfego.
+- **E:** uma NAT instance sem rotas não recebe o tráfego e cria ponto único.
 - **Regra reutilizável:** firewall/IDS/IPS fleet → GWLB + endpoints + rotas.
 - **Variação:** GWLB troca tráfego com appliances por GENEVE porta 6081.
 - **Aulas:** 77.
@@ -60,14 +63,22 @@ Abra depois de responder às [questões B06](B06_Questoes.md).
 
 ## B06-04 — Resposta B
 
-- **Requisito central:** diagnosticar diferença entre estado EC2 e saúde no TG.
-- **Palavras decisivas:** *running*, *unhealthy*, *não recebe tráfego*.
-- **A:** snapshot não testa a resposta atual da aplicação.
-- **B:** correta; path, porta, success code, aplicação e SG formam o health path.
-- **C:** password policy não controla o health check.
-- **D:** storage compartilhado não corrige endpoint unhealthy.
-- **Regra reutilizável:** EC2 `running` não implica target `healthy`.
-- **Variação:** valide também NACL, rota e AZ habilitada.
+- **Requisito central:** diagnosticar o caminho completo do health check sem
+  expor diretamente a instância privada.
+- **Palavras decisivas:** *running*, *unhealthy*, *outros targets saudáveis*,
+  *`/health`*, *porta 8080*, *internet bloqueada*.
+- **A:** deregistration delay drena conexões de um target removido; não transforma
+  uma resposta de health check inválida em saudável.
+- **B:** correta; protocolo, porta, path, success code, processo da aplicação e
+  autorização SG-do-ALB → SG-da-instância compõem o caminho do health check.
+- **C:** stickiness influencia a escolha entre targets saudáveis e não corrige o
+  teste de saúde nem deve enviar novos clientes a um target `unhealthy`.
+- **D:** Route 53 não corrige o health check interno e apontar clientes para um IP
+  privado contornaria o desenho do ALB.
+- **Regra reutilizável:** EC2 `running` não implica target `healthy`; valide
+  configuração do target group, resposta da aplicação e caminho de rede.
+- **Variação:** se todos os targets da AZ falharem, valide também NACL, rota e AZ
+  habilitada no load balancer.
 - **Aulas:** 72–74.
 - **Referência:** [ALB target health checks](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html).
 
@@ -115,15 +126,17 @@ Abra depois de responder às [questões B06](B06_Questoes.md).
 - **Aulas:** 72.
 - **Referência:** [X-Forwarded headers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/x-forwarded-headers.html).
 
-## B06-08 — Answer A
+## B06-08 — Answer A,D
 
 - **Requisito central:** let in-flight requests finish during target removal.
 - **Palavras decisivas:** *deployment*, *finish*, *removed*.
 - **A:** correct; deregistration delay keeps the target draining for the
   configured period.
 - **B:** DNS TTL does not drain backend requests.
-- **C:** EFS lifecycle changes file storage classes.
-- **D:** snapshot archive changes recovery economics.
+- **C:** snapshot archive changes recovery economics and does not drain targets.
+- **D:** correct; the application must remain alive long enough to finish work
+  during the configured draining period.
+- **E:** EFS lifecycle changes file storage classes, not target removal.
 - **Regra reutilizável:** graceful target removal → deregistration delay.
 - **Variação:** the application shutdown timeout must align with the delay.
 - **Aulas:** 82 (preparação para o B07).
@@ -131,32 +144,44 @@ Abra depois de responder às [questões B06](B06_Questoes.md).
 
 ## B06-09 — Answer D
 
-- **Requisito central:** define the role of a target group.
-- **Palavras decisivas:** *destinations*, *health-check configuration*.
-- **A:** a hosted zone contains DNS records.
-- **B:** a target group can contain multiple compatible targets.
-- **C:** ELB routes connections and does not replicate application data.
-- **D:** correct; rules/listeners forward to target groups, which organize
-  targets and health settings.
-- **Regra reutilizável:** listener accepts; rule selects; target group delivers
-  and checks health.
-- **Variação:** instance, IP, Lambda and ALB target types vary by load balancer
-  and protocol compatibility.
+- **Requisito central:** map independent routing rules to backends that have
+  different target types, ports, health checks, and deployment lifecycles.
+- **Palavras decisivas:** *host- and path-based rules*, *IP targets*, *EC2
+  instances*, *own health-check path*.
+- **A:** a hosted zone contains DNS records; it does not register per-service ALB
+  destinations or run application health checks.
+- **B:** a group can register multiple compatible targets, and supported target
+  types include instances and IP addresses.
+- **C:** ELB routes connections but does not create or synchronize application
+  data replicas.
+- **D:** correct; each listener rule can forward to the group that encapsulates
+  the appropriate target type, registered destinations, port, and health policy.
+- **Regra reutilizável:** listener accepts; rule selects; target group defines
+  backend compatibility, delivery, and health.
+- **Variação:** weighted forwarding across target groups can support a controlled
+  rollout when both backend groups are compatible with the listener action.
 - **Aulas:** 72–77.
 - **Referência:** [ALB target groups](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html).
 
 ## B06-10 — Answer A
 
-- **Requisito central:** identify cost from an idle test load balancer.
-- **Palavras decisivas:** *no targets*, *no traffic*, *cost*.
-- **A:** correct; time and capacity dimensions can still generate charges.
-- **B:** empty does not mean free.
-- **C:** load balancers do not expose an EC2-style stop state.
-- **D:** cleanup never grants authority over unrelated EIPs.
-- **Regra reutilizável:** delete unused ELB resources and audit dependencies
-  separately.
-- **Variação:** public IPv4, data processing and appliance licenses can add
-  costs depending on design.
+- **Requisito central:** remove an obsolete load-balancing cost while preserving
+  resources owned by other environments.
+- **Palavras decisivas:** *target groups empty*, *zero traffic*, *DNS reference*,
+  *without deleting unrelated resources*.
+- **A:** correct; an allocated load balancer can still incur charges, and safe
+  cleanup requires verifying references before explicitly deleting it.
+- **B:** scaling targets to zero can reduce compute cost but does not deprovision
+  the load balancer or eliminate its own billing dimensions.
+- **C:** a zero-weight DNS record changes routing, not the lifecycle or pricing
+  of the still-provisioned load balancer.
+- **D:** deleting a hosted zone and similarly named security groups without an
+  ownership and dependency check can disrupt resources shared by other
+  environments.
+- **Regra reutilizável:** for an idle managed endpoint, verify dependencies,
+  remove references, delete the endpoint, and audit separately owned resources.
+- **Variação:** public IPv4, data processing, WAF, logging, and third-party
+  appliance charges may require separate cleanup decisions.
 - **Aulas:** 73–79.
 - **Referência:** [Elastic Load Balancing pricing](https://aws.amazon.com/elasticloadbalancing/pricing/).
 

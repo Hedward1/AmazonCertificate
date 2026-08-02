@@ -68,6 +68,23 @@ USD 0,00 de recursos novos.
 - CloudTrail ajuda autoria.
 - Cleanup exige prova de propriedade.
 
+### Aplicação read-only — decisão de compute híbrido
+
+Sem criar recursos, compare um workload industrial que exige processamento no
+site, latência de poucos milissegundos com equipamentos locais e APIs AWS:
+
+| Critério | Region | Local Zones | AWS Outposts | on-premises autogerenciado |
+|---|---|---|---|---|
+| compute dentro do site do cliente |  |  |  |  |
+| responsabilidade por hardware/runtime |  |  |  |  |
+| capacidade elástica ou finita |  |  |  |  |
+| dependência de service link/Region |  |  |  |  |
+| custo ocioso e prazo de capacidade |  |  |  |  |
+
+Escolha a opção e registre: requisito decisivo, capacidade para crescimento e
+manutenção, conectividade resiliente, comportamento durante perda do service
+link e plano de continuidade. Direct Connect é conectividade, não compute local.
+
 ## 6. Execução
 
 
@@ -189,5 +206,7 @@ Justifique a escolha e as alternativas eliminadas.
 - [CloudFormation stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html)
 - [DeletionPolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html)
 - [Tagging resources](https://docs.aws.amazon.com/tag-editor/latest/userguide/tagging.html)
+- [AWS Outposts](https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html)
+- [AWS Outposts service link](https://docs.aws.amazon.com/outposts/latest/network-userguide/service-links.html)
 
 **Verificado em:** 01/08/2026.

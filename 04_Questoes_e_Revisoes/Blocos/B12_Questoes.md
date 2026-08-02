@@ -1,6 +1,6 @@
 # B12 — Questões
 
-**Formato:** 10 questões autorais, uma resposta correta por questão<br>
+**Formato:** 10 questões autorais, com itens single-answer e multi-answer; siga a instrução de cada questão<br>
 **Idioma:** 4 em português e 6 em inglês<br>
 **Tempo sugerido:** 20 minutos<br>
 **Aulas:** 150–171<br>
@@ -10,18 +10,18 @@ Responda sem abrir o gabarito. Registre resposta, confiança e palavra decisiva.
 
 ## Metadados das questões
 
-| ID | Domínio | Tarefa | Aulas | Idioma |
-|---|---:|---:|---|---|
-| B12-01 | 1 | 1.3 | 150–153 | Português |
-| B12-02 | 1 | 1.1 | 154–155, 160–161 | Português |
-| B12-03 | 1 | 1.3 | 156–162 | Português |
-| B12-04 | 3 | 3.4 | 170–171 | Português |
-| B12-05 | 3 | 3.4 | 165–167 | Inglês |
-| B12-06 | 1 | 1.3 | 150–153 | Inglês |
-| B12-07 | 1 | 1.3 | 150–153 | Inglês |
-| B12-08 | 1 | 1.1 | 154–155 | Inglês |
-| B12-09 | 3 | 3.2 | 164 | Inglês |
-| B12-10 | 4 | 4.4 | 169 | Inglês |
+| ID | Domínio | Tarefa | Aulas | Formato | Tipo | Dificuldade | Idioma |
+|---|---:|---:|---|---|---|---|---|
+| B12-01 | 1 | 1.3 | 150–153 | single | fundamental | básica | Português |
+| B12-02 | 1 | 1.1 | 154–155, 160–161 | single | fundamental | básica | Português |
+| B12-03 | 1 | 1.3 | 156–162 | multi-2 | integrada | avançada | Português |
+| B12-04 | 3 | 3.4 | 170–171 | single | situacional | intermediária | Português |
+| B12-05 | 3 | 3.4 | 165–167 | single | integrada | avançada | Inglês |
+| B12-06 | 1 | 1.3 | 150–153 | single | situacional | intermediária | Inglês |
+| B12-07 | 1 | 1.3 | 150–153 | single | situacional | intermediária | Inglês |
+| B12-08 | 1 | 1.1 | 154–155 | multi-3 | integrada | avançada | Inglês |
+| B12-09 | 3 | 3.2 | 164 | single | situacional | intermediária | Inglês |
+| B12-10 | 4 | 4.4 | 169 | single | integrada | avançada | Inglês |
 
 ### B12-01
 
@@ -46,12 +46,17 @@ receber credenciais AWS. Qual desenho é o mais seguro?
 ### B12-03
 
 Registros regulados não podem ser apagados nem pela conta root durante sete
-anos. Qual controle deve ser usado?
+anos. Quais configurações devem ser usadas?
 
-- A. S3 Object Lock em compliance mode com retenção apropriada
-- B. Versioning com delete markers
-- C. MFA Delete sem Versioning
-- D. Lifecycle expiration após sete dias
+**Choose TWO.**
+
+- A. Habilitar S3 Object Lock no bucket versionado que armazenará os registros.
+- B. Usar governance mode e conceder `s3:BypassGovernanceRetention` à conta
+  root.
+- C. Aplicar compliance mode com período de retenção de sete anos às versões dos
+  objetos.
+- D. Usar apenas MFA Delete, sem Object Lock.
+- E. Criar uma Lifecycle rule que expire as versões após sete dias.
 
 ### B12-04
 
@@ -66,12 +71,16 @@ failover entre Regions. Qual serviço é apropriado?
 ### B12-05
 
 A company serves the same private videos to users worldwide over HTTPS. It must
-reduce origin load and keep the S3 bucket nonpublic. Which design is best?
+reduce origin load, keep the S3 bucket nonpublic, and minimize infrastructure
+that the team must operate. Which design is best?
 
 - A. CloudFront with an S3 origin, OAC, and a bucket policy scoped to the distribution
-- B. Global Accelerator pointing directly to the S3 bucket
-- C. Public S3 website hosting with an open bucket policy
-- D. A separate Elastic IP for every object
+- B. S3 Transfer Acceleration with presigned URLs as the viewer delivery and
+  caching layer
+- C. CloudFront with the public S3 website endpoint as origin and an open bucket
+  policy
+- D. Global Accelerator in front of a self-managed public ALB and EC2 proxy tier
+  that retrieves each object from the private bucket
 
 ### B12-06
 
@@ -100,32 +109,58 @@ A browser request has valid AWS authorization, but JavaScript cannot read the
 response because the web origin is not allowed. Which configuration should be
 corrected?
 
-- A. The S3 CORS configuration
-- B. The KMS rotation schedule
-- C. The SQS visibility timeout
-- D. The Global Accelerator traffic dial
+**Select THREE.**
+
+- A. The S3 CORS rule must allow the requesting origin, HTTP method, and
+  required request headers.
+- B. The KMS key rotation schedule determines which browser origins can read
+  the response.
+- C. CORS does not grant access by itself; IAM and bucket authorization remain
+  separate checks.
+- D. The SQS visibility timeout controls the browser's cross-origin response.
+- E. A Global Accelerator traffic dial adds the required CORS response headers.
+- F. The browser can issue a preflight `OPTIONS` request, which must match an
+  applicable CORS rule.
 
 ### B12-09
 
-A new AWS customer in 2026 wants to transform S3 `GET` responses dynamically.
-The design proposal uses a newly created S3 Object Lambda Access Point. What is
-the key issue?
+A new AWS customer is designing a 2026 document-delivery path. Private source
+objects remain in Amazon S3, but each authorized request needs a dynamically
+redacted representation. The architecture proposal assumes that the customer
+can create a new S3 Object Lambda Access Point and make it the long-lived
+transformation dependency. The architect must validate current service
+availability before selecting and securing a supported transformation design.
 
-- A. Object Lambda supports only UDP
-- B. Object Lambda has been unavailable to new customers since November 7, 2025
-- C. Object Lambda requires every bucket to be public
-- D. Object Lambda cannot transform object data
+What is the blocking issue with the proposal?
+
+- A. S3 Object Lambda supports only UDP, so an HTTPS document-delivery path can
+  never use transformed object responses.
+- B. S3 Object Lambda has been unavailable to new customers since November 7,
+  2025, so this customer cannot base a new architecture on creating that access
+  point and must evaluate a currently supported transformation pattern.
+- C. S3 Object Lambda requires the source bucket and every transformed response
+  to be public, which conflicts with all authenticated access.
+- D. S3 Object Lambda was designed only to copy objects and never supported
+  transformation of response data.
 
 ### B12-10
 
-A team deploys a new JavaScript file many times per day through CloudFront. It
-wants low operational cost and immediate adoption of each release. Which
-strategy is preferred?
+A team serves a private S3 origin through CloudFront and deploys JavaScript many
+times per day. Each release must become immediately addressable, allow rapid
+rollback to a prior build, retain effective edge caching, and avoid recurring
+wildcard invalidations. The origin must remain private behind the distribution.
 
-- A. Use the same object name and invalidate `/*` after every upload
-- B. Disable caching globally
-- C. Use versioned object names and update the application reference
-- D. Replace CloudFront with a public EC2 instance
+Which release design best meets the requirements?
+
+- A. Overwrite the stable object name and issue a targeted invalidation for that
+  path after every release, making invalidation part of every deployment.
+- B. Overwrite one S3 key but append a new query string such as `?release=42`,
+  assuming the query string permanently preserves the bytes of every prior
+  build at the origin.
+- C. Publish immutable versioned object names, update the application reference
+  to the desired version, and retain prior versions for controlled rollback.
+- D. Maintain two CloudFront distributions that both use the same mutable origin
+  key and switch DNS between them, without retaining immutable prior objects.
 
 ## Registro antes de corrigir
 

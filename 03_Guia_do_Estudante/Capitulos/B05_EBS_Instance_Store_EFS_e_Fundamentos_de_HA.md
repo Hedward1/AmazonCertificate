@@ -19,7 +19,9 @@ Ao terminar, você deverá conseguir:
 5. explicar a cadeia de criptografia EBS com AWS KMS;
 6. selecionar EFS Regional ou One Zone e um throughput mode;
 7. distinguir escalabilidade vertical/horizontal e alta disponibilidade;
-8. reconhecer o papel inicial de um Elastic Load Balancer.
+8. dimensionar capacidade, crescimento, headroom, IOPS e throughput sem
+   superprovisionar storage;
+9. reconhecer o papel inicial de um Elastic Load Balancer.
 
 ## 2. Aulas deste bloco
 
@@ -74,6 +76,44 @@ Tipos anteriores podem aparecer em migração, mas novas decisões normalmente c
 ### 4.2 Multi-Attach não é filesystem distribuído
 
 Multi-Attach permite anexar volumes compatíveis a múltiplas instâncias compatíveis **na mesma AZ**. A aplicação deve coordenar gravações e usar filesystem cluster-aware. Um filesystem comum montado simultaneamente pode corromper dados. Para compartilhamento Linux simples entre AZs, pense primeiro em EFS.
+
+### 4.3 Dimensionamento econômico de capacidade — tarefa 4.1
+
+Dimensionar storage não é copiar o tamanho do disco atual nem comprar o máximo
+“para garantir”. Comece com dados medidos e com a data da próxima revisão:
+
+```text
+capacidade projetada = uso atual + (crescimento por período × períodos até a revisão)
+capacidade planejada = capacidade projetada × (1 + headroom justificado)
+```
+
+O **headroom** absorve variação e o tempo necessário para reagir. Ele não é um
+percentual universal: depende da volatilidade do crescimento, dos alarmes, do
+tempo para expandir ou migrar e do impacto de ficar sem espaço. Arredonde para
+cima e registre as hipóteses, mas não confunda margem justificada com anos de
+capacidade ociosa.
+
+Depois dimensione cada eixo separadamente:
+
+| Eixo | Evidência | Decisão |
+|---|---|---|
+| capacidade | GiB usados, retenção, crescimento e janela de revisão | tamanho que cobre projeção + headroom |
+| IOPS | pico sustentado, tamanho e padrão das operações | IOPS provisionadas e tipo SSD/HDD adequado |
+| throughput | MiB/s sustentados e tamanho médio de I/O | throughput provisionado e limite do caminho |
+| latência | percentis e sensibilidade da aplicação | classe de volume e arquitetura compatíveis |
+
+No `gp3`, tamanho, IOPS e throughput podem ser provisionados separadamente
+dentro das relações e limites vigentes. Portanto, não aumente GiB apenas para
+obter desempenho. Também valide o limite agregado e a largura de banda EBS da
+instância: o desempenho efetivo continua sendo o menor limite do caminho.
+
+O custo mensal comparável inclui capacidade provisionada, IOPS e throughput
+acima do baseline quando cobrados, snapshots e retenção. Subdimensionar pode
+causar indisponibilidade; superdimensionar cobra espaço e desempenho sem valor.
+Monitore uso, fila, latência, IOPS e throughput e revise periodicamente. EBS
+Elastic Volumes permite aumentar tamanho e ajustar desempenho em configurações
+compatíveis, mas não reduz o tamanho de um volume diretamente; reduzir exige
+criar um volume menor e migrar os dados.
 
 ## 5. Criptografia EBS
 
@@ -198,6 +238,9 @@ aplicação sem uma reescrita que o cenário não autoriza.
 
 - [ ] Consigo escolher EBS, EFS e instance store sem usar “mais rápido” como única justificativa.
 - [ ] Sei quando IOPS ou throughput domina.
+- [ ] Calculo crescimento até a próxima revisão e justifico o headroom.
+- [ ] Dimensiono GiB, IOPS e throughput como eixos distintos e comparo seu
+  custo.
 - [ ] Explico por que Multi-Attach pode corromper um filesystem comum.
 - [ ] Sei o efeito de uma KMS key indisponível.
 - [ ] Distingo EFS Regional de One Zone.
@@ -214,6 +257,9 @@ Sem consultar: (1) desenhe o escopo dos três storages; (2) escolha o tipo EBS p
 - Progresso: [checklist e revisões B05](../../06_Progresso/B05_Checklist_e_Revisoes.md)
 - [Amazon EBS volumes](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes.html)
 - [EBS volume types](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html)
+- [General Purpose SSD `gp3`](https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html)
+- [Create an inventory of EBS volumes](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-data-inventory.html)
+- [Select the correct resource type, size and number](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/select-the-correct-resource-type-size-and-number.html)
 - [EBS encryption](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html)
 - [EBS Multi-Attach](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html)
 - [EC2 instance store](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html)

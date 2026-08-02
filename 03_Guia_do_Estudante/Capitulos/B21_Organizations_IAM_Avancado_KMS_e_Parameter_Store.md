@@ -165,6 +165,28 @@ SecureString usa KMS.
 
 Secrets Manager é melhor quando rotação gerenciada é requisito.
 
+### Cápsula de decisão — AWS Resource Access Manager (AWS RAM)
+
+- **Problema resolvido:** compartilhar tipos de recurso suportados com contas,
+  OUs, a organização ou principals compatíveis sem criar cópias em cada conta.
+- **Relação SAA-C03:** tarefa 1.1 — acesso seguro entre contas; também pode
+  reduzir duplicação operacional e custo quando o recurso é compartilhável.
+- **Quando escolher:** uma conta central possui, por exemplo, uma subnet ou
+  outro recurso suportado que workloads de contas consumidoras devem usar.
+- **Quando não escolher:** o tipo de recurso não é compartilhável, é necessário
+  apenas conceder ações sobre dados, ou uma role/resource policy cross-account
+  atende de forma mais direta.
+- **Serviço semelhante:** cross-account IAM role/resource-based policy concede
+  ações; RAM cria uma resource share com permissões próprias do tipo suportado.
+- **Armadilha:** compartilhar não transfere ownership. Região, RAM permission,
+  IAM, SCPs, quotas e cobranças do serviço continuam aplicáveis; fora da
+  organização pode haver convite a aceitar.
+- **Questão situacional extra (fora do banco de 250):** várias contas devem lançar recursos em subnets
+  administradas por uma conta de rede, sem duplicar VPCs. **Resposta curta:**
+  compartilhe as subnets suportadas via AWS RAM e conceda IAM mínimo nas contas
+  consumidoras.
+- **Referência oficial:** [What is AWS RAM?](https://docs.aws.amazon.com/ram/latest/userguide/what-is.html).
+
 ## 6. Tabela de decisão
 
 | Requisito dominante | Escolha inicial | Motivo |
@@ -177,6 +199,7 @@ Secrets Manager é melhor quando rotação gerenciada é requisito.
 | Workforce em contas | IAM Identity Center | SSO e credenciais temporárias |
 | Microsoft AD gerenciado | Directory Service | integração de diretório |
 | Landing zone | Control Tower | governança multi-account |
+| Compartilhar recurso suportado entre contas | AWS RAM | resource share sem mudar ownership |
 | Criptografia controlada | Customer managed KMS key | policy e auditoria |
 | Configuração hierárquica | Parameter Store | parâmetros centralizados |
 
@@ -303,6 +326,8 @@ Faça inventário antes e depois. Exclua somente recursos criados por você e id
 - [Identity versus resource policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_identity-vs-resource.html)
 - [IAM Identity Center](https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html)
 - [Control Tower](https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html)
+- [AWS Resource Access Manager](https://docs.aws.amazon.com/ram/latest/userguide/what-is.html)
+- [Compartilhamento de recursos com AWS RAM](https://docs.aws.amazon.com/ram/latest/userguide/getting-started-sharing.html)
 - [KMS concepts](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html)
 - [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html)
 - [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)

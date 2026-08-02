@@ -2,7 +2,7 @@
 
 **Nível:** iniciante absoluto  
 **Sistema local:** Windows com navegador e PowerShell  
-**Tempo líquido:** 33 minutos  
+**Tempo líquido:** 39 minutos<br>
 **Espera assíncrona da AWS:** não conta como tempo líquido; não abandone o
 laboratório antes de confirmar o cleanup  
 **Aulas relacionadas:** 36–46, com foco em security groups, EC2 Instance
@@ -33,6 +33,8 @@ Ao terminar, você deverá ter:
 - associado uma role para EC2 sem permissions policies;
 - exigido IMDSv2;
 - inspecionado metadados sem exibir credenciais;
+- comparado disponibilidade e custo para uma classe de produção e outra de
+  desenvolvimento usando SLA, RTO e RPO;
 - terminado a instância;
 - confirmado a remoção do volume, endereço público e demais resíduos;
 - excluído a role e o security group criados no laboratório.
@@ -201,7 +203,7 @@ aws sts get-caller-identity --profile saa-lab-b02 --no-cli-pager
 
 O ARN não pode ser root.
 
-## 6. Roteiro de 33 minutos
+## 6. Roteiro de 39 minutos
 
 ### Etapa 1 — Preflight final — 4 minutos
 
@@ -211,6 +213,38 @@ O ARN não pode ser root.
 4. Anote as quantidades atuais de Elastic IPs e snapshots próprios.
 5. Registre a estimativa e confirme que não excede USD 0,25.
 6. Abra o console IAM e o console EC2 em abas separadas.
+
+### Etapa 1A — Classificar disponibilidade antes de comprar compute — 6 minutos
+
+Este exercício é somente de projeto; ele não autoriza criar recursos extras.
+Compare as duas classes:
+
+| Critério | Checkout de produção | Desenvolvimento descartável |
+|---|---|---|
+| impacto | vendas e pagamentos indisponíveis | desenvolvedor aguarda reconstrução |
+| objetivo de disponibilidade | 99,95% durante operação | sem SLA externo; horário comercial |
+| RTO | 10 minutos | 8 horas |
+| RPO | 1 minuto | dados sintéticos podem ser recriados |
+| falha no escopo | perda de uma AZ | interrupção de instância aceita |
+
+Registre uma decisão para cada linha abaixo:
+
+| Decisão | Checkout de produção | Desenvolvimento descartável |
+|---|---|---|
+| quantidade de AZs | | |
+| baseline interrompível? | | |
+| recuperação de dados | | |
+| automação/recriação | | |
+| agenda ou scale-to-zero | | |
+| principal custo aceito | | |
+
+**Solução esperada:** o checkout exige baseline não interrompível, redundância
+entre AZs, health checks, dados e failover compatíveis com RTO/RPO e testes de
+recuperação. Desenvolvimento pode usar uma AZ quando o risco é aceito, ser
+desligado fora da janela e usar Spot somente se a automação reconstruir o
+ambiente após interrupção. Savings Plans ou RIs podem descontar uso estável,
+mas não criam disponibilidade; o pequeno recurso que será lançado neste LAB
+continua On-Demand e não representa a arquitetura de produção.
 
 ### Etapa 2 — Criar a role vazia — 3 minutos
 
@@ -778,6 +812,9 @@ Instance type: __________________
 Free tier eligible label confirmed: sim / não
 Number of instances launched: 1
 Purchase option: On-Demand
+Production availability decision recorded: sim / não
+Development availability decision recorded: sim / não
+RTO and RPO interpreted correctly: sim / não
 CPU credit mode: standard / não se aplica
 Public IPv4 automatic: sim
 Elastic IP allocated: não
@@ -832,6 +869,11 @@ Não registre:
   compute.
 - Um public IPv4 automático não é um Elastic IP.
 - On-Demand é apropriado para laboratório curto e sem compromisso.
+- disponibilidade deve seguir criticidade, objetivo/SLA, RTO, RPO e escopo de
+  falha; o rótulo produção/não produção sozinho não decide a arquitetura;
+- redundância Multi-AZ e capacidade ociosa aumentam custo, enquanto Spot,
+  agenda e scale-to-zero só cabem quando a interrupção/recriação é aceitável;
+- Savings Plans e RIs tratam preço, não substituem redundância ou recuperação;
 - Free tier eligibility depende da conta e da oferta vigente, não apenas do nome
   tradicional do instance type.
 
@@ -856,8 +898,11 @@ Não registre:
 - [Public IPv4 pricing](https://aws.amazon.com/vpc/pricing/)
 - [Public IPv4 Free Tier allowance](https://aws.amazon.com/about-aws/whats-new/2024/02/aws-free-tier-750-hours-free-public-ipv4-addresses/)
 - [How EC2 termination affects related resources](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-termination-works.html)
+- [Understanding availability needs](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/understanding-availability-needs.html)
+- [Availability and cost](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/availability.html)
+- [Spot Instance interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html)
 - [Delete an EBS volume](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-deleting-volume.html)
 - [Delete EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-deleting-snapshot.html)
 - [EC2 Global View](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/global-view.html)
 
-**Referências verificadas em:** 24/07/2026.
+**Referências verificadas em:** 01/08/2026.

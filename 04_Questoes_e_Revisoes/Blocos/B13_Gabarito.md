@@ -8,12 +8,12 @@ Corrija somente após responder às [questões B13](B13_Questoes.md).
 |---|---|---|
 | B13-01 | D | 3.1 |
 | B13-02 | A | 3.1 |
-| B13-03 | C | 3.5 |
+| B13-03 | B,D | 3.5 |
 | B13-04 | B | 3.5 |
 | B13-05 | C | 3.1 |
 | B13-06 | A | 3.5 |
 | B13-07 | B | 3.1 |
-| B13-08 | B | 3.1 |
+| B13-08 | B,D | 3.1 |
 | B13-09 | A | 3.1 |
 | B13-10 | B | 3.5 |
 
@@ -43,14 +43,18 @@ Corrija somente após responder às [questões B13](B13_Questoes.md).
 - **Referência:** [FSx for Lustre](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html).
 - **Erro comum:** escolher S3 sozinho quando a aplicação requer filesystem paralelo.
 
-## B13-03 — Resposta C
+## B13-03 — Resposta B,D
 
 - **Requisito central:** copiar arquivos online com agendamento, automação e verificação.
 - **Palavras decisivas:** *milhões de arquivos*, *NFS*, *agendamento*, *verificação*.
 - **A:** Direct Connect fornece conectividade, mas não é o motor de cópia.
-- **B:** S3 File Gateway mantém uma interface híbrida em vez de ser apenas uma tarefa de migração.
-- **C:** correta; DataSync executa, agenda, verifica e monitora transferências.
-- **D:** SNS é pub/sub e não copia arquivos.
+- **B:** correta; o agent acessa o NFS on-premises, e as locations descrevem a
+  origem e o destino S3.
+- **C:** S3 File Gateway mantém uma interface híbrida em vez de ser uma tarefa
+  de migração com verificação.
+- **D:** correta; a DataSync task executa, agenda e verifica a transferência com
+  as permissões necessárias.
+- **E:** SNS é pub/sub e não copia arquivos.
 - **Regra reutilizável:** transferência online recorrente ou planejada → DataSync.
 - **Aulas:** 180.
 - **Referência:** [AWS DataSync](https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html).
@@ -108,41 +112,65 @@ Corrija somente após responder às [questões B13](B13_Questoes.md).
 - **Reference:** [Volume Gateway](https://docs.aws.amazon.com/storagegateway/latest/vgw/WhatIsStorageGateway.html).
 - **Common trap:** reversing cached and stored modes.
 
-## B13-08 — Answer B
+## B13-08 — Answer B,D
 
 - **Central requirement:** preserve NetApp ONTAP and multiprotocol features.
 - **Decisive words:** *NetApp*, *NFS/SMB/iSCSI*, *snapshots*, *clones*.
 - **A:** EFS supplies NFS but not the requested ONTAP capabilities.
-- **B:** correct; FSx for NetApp ONTAP is purpose-built for these requirements.
+- **B:** correct; FSx for NetApp ONTAP supports the requested NFS, SMB, and iSCSI
+  access.
 - **C:** FSx for Lustre targets parallel compute and HPC.
-- **D:** S3 is object storage rather than a multiprotocol ONTAP filesystem.
+- **D:** correct; it preserves familiar ONTAP capabilities such as snapshots and
+  clones.
+- **E:** S3 is object storage rather than a multiprotocol ONTAP filesystem.
 - **Reusable rule:** NetApp migration or ONTAP features → FSx for NetApp ONTAP.
+- **Variation:** choose another FSx engine only when its workload and protocol
+  model match the requirement.
 - **Lessons:** 175–176.
 - **Reference:** [FSx for ONTAP](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html).
 - **Common trap:** choosing an FSx family without matching its engine and protocol.
 
 ## B13-09 — Answer A
 
-- **Central requirement:** shared elastic NFS for Linux across Availability Zones.
-- **Decisive words:** *Linux*, *NFS*, *multi-AZ*, *no specialized engine*.
-- **A:** correct; EFS is the general-purpose regional NFS option.
-- **B:** EBS is Availability Zone-scoped block storage.
-- **C:** Glacier Flexible Retrieval is an object archival class.
-- **D:** Transfer Family is a managed transfer endpoint, not a mounted NFS share.
-- **Reusable rule:** shared elastic regional NFS → Amazon EFS.
+- **Central requirement:** provide one elastic POSIX namespace to disposable Linux
+  instances across Availability Zones without a specialized file-system engine.
+- **Decisive words:** *same POSIX hierarchy*, *three AZs*, *instances replaced*,
+  *without pre-provisioning*, *no specialized engine*.
+- **A:** correct; Regional EFS supplies managed, elastic NFS access through mount
+  targets in the VPC Availability Zones and decouples files from instance life.
+- **B:** EBS is zonal block storage and is not a general cross-AZ shared NFS
+  namespace for an arbitrary fleet.
+- **C:** Glacier Flexible Retrieval is an archival S3 storage class, not an active
+  low-latency POSIX file system.
+- **D:** Transfer Family exposes managed transfer endpoints; it does not become
+  the EC2 fleet's shared kernel-mounted NFS storage layer.
+- **Reusable rule:** shared elastic Regional NFS for a changing Linux fleet → EFS
+  plus mount targets and network authorization in the required AZs.
+- **Variation:** specialized protocol or workload requirements can shift the
+  decision to the matching FSx engine.
 - **Lessons:** 181.
 - **Reference:** [Amazon EFS](https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html).
 - **Common trap:** choosing FSx when no specialized filesystem is required.
 
 ## B13-10 — Answer B
 
-- **Central requirement:** distinguish data movement from an ongoing hybrid interface.
-- **Decisive words:** *automates transfer tasks*, *exposes interface*.
-- **A:** this reverses the roles of the two services.
-- **B:** correct; DataSync moves data, while Storage Gateway presents hybrid storage protocols.
-- **C:** neither service generally requires a Snow device.
-- **D:** SFTP endpoints are supplied by Transfer Family, not Storage Gateway.
-- **Reusable rule:** copy/migrate → DataSync; preserve legacy storage protocol → Storage Gateway.
+- **Central requirement:** satisfy both managed scheduled movement and a
+  persistent legacy storage interface without treating them as the same problem.
+- **Decisive words:** *scheduled verified transfers*, *incremental tasks and
+  reports*, *legacy NFS or iSCSI interface*, *movement versus interface*.
+- **A:** this reverses the services: DataSync is transfer-oriented, while Storage
+  Gateway provides persistent supported hybrid storage interfaces.
+- **B:** correct; DataSync schedules, moves, verifies, and reports transfer tasks,
+  whereas Storage Gateway lets applications use supported file, volume, or tape
+  interface patterns integrated with AWS storage.
+- **C:** network-based deployments of both services do not generally require a
+  physical Snow device.
+- **D:** managed SFTP endpoints are a Transfer Family use case; Storage Gateway
+  supports hybrid file, volume, and tape gateway patterns.
+- **Reusable rule:** copy/migrate/synchronize data → DataSync; preserve a legacy
+  storage interface during hybrid operation → the matching Storage Gateway mode.
+- **Variation:** if the network cannot satisfy the migration window, evaluate an
+  offline transfer service separately from either interface decision.
 - **Lessons:** 177–180.
 - **Reference:** [DataSync](https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html) and [Storage Gateway](https://docs.aws.amazon.com/storagegateway/).
 - **Common trap:** selecting by service name instead of interface and duration.

@@ -110,6 +110,20 @@ aulas do curso, “Lambda” sem qualificador significa a função event-driven
 padrão; em projetos atuais, identifique explicitamente o modelo de execução
 avaliado.
 
+### 5.2 Classificação das novidades de Lambda
+
+| Etiqueta | Conteúdo | Tratamento no estudo |
+|---|---|---|
+| **`núcleo SAA-C03`** | Lambda Function padrão, timeout de até 15 minutos, concurrency, idempotência e escolha Lambda versus containers/Step Functions | dominar para a prova |
+| **`atualização relevante`** | Lambda Durable Functions: workflow com checkpoints/replay, steps e waits, capaz de manter uma execução durável por até um ano | entender a diferença; não dizer que toda invocação Lambda dura um ano |
+| **`conteúdo profissional opcional`** | Lambda MicroVMs: ambiente isolado com SO, lifecycle controlado, endpoint dedicado e estado preservado por sessão de até oito horas | reconhecer o caso de sandbox/sessão; não memorizar APIs, quotas ou Regions |
+
+Conteúdo profissional opcional não é matéria para decorar. Ele existe para não
+aplicar a regra dos 15 minutos ao produto errado. Durable Functions compete com
+Step Functions quando o workflow fica próximo do código Lambda; Step Functions
+continua preferível quando a orquestração visual e as integrações entre serviços
+são o requisito. MicroVMs não são “Lambda Function com timeout maior”.
+
 Para processamento longo, stateful ou com controle de runtime/host, use
 containers/EC2/Batch/Step Functions conforme o requisito.
 
@@ -117,9 +131,11 @@ containers/EC2/Batch/Step Functions conforme o requisito.
 
 Um job determinístico leva 40 minutos e não pode ser dividido. Uma Lambda
 Function padrão não atende ao timeout máximo. Use ECS/Fargate, AWS Batch ou EC2
-conforme scheduling e controle; em uma avaliação atual fora do escopo do curso,
-compare também Lambda MicroVMs. Aumentar memory pode acelerar alguns jobs, mas
-não altera o teto de 15 minutos por invocação da função padrão.
+conforme scheduling e controle. Não escolha Lambda MicroVMs apenas pela duração:
+compare-as somente se também houver sandbox de código não confiável, isolamento
+por usuário/job, estado de sessão ou controle de SO. Aumentar memory pode
+acelerar alguns jobs, mas não altera o teto de 15 minutos por invocação da função
+padrão.
 
 ## 6. Concurrency e scaling
 
@@ -252,6 +268,10 @@ start; roles/policies; edge comparison; lista completa de cleanup.
 - [Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html)
 - [Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html)
 - [Modelos atuais do AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
+- [Lambda Durable Functions](https://docs.aws.amazon.com/lambda/latest/dg/durable-functions.html)
+- [Durable Functions versus Step Functions](https://docs.aws.amazon.com/lambda/latest/dg/durable-step-functions.html)
+- [Lambda MicroVMs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-microvms-guide.html)
+- [Executar Lambda MicroVMs](https://docs.aws.amazon.com/lambda/latest/dg/microvms-launching.html)
 - [Lambda quotas](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
 - [Lambda concurrency](https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html)
 - [Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html)

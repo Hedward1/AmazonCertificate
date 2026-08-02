@@ -148,6 +148,41 @@ Containers compartilham o kernel do host; não são VMs completas. Nunca grave
 estado durável apenas no filesystem efêmero do container. Use S3, EFS, EBS ou
 banco conforme o padrão.
 
+### 6.1 Migração de uma aplicação para containers
+
+Containerizar não é copiar a VM inteira para uma image. Use este fluxo de
+decisão:
+
+1. **Avaliar:** inventarie processos, portas, dependências, jobs, estado local,
+   requisitos de sistema operacional, licenças e padrões de tráfego. Se o prazo
+   só permite rehost, AWS Application Migration Service pode ser mais adequado
+   que uma falsa modernização.
+2. **Separar estado e configuração:** mova sessões e dados duráveis para o
+   serviço apropriado; entregue configuração por Parameter Store e segredos por
+   Secrets Manager, usando task role em vez de access keys estáticas.
+3. **Construir e testar:** crie uma image mínima e reproduzível, faça scan,
+   publique no ECR e fixe tag imutável ou digest. Registre CPU, memória, portas,
+   logs, health check, roles e volumes em uma task definition versionada.
+4. **Escolher a plataforma:** ECS/Fargate reduz gestão de hosts; ECS on EC2 dá
+   controle da capacidade; EKS é indicado quando Kubernetes é um requisito real,
+   não apenas por portabilidade genérica.
+5. **Migrar tráfego:** teste fora de produção e use rolling ou blue/green com
+   métricas, health checks e rollback. Só desligue o ambiente anterior depois de
+   validar estado, integrações, observabilidade e recuperação.
+
+**Quando não escolher containers:** dependências de kernel/licença ou um prazo
+de rehost podem tornar EC2/MGN mais seguro no primeiro ciclo. Containers também
+não tornam automaticamente uma aplicação stateless ou resiliente.
+
+### Cenário resolvido — monólito stateful para ECS
+
+Uma API em EC2 grava sessão no disco e usa credenciais IAM estáticas. Para
+migrá-la com baixo esforço operacional, externalize sessão/dados, use
+Parameter Store/Secrets Manager e task role, publique a image versionada no ECR
+e implante um ECS service em Fargate atrás do ALB. Faça cutover controlado com
+health checks e rollback; simplesmente montar o disco do host em um único
+container preservaria o ponto único de falha.
+
 ## 7. Modelo do Amazon ECS
 
 ```text
@@ -243,4 +278,6 @@ task definition/task/service/cluster, compare EC2/Fargate e enumere cleanup.
 - [Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html)
 - [Amazon MQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html)
 - [Amazon ECS components](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html)
+- [Containerizar e migrar aplicações com AWS App2Container](https://docs.aws.amazon.com/prescriptive-guidance/latest/containerize-java-a2c/introduction.html)
+- [Amazon ECS blue/green deployments](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html)
 - [Fargate ou Lambda — guia de decisão](https://docs.aws.amazon.com/pdfs/decision-guides/latest/fargate-or-lambda/fargate-or-lambda.pdf)

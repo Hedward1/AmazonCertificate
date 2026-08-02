@@ -79,8 +79,9 @@ aulas correspondentes da Udemy.
 
 17. Escolha de bancos de dados purpose-built  
     Curso: seção 21.
-18. Analytics, ingestão, transformação e visualização, incluindo Amazon Quick
-    Sight (antigo QuickSight) dentro do Amazon Quick
+18. Analytics, ingestão, transformação e visualização, incluindo Amazon
+    QuickSuite no guia SAA-C03, Amazon Quick na documentação do produto e seu
+    componente de BI Amazon Quick Sight (antigo QuickSight)
     Curso: seção 22.
 19. Serviços gerenciados de Machine Learning relevantes ao exame  
     Curso: seção 23.

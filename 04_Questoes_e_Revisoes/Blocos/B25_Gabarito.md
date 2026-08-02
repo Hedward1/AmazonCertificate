@@ -9,13 +9,13 @@ Volte às [questões B25](B25_Questoes.md) antes de corrigir.
 | B25-01 | A | 2.2 |
 | B25-02 | B | 2.2 |
 | B25-03 | A | 1.1 |
-| B25-04 | B | 1.2 |
-| B25-05 | C | 2.2 |
-| B25-06 | B | 3.5 |
+| B25-04 | A,D | 1.2 |
+| B25-05 | C | 3.2 |
+| B25-06 | B | 4.2 |
 | B25-07 | A | 4.2 |
 | B25-08 | B | 2.2 |
-| B25-09 | A | 2.2 |
-| B25-10 | C | 2.2 |
+| B25-09 | A,C,E | 4.2 |
+| B25-10 | A | 2.2 |
 
 ## B25-01 — Answer A
 
@@ -62,107 +62,115 @@ Volte às [questões B25](B25_Questoes.md) antes de corrigir.
 - **Lessons:** 370
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-servicerole.html)
 
-## B25-04 — Answer B
+## B25-04 — Answer A,D
 
-- **Central requirement:** Sessions must use managed identity and can be logged.
-- **Decisive words:** private, no SSH, no public IP, logged sessions
-- **Why the correct answer works:** Session Manager provides managed interactive access without opening inbound administrative ports when prerequisites are met.
-- **A:** WAF filters web requests.
-- **B:** This is correct.
-- **C:** CloudFront is a CDN.
-- **D:** Snowball Edge is a legacy data-transfer and edge-compute service approaching end of support; it is unrelated to managed administrative sessions.
-- **Reusable rule:** Administrative access without inbound ports points to Session Manager.
-- **Cost/operation:** Logs, VPC endpoints, and storage can incur charges.
-- **Variation:** Nodes need SSM Agent, IAM permissions, and network connectivity.
-- **Lessons:** 373–374
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html)
+- **Central requirement:** administer isolated instances through IAM-authorized, logged sessions without inbound ports or internet egress.
+- **Decisive words:** *no SSH*, *no public IP*, *no general internet*, *IAM*, *auditable*.
+- **A:** correct; Session Manager provides managed interactive access and supports session logging when prerequisites are configured.
+- **B:** incorrect; opening SSH and sharing keys violates every access constraint.
+- **C:** incorrect; CloudFront is a CDN and does not provide operating-system sessions.
+- **D:** correct; Systems Manager interface endpoints and private DNS provide private service reachability from the isolated VPC.
+- **E:** incorrect; WAF authorizes and filters supported web requests, not shell commands.
+- **Reusable rule:** private Session Manager requires both the management plane capability and an IAM/network path from the managed node.
+- **Lessons:** 373–374.
+- **Official reference:** [Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html) and [Systems Manager VPC endpoints](https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html).
 
 ## B25-05 — Answer C
 
-- **Central requirement:** It does not need continuous stream processing.
-- **Decisive words:** queued, containerized jobs, batch demand
-- **Why the correct answer works:** AWS Batch schedules and runs containerized batch computing workloads on managed compute environments.
-- **A:** Pinpoint is a legacy engagement service approaching end of support and is unrelated to batch compute.
-- **B:** AppFlow transfers data between SaaS and AWS.
-- **C:** This is correct.
-- **D:** Lex builds conversational interfaces.
-- **Reusable rule:** Queued containerized batch jobs point to AWS Batch.
+- **Central requirement:** schedule dependent, prioritized container jobs onto elastic compute with workload-specific capacity/cost choices.
+- **Decisive words:** dependencies, queue priorities, retry, GPU, Spot, may wait
+- **Why the correct answer works:** AWS Batch supplies job definitions/queues/scheduling and orchestrates supported managed compute environments for batch demand.
+- **A:** ECS workers plus SQS can form a valid custom batch platform, but the option requires building the dependencies, priority scheduling, retries, placement, and scaling logic AWS Batch already supplies.
+- **B:** Step Functions can orchestrate ECS tasks and Distributed Map can fan out work, but recreating fair job queues and heterogeneous compute scheduling adds complexity for this batch-compute requirement.
+- **C:** correct; queues and policies express scheduling, definitions express resources/retries, and compute-environment choices balance compatibility, interruption, and cost.
+- **D:** EKS Jobs can run the workloads and specialized schedulers exist, but the proposal adds Kubernetes control/data-plane operations without a Kubernetes constraint.
+- **Reusable rule:** queued finite container jobs with dependencies and elastic compute point to AWS Batch; continuous records and stateful windows point to streaming services.
 - **Cost/operation:** The service orchestrates compute, and the underlying compute and storage are billed.
-- **Variation:** Continuous event streams point to streaming services instead.
+- **Variation:** Validate whether each job can tolerate interruption before using Spot and whether its resource shape is supported by the chosen compute environment.
 - **Lessons:** 367–381
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/batch/latest/userguide/what-is-batch.html)
 
 ## B25-06 — Answer B
 
-- **Central requirement:** The solution should use a managed data integration service.
-- **Decisive words:** SaaS, S3, minimal code, managed flow
-- **Why the correct answer works:** AppFlow provides managed data flows between supported SaaS applications and AWS services.
-- **A:** Outposts runs AWS infrastructure on premises.
-- **B:** This is correct.
-- **C:** Inspector assesses vulnerabilities.
-- **D:** Direct Connect supplies connectivity, not the SaaS integration flow.
-- **Reusable rule:** Supported SaaS-to-AWS managed data flow points to AppFlow.
-- **Cost/operation:** Flow runs, data processing, destinations, and transfer can incur charges.
-- **Variation:** Glue is more appropriate for broader custom ETL requirements.
-- **Lessons:** 379
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/appflow/latest/userguide/what-is-appflow.html)
+- **Central requirement:** run supported AWS compute and storage inside the
+  customer facility for local latency/processing while AWS manages the local
+  infrastructure.
+- **Decisive words:** *inside the facility*, *local latency*, *AWS-managed*,
+  *finite capacity planned*, *service link*.
+- **Why the correct answer works:** Outposts extends supported AWS
+  infrastructure, services, APIs, and tools to the customer site and integrates
+  Outpost subnets with the parent VPC/Region.
+- **A:** Local Zones place resources in AWS-operated metropolitan locations;
+  they are not installed in the customer's facility.
+- **B:** correct; it meets local execution and AWS-management requirements, but
+  requires site readiness, capacity planning, and resilient Region connectivity.
+- **C:** Direct Connect provides private connectivity to AWS; it does not put EC2
+  or EBS hardware at the customer site.
+- **D:** customer-owned infrastructure can satisfy locality, but the customer
+  remains responsible for the hardware/platform and does not receive the
+  requested Outposts operating model.
+- **Reusable rule:** choose Outposts for AWS-managed compute at the customer
+  site; choose Local Zones for nearby AWS placement; choose Direct Connect for
+  connectivity to a Region.
+- **Cost/operation:** installed capacity is finite and can be idle; size for
+  growth, maintenance/failure headroom, facility needs, and connectivity.
+- **Variation:** if no local-execution requirement exists, a Region connected by
+  Direct Connect is usually simpler and more elastic.
+- **Lessons:** 377
+- **Official reference:** [What is AWS Outposts?](https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html)
 
 ## B25-07 — Answer A
 
-- **Central requirement:** The feature should detect anomalies, not enforce a hard spending cap.
-- **Decisive words:** unexpected spending, learned patterns, notifications
-- **Why the correct answer works:** Cost Anomaly Detection uses models to identify unusual spending and sends notifications through subscriptions.
-- **A:** This is correct.
-- **B:** A security group controls network access.
-- **C:** Drift compares stack configuration.
-- **D:** ACM manages certificates.
-- **Reusable rule:** Unusual cost pattern points to Cost Anomaly Detection; threshold planning points to Budgets.
+- **Central requirement:** detect model-based spend deviations, notify owners, preserve attribution analysis, and keep explicit threshold budgets separate.
+- **Decisive words:** learned patterns, service-level deviation, attribute, separate forecast threshold, not stop resources
+- **Why the correct answer works:** Cost Anomaly Detection models expected spend and uses subscriptions for alerts; Cost Explorer/cost data supports investigation, while Budgets covers configured thresholds.
+- **A:** correct; each capability has a distinct role and none is misrepresented as automatic resource shutdown.
+- **B:** Budgets is correct for explicit thresholds and forecasts, but it is not the requested learned-pattern anomaly detector.
+- **C:** custom Cost Explorer analytics could be built, but the team would own statistical modeling, seasonality, state, and alert quality already provided by the managed capability.
+- **D:** a static billing alarm lacks learned service-level patterns and the richer monitor/subscription dimensions requested.
+- **Reusable rule:** anomaly model → Cost Anomaly Detection; explicit actual/forecast threshold → Budgets; interactive attribution → Cost Explorer or detailed cost data.
 - **Cost/operation:** Alerts do not stop resources; investigation and cleanup remain necessary.
-- **Variation:** Use Cost Explorer to attribute the anomaly by service, account, or Region.
+- **Variation:** Notifications require ownership and a remediation runbook because cost alerts themselves do not stop resources.
 - **Lessons:** 375–376
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html)
 
 ## B25-08 — Answer B
 
-- **Central requirement:** The team wants the complete current set of Well-Architected pillars.
-- **Decisive words:** complete, pillars, environmental impact
-- **Why the correct answer works:** Those are the six pillars of the AWS Well-Architected Framework.
-- **A:** This is a service-category list, not the pillars.
-- **B:** This is correct.
-- **C:** These are practices, not the official pillars.
-- **D:** These are technical topics, not the pillars.
-- **Reusable rule:** Memorize the six pillars as decision areas, not products.
+- **Central requirement:** evaluate cross-pillar trade-offs with the complete framework and record an improvement plan without automatic production changes.
+- **Decisive words:** single-AZ, reliability versus cost/sustainability, automation, documented improvement, not silently changes
+- **Why the correct answer works:** the six pillars are simultaneous decision dimensions, and the Well-Architected Tool records workloads, risks, and improvement items for human-governed remediation.
+- **A:** these services provide valuable signals, but automated checks cannot replace workload-specific pillar trade-offs, business context, and an owned improvement plan.
+- **B:** correct; it uses the complete current pillar set and correctly limits the Tool's role to review/documentation rather than autonomous remediation.
+- **C:** the Tool is appropriate, but omitting Sustainability means the review is not using the complete current framework requested.
+- **D:** recording improvements does not authorize untested automatic production mutations; owners must prioritize, test, and implement changes through governance.
+- **Reusable rule:** Well-Architected is a trade-off framework across six pillars; the Tool records review state and improvement plans but does not redesign workloads automatically.
 - **Cost/operation:** Cost Optimization is one pillar and must be balanced with the other five.
-- **Variation:** The Well-Architected Tool records reviews and improvement plans but does not change resources.
+- **Variation:** Revisit reviews after material workload or business changes; a risk accepted today may need a different trade-off later.
 - **Lessons:** 382–385
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html)
 
-## B25-09 — Answer A
+## B25-09 — Answer A,C,E
 
-- **Central requirement:** The architect must remember that coverage varies by support plan.
-- **Decisive words:** checks, recommendations, support plan
-- **Why the correct answer works:** Trusted Advisor analyzes the account and provides checks and recommendations, with access depending on support level.
-- **A:** This is correct.
-- **B:** Kendra is enterprise search.
-- **C:** DMS migrates data.
-- **D:** Textract extracts documents.
-- **Reusable rule:** Account recommendations across operational categories point to Trusted Advisor.
-- **Cost/operation:** Recommendations identify opportunities but do not automatically remove resources.
-- **Variation:** Do not assume every check is available on every plan.
-- **Lessons:** 384
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html)
+- **Central requirement:** deliver detailed cost data, utilization-based rightsizing, and learned-pattern anomaly alerts.
+- **Decisive words:** *line-item*, *SQL analysis*, *rightsizing*, *deviates from learned patterns*.
+- **A:** correct; Cost and Usage Reports deliver detailed billing and usage records to S3.
+- **B:** incorrect; Artifact provides compliance reports and agreements, not rightsizing.
+- **C:** correct; Compute Optimizer analyzes utilization for supported resource recommendations.
+- **D:** incorrect; Inspector assesses security vulnerabilities, not billing allocation.
+- **E:** correct; Cost Anomaly Detection learns patterns and sends alerts for anomalous spend.
+- **F:** incorrect; CloudTrail is an API audit source, not the authoritative line-item billing dataset.
+- **Reusable rule:** CUR is detailed cost evidence, Compute Optimizer is rightsizing, and Cost Anomaly Detection is behavioral spend alerting.
+- **Lessons:** 375–384.
+- **Official reference:** [Cost and Usage Reports](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html), [Compute Optimizer](https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html), and [Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html).
 
-## B25-10 — Answer C
+## B25-10 — Answer A
 
-- **Central requirement:** Cleanup must be verified, and the practice exam must remain unseen until SIM B.
-- **Decisive words:** Retain, remains, reserved practice exam
-- **Why the correct answer works:** Retain deliberately preserves the resource, so cleanup requires explicit ownership verification; the study plan reserves the exam for SIM B.
-- **A:** Both assumptions are wrong.
-- **B:** Deleting unknown resources is unsafe.
-- **C:** This is correct.
-- **D:** Retained resources can continue charging.
-- **Reusable rule:** Stack deletion is not proof of cleanup; preserve an unseen readiness measurement.
-- **Cost/operation:** Retained databases, snapshots, logs, public IPs, and keys can continue to cost.
-- **Variation:** Termination protection and stack policies solve different lifecycle risks.
-- **Lessons:** 368–396; practice exam excluded
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html)
+- **Central requirement:** preserve recoverable database state on both stack deletion and update-driven replacement.
+- **Decisive words:** *stack deleted*, *update replaces*, *snapshot*, *stateful resource only*.
+- **A:** correct; `DeletionPolicy` governs stack deletion while `UpdateReplacePolicy` governs the old physical resource during replacement.
+- **B:** incorrect; stack events are metadata and cannot restore deleted database contents.
+- **C:** incorrect; outputs expose values but do not change resource lifecycle behavior.
+- **D:** incorrect; a change set previews changes but does not automatically snapshot a replacement.
+- **Reusable rule:** use `DeletionPolicy` for deletion behavior and `UpdateReplacePolicy` for replacement behavior; set both explicitly for stateful resources.
+- **Lessons:** 368–396.
+- **Official reference:** [DeletionPolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html) and [UpdateReplacePolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatereplacepolicy.html).

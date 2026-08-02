@@ -2,24 +2,24 @@
 
 **Quantidade:** 10 questões inéditas<br>
 **Idioma:** 5 em português e 5 em inglês<br>
-**Regra:** uma resposta<br>
+**Formato:** questões single-answer e multi-answer; siga a instrução de cada questão<br>
 **Tempo:** 15 minutos<br>
 **Gabarito:** [arquivo separado](B08_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B08-01 | 2.2 | RDS Multi-AZ | Situacional | Básica | Português |
-| B08-02 | 3.3 | Read replica | Situacional | Básica | Português |
-| B08-03 | 2.2 | Backup/PITR | Situacional | Intermediária | Português |
-| B08-04 | 3.3 | RDS Proxy | Situacional | Intermediária | Português |
-| B08-05 | 3.3 | ElastiCache | Situacional | Intermediária | Português |
-| B08-06 | 2.2 | Aurora endpoints | Situacional | Intermediária | Inglês |
-| B08-07 | 1.3 | RDS network security | Diagnóstico | Básica | Inglês |
-| B08-08 | 3.3 | RDS Custom | Situacional | Intermediária | Inglês |
-| B08-09 | 4.3 | Cache invalidation | Situacional | Avançada | Inglês |
-| B08-10 | 2.2 | Read replica promotion | Situacional | Intermediária | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B08-01 | 2.2 | RDS Multi-AZ | single | fundamental | básica | Português |
+| B08-02 | 3.3 | Read replica | single | fundamental | básica | Português |
+| B08-03 | 2.2 | Backup/PITR | multi-2 | fundamental | intermediária | Português |
+| B08-04 | 3.3 | RDS Proxy | single | situacional | intermediária | Português |
+| B08-05 | 3.3 | ElastiCache | single | situacional | intermediária | Português |
+| B08-06 | 2.2 | Aurora endpoints | single | situacional | intermediária | Inglês |
+| B08-07 | 1.3 | RDS network security | single | situacional | intermediária | Inglês |
+| B08-08 | 3.3 | RDS Custom | multi-3 | integrada | avançada | Inglês |
+| B08-09 | 4.3 | Cache invalidation | single | integrada | avançada | Inglês |
+| B08-10 | 2.2 | Read replica promotion | single | integrada | avançada | Inglês |
 
 ## Questões
 
@@ -47,10 +47,16 @@ Relatórios read-only degradam o primary e toleram alguns segundos de atraso.
 Às 15:00, uma tabela foi excluída por engano. A retenção de backups automáticos
 está ativa e a empresa quer o estado das 14:57 sem sobrescrever produção.
 
-- A. Fazer point-in-time restore para uma nova DB instance e recuperar os dados.
-- B. Fazer failover Multi-AZ para desfazer a exclusão.
-- C. Consultar o standby clássico diretamente.
-- D. Aumentar o TTL no ElastiCache.
+Quais ações atendem ao requisito?
+
+**Choose TWO.**
+
+- A. Fazer point-in-time restore para uma nova DB instance no horário desejado.
+- B. Fazer failover Multi-AZ para desfazer a exclusão lógica.
+- C. Consultar diretamente o standby clássico para obter a versão anterior.
+- D. Aumentar o TTL no ElastiCache para reconstruir a tabela.
+- E. Validar a instância restaurada e copiar os dados necessários ou redirecionar
+  a aplicação de forma controlada, preservando a produção atual até a validação.
 
 ### B08-04
 
@@ -99,31 +105,65 @@ is the best initial network-security check?
 A legacy Oracle workload requires supported operating-system access and custom
 database software configuration that standard RDS does not expose.
 
-- A. Aurora Serverless v2.
-- B. ElastiCache for Memcached.
-- C. RDS read replica only.
-- D. Evaluate RDS Custom for Oracle and accept the added responsibilities.
+Which statements should a solutions architect consider?
+
+**Select THREE.**
+
+- A. RDS Custom for Oracle provides access to the underlying operating system
+  and database environment for supported customizations.
+- B. The customer accepts additional management and security responsibilities
+  compared with standard RDS.
+- C. Adding a standard RDS read replica exposes operating-system access on the
+  replica.
+- D. Aurora Serverless v2 is Oracle-compatible and preserves custom Oracle
+  software.
+- E. RDS Custom monitors the environment through its support perimeter, and
+  unsupported changes can place the instance outside that perimeter.
+- F. ElastiCache for Memcached can host the Oracle database while preserving
+  its custom software.
 
 ### B08-09
 
-A cache-aside implementation sometimes returns stale product prices after an
-update. Which design addresses the issue most directly?
+A Multi-AZ application reads product prices through a cache-aside layer in front
+of Amazon RDS. Writes commit successfully to the primary database, but subsequent
+requests can continue reading the previous cached value until a long TTL expires.
+Read replicas are used for reporting and must not become part of the write path.
+After a successful price change, the next request for that product must not
+receive the old price; unrelated products must remain cached.
 
-- A. Increase the database port number.
-- B. Never expire cache entries.
-- C. Invalidate/update the relevant key on writes and keep an appropriate TTL.
-- D. Promote a read replica after every price change.
+Which design addresses the consistency problem most directly?
+
+- A. Reduce the TTL to 60 seconds and perform no write-triggered invalidation,
+  accepting that the old price can still be returned during that interval.
+- B. Update the cache before starting the database transaction and leave the new
+  cached value in place even if the database write rolls back.
+- C. Invalidate or update the affected cache key only after the database write
+  succeeds and before acknowledging the change, use a version or ordering guard
+  where concurrent writers require one, and retain an appropriate TTL as a
+  recovery safeguard.
+- D. Flush the entire cache before each database transaction, including keys for
+  unrelated products, and repopulate it synchronously.
 
 ### B08-10
 
-A cross-Region RDS read replica is promoted during disaster recovery. What is a
-key consequence?
+A company uses an asynchronous cross-Region Amazon RDS read replica as part of a
+regional disaster-recovery design. During an outage, the replica is promoted and
+the application is redirected through DNS. After the original Region recovers,
+the team must avoid assuming that replication direction and application
+endpoints repaired themselves.
 
-- A. It remains a read-only child forever.
-- B. It becomes an independent writable DB instance, and applications must use
-  the appropriate endpoint/failback plan.
-- C. It automatically becomes the old primary through synchronous replication.
-- D. Promotion restores deleted rows from any point in time.
+Which statement correctly describes the promoted database and the required
+operational plan?
+
+- A. Promote the replica but leave applications on the original DB endpoint,
+  because promotion moves that endpoint to the recovery Region automatically.
+- B. It becomes an independent writable DB instance; applications must use its
+  endpoint, and the team must design resynchronization and failback explicitly.
+- C. Put an RDS Proxy in each Region and assume the proxy automatically rebinds
+  across Regions to the promoted independent DB without endpoint changes.
+- D. Promote the replica, accept writes, and fail back to the recovered original
+  primary immediately without reconciling divergent data or recreating
+  replication.
 
 ## Registro antes de corrigir
 

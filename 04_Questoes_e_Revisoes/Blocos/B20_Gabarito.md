@@ -9,12 +9,12 @@ Volte às [questões B20](B20_Questoes.md) antes de corrigir.
 | B20-01 | B | 2.2 |
 | B20-02 | A | 2.2 |
 | B20-03 | C | 2.1 |
-| B20-04 | D | 1.2 |
+| B20-04 | B,E | 1.2 |
 | B20-05 | A | 1.2 |
 | B20-06 | B | 1.2 |
-| B20-07 | C | 1.2 |
+| B20-07 | A,D | 2.2 |
 | B20-08 | D | 1.2 |
-| B20-09 | A | 2.1 |
+| B20-09 | A,C,F | 1.2 |
 | B20-10 | B | 1.1 |
 
 ## B20-01 — Answer B
@@ -62,20 +62,22 @@ Volte às [questões B20](B20_Questoes.md) antes de corrigir.
 - **Lessons:** 273–275
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is-how-it-works-concepts.html)
 
-## B20-04 — Answer D
+## B20-04 — Answer B,E
 
-- **Central requirement:** Only recent management activity is needed, and no trail has been configured.
-- **Decisive words:** who, recently, management activity, no trail
-- **Why the correct answer works:** Event history provides searchable recent management events without requiring a trail.
-- **A:** BI is unrelated.
-- **B:** CPU metrics do not show API authorship.
-- **C:** A conformance pack evaluates configuration.
-- **D:** Event history is correct.
-- **Reusable rule:** Recent API authorship points to CloudTrail Event history.
-- **Cost/operation:** Event history itself does not require creating a trail.
-- **Variation:** A trail is needed for continuous delivery and longer retention.
-- **Lessons:** 276–281
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html)
+- **Central requirement:** answer a recent caller investigation immediately and create durable future audit retention.
+- **Decisive words:** *deleted yesterday*, *who*, *future investigations*, *multi-Region*.
+- **A:** incorrect; CPU metrics do not record IAM API caller identity.
+- **B:** correct; IAM is a global service, and its global service events are
+  recorded in `us-east-1`. Event history there exposes the recent management
+  event without requiring a pre-existing trail.
+- **C:** incorrect; Config records resource configuration/compliance, not the complete API caller audit record.
+- **D:** incorrect; Quick Sight is a BI service, not the source of CloudTrail events.
+- **E:** correct; a multi-Region trail continuously delivers management events to durable S3 storage.
+- **Reusable rule:** CloudTrail Event history is the quick recent lookup; for
+  global IAM events, search `us-east-1`. A multi-Region trail is the durable,
+  continuously delivered audit design.
+- **Lessons:** 276–281.
+- **Official reference:** [Viewing CloudTrail Event history](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html).
 
 ## B20-05 — Answer A
 
@@ -107,62 +109,59 @@ Volte às [questões B20](B20_Questoes.md) antes de corrigir.
 - **Lessons:** 279–281
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/config/latest/developerguide/config-concepts.html)
 
-## B20-07 — Answer C
+## B20-07 — Answer A,D
 
-- **Central requirement:** It needs operational impact, API authorship, and the resulting configuration.
-- **Decisive words:** impact, authorship, resulting configuration
-- **Why the correct answer works:** Each service answers a distinct part of the investigation.
-- **A:** The roles are incorrect.
-- **B:** The roles are reversed.
-- **C:** The mapping is correct.
-- **D:** Organizations does not provide these three signals.
-- **Reusable rule:** CloudWatch observes behavior; CloudTrail audits actions; Config tracks resource state.
-- **Cost/operation:** Using all services improves evidence but adds ingestion, retention, and evaluation costs.
-- **Variation:** EventBridge can automate a response from the audit event.
-- **Lessons:** 264–281
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/pdfs/decision-guides/latest/cloudtrail-or-cloudwatch/cloudtrail-or-cloudwatch.pdf)
+- **Central requirement:** identify slow distributed request segments and correlate traces with operational telemetry.
+- **Decisive words:** *API Gateway, Lambda, DynamoDB*, *end-to-end latency*, *downstream segment*, *correlate*.
+- **A:** correct; X-Ray trace context and segments expose the distributed request path and latency contributors.
+- **B:** incorrect; CloudTrail data events audit resource API activity and are not application tracing spans.
+- **C:** incorrect; Config snapshots track resource state, not individual request call graphs.
+- **D:** correct; CloudWatch ServiceLens correlates traces with metrics and logs for supported resources.
+- **E:** incorrect; consolidated billing provides cost aggregation, not a service latency map.
+- **Reusable rule:** metrics show symptoms; distributed traces locate latency across service boundaries; correlate both for root cause.
+- **Lessons:** 264–281.
+- **Official reference:** [AWS X-Ray](https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html) and [CloudWatch ServiceLens](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ServiceLens.html).
 
 ## B20-08 — Answer D
 
-- **Central requirement:** The events are high volume and must be selected intentionally.
-- **Decisive words:** object-level, GetObject, PutObject, high volume
-- **Why the correct answer works:** S3 object-level operations are CloudTrail data events and require deliberate selection.
-- **A:** Config CPU is unrelated.
-- **B:** Event history management events do not provide the requested object activity.
-- **C:** EC2 monitoring is unrelated.
-- **D:** Selected data events are correct.
-- **Reusable rule:** Operations inside a resource often map to CloudTrail data events.
+- **Central requirement:** preserve centralized management and selected S3 object activity without logging every high-volume bucket.
+- **Decisive words:** selected prefix, object operations, management changes, central retention
+- **Why the correct answer works:** CloudTrail distinguishes management events from S3 data events and supports selectors plus delivery to a separately protected logging destination.
+- **A:** Config and Inventory are useful for configuration and object listings, but neither is a complete record of the requested object API calls.
+- **B:** CloudTrail Lake can retain/query selected events, but this design drops the required central S3 separation and management trail while logging excessive scope.
+- **C:** server access logging can supplement analysis, but same-bucket placement and default Event history do not provide the requested protected, unified, narrowly selected CloudTrail design.
+- **D:** correct; the trail retains control-plane visibility, targeted data selectors constrain volume, and a central destination improves separation and retention control.
+- **Reusable rule:** CloudTrail management events cover control-plane actions; high-volume resource operations such as S3 object access require deliberately scoped data events.
 - **Cost/operation:** Data event volume can create substantial CloudTrail and storage charges.
-- **Variation:** Apply selectors narrowly to required resources and actions.
+- **Variation:** Use advanced event selectors, lifecycle/immutability controls, and query tooling according to audit and cost requirements.
 - **Lessons:** 276–281
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html)
 
-## B20-09 — Answer A
+## B20-09 — Answer A,C,F
 
-- **Central requirement:** The design needs retries and a place for events that exhaust retries.
-- **Decisive words:** temporarily fail, cannot lose, exhaust retries
-- **Why the correct answer works:** EventBridge target retry policy and DLQ provide controlled handling of failed delivery.
-- **A:** Retry and DLQ are correct.
-- **B:** Storage on EC2 is unrelated.
-- **C:** SCP never grants permissions.
-- **D:** A dashboard does not preserve failed events.
-- **Reusable rule:** Asynchronous delivery needs idempotency, retries, and DLQ.
-- **Cost/operation:** SQS DLQ, target invocations, and logging can incur charges.
-- **Variation:** The consumer should remain idempotent because retries can repeat delivery.
-- **Lessons:** 273–275
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html)
+- **Central requirement:** map finding aggregation, audit evidence collection, and AWS compliance documents to distinct managed services.
+- **Decisive words:** *one view of findings*, *evidence mapped to controls*, *reports and agreements*.
+- **A:** correct; Security Hub aggregates, normalizes, and prioritizes supported security findings.
+- **B:** incorrect; Inspector assesses vulnerabilities and does not distribute AWS SOC reports.
+- **C:** correct; Audit Manager automates evidence collection and assessment workflows.
+- **D:** incorrect; dashboards visualize data but are not the authoritative compliance-agreement repository.
+- **E:** incorrect; Artifact supplies documents and agreements, not runtime finding aggregation.
+- **F:** correct; Artifact provides on-demand AWS compliance reports and agreements.
+- **Reusable rule:** Security Hub is findings, Audit Manager is customer audit evidence, and Artifact is AWS compliance documentation.
+- **Lessons:** 264–281.
+- **Official reference:** [Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html), [Audit Manager](https://docs.aws.amazon.com/audit-manager/latest/userguide/what-is.html), and [Artifact](https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html).
 
 ## B20-10 — Answer B
 
-- **Central requirement:** The solution must organize accounts into logical units.
-- **Decisive words:** accounts, consolidated billing, hierarchy
-- **Why the correct answer works:** Organizations manages multiple accounts and OUs group accounts for governance.
-- **A:** Log groups organize logs.
-- **B:** Organizations and OUs are correct.
-- **C:** Config does not create account hierarchy.
-- **D:** Subnets organize networks.
-- **Reusable rule:** Multi-account hierarchy and consolidated billing point to Organizations and OUs.
+- **Central requirement:** create a multi-account governance and billing hierarchy with policy inheritance and delegated operations.
+- **Decisive words:** separate accounts, consolidated billing, policy boundaries, delegated administration
+- **Why the correct answer works:** Organizations supplies the account hierarchy, OUs provide policy attachment boundaries, and supported services can use delegated administrators.
+- **A:** tags, VPCs, and Resource Groups can organize resources but do not provide separate account blast radii, inherited account policies, or a multi-account billing hierarchy.
+- **B:** correct; it separates blast radius while centralizing governance and leaves network topology as an independent design.
+- **C:** a Config aggregator can centralize configuration visibility, but standalone accounts remain outside the required billing and preventive-policy hierarchy.
+- **D:** multiple organizations fragment consolidated billing and delegated administration; management accounts cannot be nested into one OU hierarchy.
+- **Reusable rule:** use accounts and Organizations/OUs for administrative and policy boundaries; use VPC/subnet structure for network boundaries.
 - **Cost/operation:** Creating an organization changes governance even when the service has no direct usage fee.
-- **Variation:** SCP behavior is covered in B21.
+- **Variation:** SCPs limit maximum available permissions; they do not grant permissions and should be tested before broad attachment.
 - **Lessons:** 282
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html)

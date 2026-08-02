@@ -9,12 +9,12 @@ as [questões B01](B01_Questoes.md).
 |---|---|---|
 | B01-01 | B | 2.2 |
 | B01-02 | C | 2.1/3.4 |
-| B01-03 | B | 1.1 |
+| B01-03 | B,E | 1.1 |
 | B01-04 | D | 1.1 |
 | B01-05 | A | 1.1 |
 | B01-06 | C | 1.1 |
 | B01-07 | B | 1.1 |
-| B01-08 | D | 1.1 |
+| B01-08 | A,B | 1.1 |
 | B01-09 | A | 1.1 |
 | B01-10 | C | 1.1 |
 
@@ -50,14 +50,16 @@ as [questões B01](B01_Questoes.md).
 - **Aulas:** 8–10.
 - **Referência:** [How CloudFront delivers content](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html).
 
-## B01-03 — Resposta B
+## B01-03 — Resposta B,E
 
-- **Requisito central:** identificar responsabilidade do cliente em EC2.
-- **Palavras decisivas:** *guest operating system*.
+- **Requisito central:** identificar duas responsabilidades do cliente em EC2.
+- **Palavras decisivas:** *guest operating system*, *security groups*, *data*.
 - **A:** hardware físico é responsabilidade da AWS.
-- **B:** correta; o cliente administra e aplica patches ao guest OS.
+- **B:** correta; o cliente administra e aplica patches ao guest OS da
+  instância.
 - **C:** a camada de virtualização é responsabilidade da AWS.
 - **D:** segurança física das instalações é responsabilidade da AWS.
+- **E:** correta; o cliente configura acessos e protege os dados da aplicação.
 - **Regra reutilizável:** em EC2, AWS cuida do host; cliente cuida do guest.
 - **Variação:** um serviço mais gerenciado transfere mais operação à AWS, mas não
   transfere dados e permissões do cliente.
@@ -69,7 +71,11 @@ as [questões B01](B01_Questoes.md).
 - **Requisito central:** reconhecer o que continua com o cliente em um serviço
   gerenciado.
 - **Palavras decisivas:** *confidential documents*, *permissions*, *encryption*.
-- **A, B e C:** tratam de sistema e infraestrutura subjacentes operados pela AWS.
+- **A:** o sistema operacional dos servidores que executam o Amazon S3 faz parte
+  da infraestrutura gerenciada pela AWS.
+- **B:** a substituição dos dispositivos físicos de armazenamento é
+  responsabilidade da AWS.
+- **C:** a segurança física dos data centers é responsabilidade da AWS.
 - **D:** correta; classificação, acessos e escolhas de proteção dos dados
   continuam com o cliente.
 - **Regra reutilizável:** serviço gerenciado reduz operação, não a
@@ -120,15 +126,18 @@ as [questões B01](B01_Questoes.md).
 - **Lessons:** 11–18.
 - **Reference:** [Programmatic access alternatives](https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds-programmatic-access.html).
 
-## B01-08 — Answer D
+## B01-08 — Answer A,B
 
-- **Central requirement:** temporary, limited, cross-account access.
-- **Keywords:** *occasionally*, *production account*, *no duplicate credentials*.
-- **A:** creates duplicate long-term identities.
-- **B:** the target account must establish trust and resource permissions.
-- **C:** root credentials must not be shared or used for deployment.
-- **D:** correct; trust policy answers who can assume, permissions policy answers
-  what the role can do, and STS creates the temporary session.
+- **Central requirement:** configure temporary, limited, cross-account access.
+- **Keywords:** *occasionally*, *production account*, *temporary*, *no duplicate
+  credentials*.
+- **A:** correct; the role permissions policy defines the allowed S3 actions and
+  resources.
+- **B:** correct; the trust relationship and the caller's `sts:AssumeRole`
+  permission establish who can obtain a temporary session.
+- **C:** creates duplicate long-term identities in production.
+- **D:** root credentials must not be shared or used for deployment.
+- **E:** public access violates the limited-access requirement.
 - **Reusable rule:** cross-account delegation → role + trust + permissions.
 - **Variation:** direct resource-based access could be valid for a supported
   service, but it must still trust the external principal.
@@ -137,13 +146,20 @@ as [questões B01](B01_Questoes.md).
 
 ## B01-09 — Answer A
 
-- **Central requirement:** download known objects only from one prefix.
-- **Keywords:** *known objects only*, *does not need to list*.
-- **A:** correct; the action and object ARN match the exact need.
-- **B:** every S3 action on every resource is excessive.
-- **C:** `GetObject` needs object ARNs, which include `/*` or the required prefix.
-- **D:** `ListBucket` lists keys and does not retrieve object data.
-- **Reusable rule:** least privilege restricts action and resource together.
+- **Central requirement:** grant one assumed workload role read access to known
+  object keys in one prefix without adding discovery or mutation permissions.
+- **Keywords:** *approved manifest*, *only `quarterly/`*, *never lists*, *KMS
+  separately scoped*.
+- **A:** correct; `GetObject` is the required data-plane action and the object ARN
+  limits it to the exact prefix.
+- **B:** every S3 action on every resource violates both action and resource
+  least privilege.
+- **C:** the bucket ARN names the bucket itself; `GetObject` requires object ARNs
+  that include a key, wildcard, or the required prefix path.
+- **D:** `ListBucket` is a bucket-level discovery action and neither retrieves an
+  object nor matches the stated manifest-driven access pattern.
+- **Reusable rule:** least privilege aligns principal, action, resource ARN, and
+  conditions; add a separate KMS permission only when the encryption path needs it.
 - **Variation:** if the application needed to discover keys, add a restricted
   `ListBucket` statement with an appropriate prefix condition.
 - **Lessons:** 14–15.

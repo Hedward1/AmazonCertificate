@@ -9,12 +9,12 @@ as [questões B03](B03_Questoes.md).
 |---|---|---|
 | B03-01 | C | 1.2 |
 | B03-02 | A | 1.2 |
-| B03-03 | D | 1.2 |
+| B03-03 | A,D | 1.2 |
 | B03-04 | B | 1.1 |
 | B03-05 | C | 4.2 |
 | B03-06 | B | 4.2 |
 | B03-07 | D | 4.2 |
-| B03-08 | A | 4.2 |
+| B03-08 | A,D | 4.2 |
 | B03-09 | C | 4.2 |
 | B03-10 | B | 4.2 |
 
@@ -58,20 +58,22 @@ as [questões B03](B03_Questoes.md).
 - **Aulas:** 42.
 - **Referência:** [EC2 Instance Connect methods](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html).
 
-## B03-03 — Resposta D
+## B03-03 — Resposta A,D
 
 - **Requisito central:** shell em instância privada sem inbound administrative
   ports nem bastion.
 - **Palavras decisivas:** *sem IP público*, *proíbe portas de entrada*,
   *IAM-controlled shell*.
-- **A:** sem endereço público ou EC2 Instance Connect Endpoint, não há caminho
-  direto da internet para a instância.
-- **B:** contradiz tanto a ausência de IP público quanto a proibição de portas
+- **A:** correta; SSM Agent e uma instance role adequada tornam a instância
+  gerenciável pelo Systems Manager.
+- **B:** contradiz a ausência de IP público e a proibição de portas
   administrativas de entrada.
 - **C:** Dedicated Host trata de hardware dedicado e posicionamento, não cria um
-  canal de administração.
-- **D:** correta; Session Manager fornece shell pelo console ou CLI sem exigir
-  inbound ports, bastion ou gerenciamento de SSH keys.
+  canal administrativo.
+- **D:** correta; o managed node precisa alcançar os endpoints do Systems
+  Manager por um caminho de saída.
+- **E:** Session Manager inicia a comunicação a partir do managed node; não
+  requer liberar HTTPS de entrada da internet.
 - **Regra reutilizável:** administração privada sem porta de entrada → Session
   Manager com managed node e IAM.
 - **Variação:** conectividade aos serviços pode ser fornecida por NAT ou
@@ -101,23 +103,28 @@ as [questões B03](B03_Questoes.md).
 
 ## B03-05 — Resposta C
 
-- **Requisito central:** capacidade não interrompível, temporária e sem
-  compromisso longo.
-- **Palavras decisivas:** *dez dias*, *pode mudar*, *não pode sofrer
-  interrupções*.
-- **A:** três anos de compromisso não combinam com uma necessidade de dez dias e
-  incerta.
-- **B:** Spot pode ser interrompida quando a AWS precisa recuperar capacidade.
-- **C:** correta; On-Demand cobra pelo uso sem exigir compromisso de um ou três
-  anos e atende cargas temporárias que não toleram interrupção.
-- **D:** não há requisito de host físico dedicado ou BYOL que justifique esse
-  custo e compromisso.
-- **Regra reutilizável:** carga curta, imprevisível e não interrompível →
-  On-Demand.
-- **Variação:** se a execução pudesse salvar estado e reiniciar, Spot poderia
-  reduzir o custo.
-- **Aulas:** 44, 46.
-- **Referência:** [EC2 billing and purchasing options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html).
+- **Requisito central:** financiar somente a disponibilidade exigida por cada
+  classe sem aplicar o risco de desenvolvimento à produção nem o custo de
+  produção ao ambiente descartável.
+- **Palavras decisivas:** *99,95%*, *RTO*, *RPO*, *perda de uma AZ*, *dados
+  sintéticos*, *reconstruído*, *aceita interrupções*.
+- **A:** inverte as necessidades: uma única Spot não atende a produção nem à
+  falha de AZ, enquanto desenvolvimento recebe capacidade cara e ociosa.
+- **B:** a arquitetura pode exceder o objetivo de desenvolvimento, mas não é a
+  alternativa de menor custo apropriado porque ignora horário, reconstrução e
+  tolerância a interrupção.
+- **C:** correta; produção recebe redundância, capacidade estável e proteção de
+  dados compatíveis com seus objetivos, enquanto agenda, scale-to-zero e Spot
+  exploram somente a flexibilidade comprovada de desenvolvimento.
+- **D:** hardware dedicado atende isolamento ou licenciamento, não substitui
+  redundância entre AZs, failover nem uma estratégia de dados para o RPO.
+- **Regra reutilizável:** criticidade + objetivo/SLA + RTO + RPO + escopo de
+  falha determinam disponibilidade; depois escolha o modelo de compute de menor
+  custo que preserve esses limites.
+- **Variação:** homologação pode precisar temporariamente de topologia semelhante
+  à produção para validar failover, mesmo sendo classificada como não produção.
+- **Aulas:** 44–46.
+- **Referências:** [understanding availability needs](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/understanding-availability-needs.html) e [Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html).
 
 ## B03-06 — Resposta B
 
@@ -161,23 +168,29 @@ as [questões B03](B03_Questoes.md).
 - **Lessons:** 45.
 - **References:** [Spot Instance interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and [Fleet allocation strategies](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-allocation-strategy.html).
 
-## B03-08 — Answer A
+## B03-08 — Answer A,D
 
-- **Central requirement:** discount and reserved capacity in one specified AZ.
-- **Keywords:** *same configuration*, *specific Availability Zone*, *three
-  years*, *reserved capacity*.
+- **Central requirement:** distinguish a Zonal RI, which couples discount and
+  zonal capacity, from an On-Demand Capacity Reservation, which separates the
+  capacity decision from an eligible billing discount.
+- **Keywords:** *specific Availability Zone*, *discount and capacity*,
+  *coupled or separate*.
 - **A:** correct; a matching Zonal Reserved Instance provides a billing discount
   and reserves capacity in the selected AZ.
 - **B:** a Compute Savings Plan discounts eligible usage but does not reserve
   EC2 capacity.
 - **C:** a Regional RI provides a discount and AZ flexibility within the Region,
   but it does not reserve capacity.
-- **D:** ordinary On-Demand usage provides neither committed-use discount nor
-  reserved capacity.
-- **Reusable rule:** RI scope matters: regional favors flexibility; zonal adds
-  capacity in one AZ.
-- **Variation:** an On-Demand Capacity Reservation can reserve capacity
-  independently and can be combined with an applicable discount mechanism.
+- **D:** correct; an On-Demand Capacity Reservation supplies capacity separately,
+  while eligible usage can still receive an applicable Savings Plan or RI
+  billing discount.
+- **E:** Spot capacity can be interrupted and is not a three-year capacity
+  guarantee, regardless of request persistence.
+- **Reusable rule:** a Zonal RI couples discount and zonal capacity; an
+  On-Demand Capacity Reservation separates the capacity guarantee from the
+  billing-discount mechanism.
+- **Variation:** a Regional RI favors AZ flexibility and discount but does not
+  reserve capacity in one Availability Zone.
 - **Lessons:** 44, 46.
 - **Reference:** [Regional and zonal Reserved Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/reserved-instances-scope.html).
 

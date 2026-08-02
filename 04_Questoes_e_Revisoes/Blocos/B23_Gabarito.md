@@ -9,12 +9,12 @@ Volte às [questões B23](B23_Questoes.md) antes de corrigir.
 | B23-01 | C | 3.4 |
 | B23-02 | A | 3.4 |
 | B23-03 | C | 3.4 |
-| B23-04 | D | 3.4 |
+| B23-04 | B,D | 3.4 |
 | B23-05 | A | 3.4 |
 | B23-06 | B | 3.4 |
-| B23-07 | C | 3.4 |
+| B23-07 | A,D | 3.4 |
 | B23-08 | B | 3.4 |
-| B23-09 | B | 3.4 |
+| B23-09 | A,C,E | 3.4 |
 | B23-10 | C | 3.4 |
 
 ## B23-01 — Answer C
@@ -62,20 +62,18 @@ Volte às [questões B23](B23_Questoes.md) antes de corrigir.
 - **Lessons:** 333–334
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints.html)
 
-## B23-04 — Answer D
+## B23-04 — Answer B,D
 
-- **Central requirement:** Packet payload is not required.
-- **Decisive words:** metadata, ACCEPT REJECT, no payload
-- **Why the correct answer works:** Flow Logs capture network flow metadata at VPC, subnet, or ENI scope without packet payload.
-- **A:** Mirroring copies packets and is more than required.
-- **B:** WAF logs are application web-layer data.
-- **C:** Inspector assesses vulnerabilities.
-- **D:** This is correct.
-- **Reusable rule:** Flow metadata points to Flow Logs; packet content points to Traffic Mirroring.
-- **Cost/operation:** Log delivery, storage, and analysis can incur charges.
-- **Variation:** A REJECT entry narrows the investigation but does not identify every possible blocking layer.
-- **Lessons:** 335–336
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
+- **Central requirement:** provide managed remote-user connectivity and record network flow metadata without payload capture.
+- **Decisive words:** *remote employees*, *certificate-based*, *private resources*, *ACCEPT or REJECT*, *no payload*.
+- **A:** incorrect; Traffic Mirroring copies packets for appliances and is not a remote-access VPN concentrator.
+- **B:** correct; Client VPN provides managed client connectivity with authentication and authorization controls.
+- **C:** incorrect; an Internet Gateway does not enroll remote devices into the VPC address space.
+- **D:** correct; Flow Logs capture the requested connection metadata for the relevant ENIs.
+- **E:** incorrect; WAF logs neither establish a VPN tunnel nor provide general VPC flow metadata.
+- **Reusable rule:** Client VPN solves user-to-VPC access; Flow Logs observe connection metadata; Traffic Mirroring is for packet content.
+- **Lessons:** 335–340.
+- **Official reference:** [AWS Client VPN](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html) and [VPC Flow Logs](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html).
 
 ## B23-05 — Answer A
 
@@ -94,63 +92,60 @@ Volte às [questões B23](B23_Questoes.md) antes de corrigir.
 
 ## B23-06 — Answer B
 
-- **Central requirement:** The service should provide managed IPsec tunnels.
-- **Decisive words:** encrypted, public internet, within hours, IPsec
-- **Why the correct answer works:** Site-to-Site VPN provides managed IPsec tunnels over the internet and can be provisioned faster than a dedicated circuit.
-- **A:** Direct Connect is dedicated and slower to provision; it is not IPsec by itself.
-- **B:** This is correct.
-- **C:** Peering connects VPCs.
-- **D:** CloudFront is a CDN.
-- **Reusable rule:** Fast hybrid IPsec over the internet points to Site-to-Site VPN.
+- **Central requirement:** establish redundant encrypted hybrid connectivity immediately while keeping a later dedicated-transport option separate.
+- **Decisive words:** within hours, existing internet, two IPsec tunnels, dedicated circuit later
+- **Why the correct answer works:** Site-to-Site VPN can be configured quickly over the internet and supplies two managed tunnel endpoints; Direct Connect is a distinct provisioning and transport decision.
+- **A:** Direct Connect/MACsec can be appropriate on supported connections, but provisioning cannot satisfy the within-hours first step and MACsec is not a universal substitute for the stated IPsec design.
+- **B:** correct; it meets the immediate encrypted requirement and leaves a staged path to dedicated transport or VPN over Direct Connect.
+- **C:** Client VPN is designed for individual remote clients, not a branch-router site-to-site network attachment with redundant managed tunnels.
+- **D:** Transit Gateway can be the hub, but an explicit VPN or Direct Connect attachment is still required to carry branch traffic to it.
+- **Reusable rule:** use Site-to-Site VPN for rapid encrypted hybrid access; add Direct Connect for dedicated capacity/consistency and retain explicit encryption when required.
 - **Cost/operation:** VPN connection-hours and data transfer can incur charges.
-- **Variation:** Configure both tunnels for availability.
+- **Variation:** Dynamic routing with BGP and customer-device redundancy can improve convergence beyond merely creating both AWS tunnels.
 - **Lessons:** 337–338
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html)
 
-## B23-07 — Answer C
+## B23-07 — Answer A,D
 
-- **Central requirement:** Both dedication and encryption must be satisfied.
-- **Decisive words:** dedicated, consistent, IPsec
-- **Why the correct answer works:** Direct Connect supplies the dedicated path, while VPN adds IPsec when the design supports the combination.
-- **A:** Direct Connect alone is not IPsec automatically.
-- **B:** VPN alone does not satisfy dedicated path.
-- **C:** This is correct.
-- **D:** NAT is unrelated.
-- **Reusable rule:** Dedicated plus encrypted often maps to Direct Connect plus VPN.
-- **Cost/operation:** Ports, transfer, VPN, and provider circuits all contribute to cost.
-- **Variation:** VPN over the internet can remain a backup path.
-- **Lessons:** 339–340
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-plus-vpn.html)
+- **Central requirement:** combine a dedicated network path with IPsec encryption to AWS.
+- **Decisive words:** *dedicated*, *consistent performance*, *IPsec*, *not public-internet VPN alone*.
+- **A:** correct; Direct Connect supplies the dedicated transport path.
+- **B:** incorrect; Direct Connect virtual interfaces are not all IPsec encrypted by default.
+- **C:** incorrect; a NAT Gateway cannot act as an on-premises customer gateway.
+- **D:** correct; Site-to-Site VPN over an appropriate Direct Connect public-VIF design adds IPsec to the dedicated path.
+- **E:** incorrect; VPC peering does not connect an on-premises router or create IPsec.
+- **Reusable rule:** dedicated plus IPsec often requires Direct Connect plus Site-to-Site VPN; neither service alone satisfies both clauses.
+- **Lessons:** 339–340.
+- **Official reference:** [AWS Direct Connect plus VPN](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-plus-vpn.html).
 
 ## B23-08 — Answer B
 
-- **Central requirement:** The company wants a regional hub-and-spoke design.
-- **Decisive words:** dozens, transitive, regional hub, segmentation
-- **Why the correct answer works:** Transit Gateway is a regional transit hub for VPC and hybrid attachments with route-table segmentation.
-- **A:** Peering is non-transitive and a mesh is complex.
-- **B:** This is correct.
-- **C:** IGWs cannot be shared as the requested transit hub.
-- **D:** Resolver handles DNS, not packet transit.
-- **Reusable rule:** Many networks plus transitive hub points to Transit Gateway.
+- **Central requirement:** centralize transitive regional routing while isolating environments and steering only intended paths through inspection.
+- **Decisive words:** dozens of VPCs, VPN attachments, routing domains, inspection, no mesh
+- **Why the correct answer works:** Transit Gateway is a regional transit hub whose attachments can associate with and propagate into controlled route tables.
+- **A:** Cloud WAN could be justified for centrally governed multi-Region/global networks, but it is broader than necessary for the explicitly regional requirement.
+- **B:** correct; multiple TGW route tables and deliberate association/propagation implement segmentation, with explicit routes for inspection paths.
+- **C:** peering is non-transitive; a mesh scales operationally poorly and cannot use a peer as a general VPN transit path.
+- **D:** Transit Gateway is the right service family, but one fully propagated route table defeats the required segmentation and inspection steering.
+- **Reusable rule:** Transit Gateway handles regional many-to-many network transit; route-table design determines reachability and segmentation, not attachment alone.
 - **Cost/operation:** Attachments and data processing are billed.
-- **Variation:** Multiple TGW route tables can isolate environments.
+- **Variation:** For multi-Region or global network policy, evaluate inter-Region TGW peering or Cloud WAN separately from this regional requirement.
 - **Lessons:** 341
 - **Official reference:** [AWS documentation](https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html)
 
-## B23-09 — Answer B
+## B23-09 — Answer A,C,E
 
-- **Central requirement:** The solution must be managed and IPv6-specific.
-- **Decisive words:** IPv6, initiate outbound, no inbound initiation
-- **Why the correct answer works:** An egress-only Internet Gateway supports outbound-initiated IPv6 internet traffic and blocks new inbound-initiated connections.
-- **A:** NAT Gateway is the classic IPv4 clue.
-- **B:** This is correct.
-- **C:** A gateway endpoint is service-specific.
-- **D:** Peering is not internet egress.
-- **Reusable rule:** Private IPv6 egress points to an egress-only Internet Gateway.
-- **Cost/operation:** The gateway choice does not remove normal data transfer charges.
-- **Variation:** An Internet Gateway provides bidirectional routing when security controls allow.
-- **Lessons:** 343–345
-- **Official reference:** [AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html)
+- **Central requirement:** provide outbound-only IPv6, a private S3 path, and network-flow observability.
+- **Decisive words:** *initiate IPv6*, *no new inbound*, *S3 avoid NAT*, *metadata*.
+- **A:** correct; an egress-only Internet Gateway permits outbound-initiated IPv6 connections and blocks new inbound initiation.
+- **B:** incorrect; a public NAT Gateway is not the IPv6-specific outbound-only target requested.
+- **C:** correct; an S3 gateway endpoint routes supported S3 traffic privately through associated route tables.
+- **D:** incorrect; peering is private VPC connectivity, not a default internet path.
+- **E:** correct; Flow Logs provide accepted/rejected connection metadata at supported scopes.
+- **F:** incorrect; public IPv4 addressing does not satisfy or secure IPv6 egress.
+- **Reusable rule:** design each path independently: egress-only IGW for IPv6 internet, gateway endpoint for S3, Flow Logs for metadata.
+- **Lessons:** 333–345.
+- **Official reference:** [Egress-only Internet Gateway](https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html) and [S3 gateway endpoints](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html).
 
 ## B23-10 — Answer C
 

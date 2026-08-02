@@ -8,12 +8,12 @@ Abra depois das [questões B09](B09_Questoes.md).
 |---|---|---|
 | B09-01 | B | 3.4 |
 | B09-02 | C | 3.4 |
-| B09-03 | A | 3.4 |
+| B09-03 | A,B | 3.4 |
 | B09-04 | D | 3.4 |
 | B09-05 | B | 3.4 |
 | B09-06 | A | 3.4 |
 | B09-07 | C | 3.4 |
-| B09-08 | D | 4.4 |
+| B09-08 | A,B | 4.4 |
 | B09-09 | B | 3.4 |
 | B09-10 | C | 3.4 |
 
@@ -41,14 +41,18 @@ Abra depois das [questões B09](B09_Questoes.md).
 - **Aulas:** 106.
 - **Referência:** [TTL values](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-basic.html#rrsets-values-basic-ttl).
 
-## B09-03 — Resposta A
+## B09-03 — Resposta A,B
 
 - **Requisito central:** canary com proporção aproximada.
 - **Palavras decisivas:** *90%/10%*, *respostas DNS*.
-- **A:** correta; weighted usa pesos relativos.
-- **B:** latency seleciona por desempenho regional.
-- **C:** CNAME sozinho não oferece peso.
-- **D:** simple não controla proporção.
+- **A:** correta; os endpoints precisam de weighted records compatíveis para
+  participar da mesma decisão de roteamento.
+- **B:** correta; weighted usa pesos relativos, e 90/10 expressa a proporção
+  desejada sem exigir soma específica.
+- **C:** latency seleciona pela menor latência medida, não por uma divisão
+  percentual fixa.
+- **D:** um CNAME sem weighted routing não oferece pesos.
+- **E:** simple routing não controla proporção.
 - **Regra reutilizável:** canary/blue-green gradual → weighted.
 - **Aulas:** 109.
 - **Referência:** [Weighted routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html).
@@ -101,39 +105,65 @@ Abra depois das [questões B09](B09_Questoes.md).
 - **Aulas:** 101–102.
 - **Referência:** [DNS concepts](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/route-53-concepts.html).
 
-## B09-08 — Answer D
+## B09-08 — Answer A,B
 
 - **Requisito central:** explain old answer after simultaneous TTL reduction.
 - **Palavras decisivas:** *exact moment*, *previous 3600*.
-- **A:** Alias responses still follow DNS caching behavior.
-- **B:** EBS is unrelated.
-- **C:** weighted records also have TTL/caching.
-- **D:** correct; cached entries retain the TTL supplied earlier.
+- **A:** correct; cached entries retain the TTL that accompanied the previous
+  answer.
+- **B:** correct; lowering the TTL in advance lets old 3600-second cache entries
+  expire before the value changes.
+- **C:** Alias answers participate in DNS caching; they are not permanently
+  cached.
+- **D:** weighted records also use DNS caching.
+- **E:** EBS is unrelated to resolver caches.
 - **Regra reutilizável:** lowering TTL is not retroactive.
+- **Variação:** after the cutover stabilizes, the team can raise the TTL again
+  to reduce query volume.
 - **Aulas:** 106.
 - **Referência:** [TTL](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-basic.html#rrsets-values-basic-ttl).
 
 ## B09-09 — Answer B
 
-- **Requisito central:** define simple routing limitations.
-- **Palavras decisivas:** *simple routing*, *multiple values*.
-- **A:** latency is another policy.
-- **B:** correct; simple lacks advanced health-aware selection.
-- **C:** geolocation is another policy.
-- **D:** resolver caching prevents per-request equal guarantees.
-- **Regra reutilizável:** no special routing requirement → simple.
+- **Requisito central:** return equivalent endpoints without DNS-layer policy
+  selection while stating the limits created by caching and absent health checks.
+- **Palavras decisivas:** *several equivalent endpoints*, *health and retries in
+  the client*, *no latency/geography/weights*, *no per-request guarantee*.
+- **A:** latency-based routing is a different policy; simple routing does not
+  continuously measure and choose the lowest-latency endpoint.
+- **B:** correct; simple routing can return one or multiple values, but it does
+  not add advanced policy health selection or exact request distribution.
+- **C:** geolocation routing, not simple routing, selects records from the
+  requester's location.
+- **D:** recursive and client caching means a DNS response is not a per-request
+  load-balancing decision and cannot guarantee exact equality.
+- **Regra reutilizável:** use simple routing only when no specialized DNS
+  selection is required and the endpoint/client layer owns health and balancing.
+- **Variação:** if Route 53 must evaluate endpoint health and return multiple
+  healthy records, compare multivalue-answer routing instead.
 - **Aulas:** 108.
 - **Referência:** [Simple routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-simple.html).
 
 ## B09-10 — Answer C
 
-- **Requisito central:** distinguish DNS answers from connection proxying.
-- **Palavras decisivas:** *immediately*, *existing connections*.
-- **A:** DNS supports A and AAAA.
-- **B:** Route 53 Alias can target supported load balancers.
-- **C:** correct; cached DNS does not terminate existing flows.
-- **D:** TTL does not attach storage.
-- **Regra reutilizável:** DNS selects endpoints; ELB handles live connections.
+- **Requisito central:** separate regional DNS failover for new resolutions from
+  health, draining, and retry behavior for cached or established connections.
+- **Palavras decisivas:** *new DNS answers*, *cached answers*, *long-lived
+  connections*, *terminate immediately*.
+- **A:** changing a TTL to zero does not revoke responses already cached under
+  the previous TTL and DNS cannot terminate an established TCP connection.
+- **B:** a new TTL applies to new responses; clients can retain an earlier answer
+  until the TTL delivered with that answer expires.
+- **C:** correct; DNS influences endpoint resolution but is not in the established
+  traffic path. Load balancer health, draining, and client retry/reconnect logic
+  address live or cached connections.
+- **D:** ALB cross-zone load balancing distributes targets across enabled AZs in
+  one Region; it neither moves established sessions nor supplies cross-Region
+  load-balancer failover.
+- **Regra reutilizável:** DNS chooses endpoints for resolutions; endpoint health,
+  proxies, and clients govern established connections and recovery behavior.
+- **Variação:** shorter TTLs may reduce future cache duration but do not revoke a
+  response already cached with the old TTL or close an established socket.
 - **Aulas:** 102 e 108–110.
 - **Referência:** [How Route 53 routes traffic](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html).
 

@@ -32,11 +32,15 @@
 | 386 e 389–393 | Consultar perto da prova |
 | 387–388 | Checkpoint e exam tips |
 | 394–396 | Pular |
-| Practice exam | Reservado ao SIM B de 28/08 |
+| Practice exam | Reservado ao evento Practice Udemy de 28/08; não confundir com o `SIM-B` autoral privado |
 
 Use aulas, capítulo, laboratório e questões nessa ordem. Não copie credenciais nem crie recursos pagos para reproduzir telas.
 
-**Atualização de serviço:** se a aula apresentar Amazon Pinpoint como escolha nova para campanhas, trate isso como pista histórica. Pinpoint não aceita novos clientes desde 20/05/2025 e encerra suporte em 30/10/2026. Para novos desenhos, avalie Amazon Connect Customer outbound campaigns para engajamento, AWS End User Messaging para SMS/voz/push/WhatsApp e SES para email.
+### Classificação da atualização do Amazon Pinpoint
+
+- **`núcleo SAA-C03`:** escolher o serviço pelo requisito: SES para email transacional ou em massa; entrega programática por outros canais e engajamento orquestrado são necessidades diferentes. Em uma arquitetura nova, não selecione um serviço em encerramento.
+- **`atualização relevante`:** Amazon Pinpoint não aceita novos clientes desde 20/05/2025 e encerra suporte em 30/10/2026. Para novos desenhos, use Amazon Connect Customer outbound campaigns para engajamento proativo, AWS End User Messaging para canais de mensagem e SES para email.
+- **`conteúdo profissional opcional`:** mapeamento de endpoints para Customer Profiles, migração de templates, journeys, analytics e APIs de canal. Isso é útil para migração real, mas **não é para memorizar** para a SAA-C03.
 
 ## 3. Vocabulário essencial
 
@@ -146,7 +150,31 @@ SES atende email transacional e em massa.
 Amazon Pinpoint atende campanhas multicanal apenas em contas existentes durante a transição e encerra suporte em 30/10/2026; não é escolha para um novo projeto.
 ### 5.27 Ponto 27
 
-Outposts leva infraestrutura AWS on-premises.
+AWS Outposts estende infraestrutura, APIs e ferramentas AWS a uma instalação do
+cliente. A AWS opera o hardware; o cliente fornece site, energia, rede e
+conectividade do **service link** com a Region associada. A capacidade local é
+finita e precisa incluir crescimento e tolerância a manutenção/falha.
+
+**Escolha Outposts** quando o workload precisa executar no site por latência com
+sistemas locais, processamento/residência de dados ou dependências locais, mas
+quer o modelo operacional e APIs AWS suportadas. **Não escolha** apenas porque a
+aplicação é híbrida: Direct Connect conecta o datacenter à Region sem levar
+compute AWS ao site; Local Zones colocam recursos em uma instalação AWS próxima
+de uma área metropolitana, não dentro do datacenter do cliente; infraestrutura
+on-premises autogerenciada mantém outra responsabilidade operacional.
+
+| Opção | Onde executa | Decisão dominante |
+|---|---|---|
+| AWS Region | Region AWS | maior elasticidade e catálogo; latência até o site |
+| AWS Local Zones | local AWS metropolitano | proximidade a usuários, não presença no site do cliente |
+| AWS Outposts | instalação do cliente | AWS gerenciada localmente; capacidade e service link planejados |
+| on-premises autogerenciado | instalação do cliente | máximo controle e máxima responsabilidade operacional |
+
+**Cenário resolvido — fábrica:** um sistema de controle precisa responder em
+poucos milissegundos aos equipamentos locais, manter o processamento no site e
+usar EC2/EBS/ECS compatíveis. Se a instalação atende aos requisitos físicos e a
+empresa aceita planejar capacidade e service link resiliente, Outposts é a
+opção híbrida. Se basta acesso privado à Region, Direct Connect é mais simples.
 ### 5.28 Ponto 28
 
 Batch executa jobs batch containerizados.
@@ -203,7 +231,33 @@ Trusted Advisor produz checks e recomendações.
 Cobertura do Trusted Advisor depende do plano.
 ### 5.46 Ponto 46
 
-Practice exam fica inédito até SIM B.
+Practice exam fica inédito até o evento Practice Udemy de 28/08. O `SIM-B`
+autoral privado permanece fechado como tentativa extra posterior ou substituto
+se a Udemy estiver indisponível.
+
+### Cápsula de decisão — AWS Compute Optimizer
+
+- **Problema que resolve:** analisar configuração e métricas de utilização para identificar recursos ociosos ou super/subdimensionados e recomendar rightsizing com melhor relação preço-performance.
+- **Tarefa SAA-C03 relacionada:** 4.2 — projetar arquiteturas de compute com custo otimizado; as recomendações também podem apoiar decisões de storage e banco nos tipos de recurso compatíveis.
+- **Quando escolher:** a pergunta fornece histórico de utilização e pede recomendações de tamanho ou configuração para EC2, Auto Scaling, EBS, Lambda, ECS on Fargate, RDS/Aurora ou outros recursos suportados.
+- **Quando não escolher:** para alertar imediatamente que um orçamento foi excedido, detalhar uma fatura por linha ou alterar recursos automaticamente.
+- **Serviço semelhante:** Trusted Advisor oferece checks amplos; Compute Optimizer aprofunda rightsizing com configuração, métricas e projeção de utilização.
+- **Armadilha:** recomendações não são alterações automáticas. É preciso optar pelo serviço, acumular métricas suficientes e validar performance e capacidade antes de aplicar; o lookback padrão é de 14 dias e recursos avançados podem ter custo.
+- **Questão situacional extra (fora do banco de 250):** uma frota EC2 opera há meses, mas a equipe não sabe quais tipos menores manteriam performance aceitável. Qual serviço fornece recomendações baseadas em utilização?
+- **Resposta curta:** AWS Compute Optimizer; revise os gráficos e o risco de performance antes de executar o rightsizing.
+- **Referência oficial:** [What is AWS Compute Optimizer?](https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html)
+
+### Cápsula de decisão — AWS Cost and Usage Report (CUR 2.0)
+
+- **Problema que resolve:** entregar dados recorrentes e granulares de custo e uso em S3 para rateio, auditoria e análises próprias.
+- **Tarefas SAA-C03 relacionadas:** apoia 4.1–4.4 ao fornecer evidência detalhada para otimizar storage, compute, bancos e rede.
+- **Quando escolher:** a organização precisa de linhas detalhadas de billing, esquema controlado e processamento posterior com SQL, Athena, Amazon Quick Sight (componente de BI do Amazon Quick; Amazon QuickSuite no guia SAA-C03) ou ferramentas próprias. Em Data Exports, CUR 2.0 é a opção nova e recomendada.
+- **Quando não escolher:** para uma exploração rápida no console, um limiar de orçamento ou detecção de anomalia; use Cost Explorer, Budgets ou Cost Anomaly Detection, respectivamente.
+- **Serviço semelhante:** Cost Explorer oferece análise interativa pronta; CUR 2.0 fornece o dataset granular e recorrente para análises personalizadas.
+- **Armadilha:** o relatório não reduz nem bloqueia gastos. Legacy CUR ainda existe, mas CUR 2.0 via AWS Data Exports é recomendado; considere atraso dos dados e custos de S3, consulta e visualização.
+- **Questão situacional extra (fora do banco de 250):** FinOps precisa atribuir custos por conta, serviço, tag e tipo de uso, guardar o histórico em S3 e consultar milhões de linhas com SQL. Qual recurso deve ser configurado?
+- **Resposta curta:** CUR 2.0 em AWS Data Exports, com entrega recorrente no S3 e consulta por Athena ou outra ferramenta.
+- **Referência oficial:** [What is AWS Data Exports?](https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html)
 
 ## 6. Tabela de decisão
 
@@ -214,11 +268,14 @@ Practice exam fica inédito até SIM B.
 | Mudança manual | Drift detection | comparação suportada |
 | Shell sem inbound | Session Manager | canal gerenciado |
 | Email transacional | SES | entrega de email |
-| Nova campanha multicanal | Amazon Connect Customer outbound campaigns | substitui o uso de engajamento do Pinpoint em novos desenhos |
+| Engajamento proativo com segmentação, campanhas ou jornadas | Amazon Connect Customer outbound campaigns | destino atual para capacidades de engagement do Pinpoint |
+| SMS, MMS, push, WhatsApp ou voz por API | AWS End User Messaging | canais de entrega programática atuais |
 | Job container batch | AWS Batch | fila e compute |
 | SaaS para AWS | AppFlow | integração gerenciada |
 | Analisar gasto | Cost Explorer | dimensões históricas |
 | Detectar gasto incomum | Cost Anomaly Detection | modelo e alerta |
+| Rightsizing baseado em utilização | AWS Compute Optimizer | recomenda tamanho/configuração sem alterar automaticamente |
+| Exportar billing granular e recorrente | CUR 2.0 em AWS Data Exports | dataset customizável entregue no S3 |
 
 ## 7. Cenários resolvidos
 
@@ -346,6 +403,10 @@ Faça inventário antes e depois. Exclua apenas recursos criados pelo bloco.
 - [Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html)
 - [Cost Explorer](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html)
 - [Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html)
+- [AWS Compute Optimizer](https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html)
+- [AWS Data Exports e CUR 2.0](https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html)
+- [O que é AWS Outposts](https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html)
+- [Capacidade do AWS Outposts](https://docs.aws.amazon.com/outposts/latest/network-userguide/outposts-capacity.html)
 - [Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html)
 - [Pillars](https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html)
 - [Trusted Advisor](https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html)

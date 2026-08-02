@@ -114,10 +114,12 @@ validação do capítulo:
 
 ## Nomenclatura e atualização
 
-- O curso usa **QuickSight**, enquanto o guia oficial atual lista **Amazon
-  Quick**. O antigo QuickSight continua como **Amazon Quick Sight**, componente
-  de business intelligence do Amazon Quick. O Guia registra essa equivalência
-  antes de ensinar o tópico.
+- O curso usa **QuickSight**, enquanto o guia oficial SAA-C03 vigente lista
+  **Amazon QuickSuite**. A documentação atual do produto usa **Amazon Quick** e
+  mantém **Amazon Quick Sight** como o componente de business intelligence e
+  visualização. O Guia registra as três formas antes de ensinar o tópico:
+  [domínio 3 do SAA-C03](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html)
+  e [documentação Amazon Quick](https://docs.aws.amazon.com/quick/).
 - O título da seção 17 usa “Active MQ”, mas a aula e o nome correto do serviço
   são **Amazon MQ**.
 - A descrição comercial do curso ainda contém histórico e frases sobre

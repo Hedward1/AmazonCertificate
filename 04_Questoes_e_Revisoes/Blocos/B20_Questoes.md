@@ -2,24 +2,24 @@
 
 **Quantidade:** 10 questões autorais<br>
 **Idioma:** 10 em inglês<br>
-**Regra:** selecione uma resposta<br>
+**Regra:** selecione a quantidade indicada em cada questão<br>
 **Tempo sugerido:** 18 minutos<br>
 **Gabarito:** [arquivo separado](B20_Gabarito.md)
 
 ## Metadados
 
-| ID | Tarefa | Tópico | Tipo | Dificuldade | Idioma |
-|---|---|---|---|---|---|
-| B20-01 | 2.2 | CloudWatch agent | Situacional | Basic | Inglês |
-| B20-02 | 2.2 | CloudWatch alarm | Situacional | Intermediate | Inglês |
-| B20-03 | 2.1 | EventBridge | Situacional | Basic | Inglês |
-| B20-04 | 1.2 | CloudTrail Event history | Situacional | Basic | Inglês |
-| B20-05 | 1.2 | CloudTrail trail | Situacional | Intermediate | Inglês |
-| B20-06 | 1.2 | AWS Config | Situacional | Intermediate | Inglês |
-| B20-07 | 1.2 | CloudWatch versus CloudTrail versus Config | Situacional | Intermediate | Inglês |
-| B20-08 | 1.2 | CloudTrail data events | Situacional | Intermediate | Inglês |
-| B20-09 | 2.1 | EventBridge reliability | Situacional | Intermediate | Inglês |
-| B20-10 | 1.1 | AWS Organizations | Situacional | Basic | Inglês |
+| ID | Tarefa | Tópico | Formato | Tipo | Dificuldade | Idioma |
+|---|---|---|---|---|---|---|
+| B20-01 | 2.2 | CloudWatch agent | single | fundamental | básica | Inglês |
+| B20-02 | 2.2 | CloudWatch alarm | single | situacional | intermediária | Inglês |
+| B20-03 | 2.1 | EventBridge | single | situacional | intermediária | Inglês |
+| B20-04 | 1.2 | CloudTrail investigation | multi-2 | integrada | avançada | Inglês |
+| B20-05 | 1.2 | CloudTrail trail | single | situacional | intermediária | Inglês |
+| B20-06 | 1.2 | AWS Config | single | situacional | intermediária | Inglês |
+| B20-07 | 2.2 | X-Ray observability | multi-2 | integrada | avançada | Inglês |
+| B20-08 | 1.2 | CloudTrail data events | single | integrada | avançada | Inglês |
+| B20-09 | 1.2 | Security Hub, Audit Manager and Artifact | multi-3 | integrada | avançada | Inglês |
+| B20-10 | 1.1 | Organizations and governance | single | situacional | intermediária | Inglês |
 
 ## Questões
 
@@ -36,8 +36,6 @@
 - C. Create an AWS Config rule.
 - D. Create an EventBridge scheduled rule only.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B20-02
 
 **Context:** A service must notify operators only when average CPU exceeds 80 percent for three consecutive five-minute periods.
@@ -50,8 +48,6 @@
 - B. A CloudTrail Event history filter.
 - C. An AWS Config recorder.
 - D. A VPC Flow Log.
-
-**Before moving on:** record decisive words and confidence.
 
 ### B20-03
 
@@ -66,22 +62,17 @@
 - C. Amazon EventBridge.
 - D. AWS Organizations.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B20-04
 
-**Context:** An administrator needs to find who recently deleted an IAM role in the current Region.
+**Context:** An administrator must identify who deleted an IAM role yesterday. The company also needs durable multi-Region management-event records for future investigations.
 
-**Requirement:** Only recent management activity is needed, and no trail has been configured.
+**Requirement:** Provide the fastest answer for the recent event and establish long-term evidence. **Choose TWO.**
 
-**Question:** What should the administrator use first?
-
-- A. Amazon Quick Sight.
-- B. CloudWatch CPU metrics.
-- C. AWS Config conformance pack.
-- D. CloudTrail Event history.
-
-**Before moving on:** record decisive words and confidence.
+- A. Query CloudWatch CPU metrics for the role name.
+- B. Search CloudTrail Event history in `us-east-1` for the recent global IAM management event.
+- C. Enable only an AWS Config conformance pack; Config records the API caller identity.
+- D. Use Amazon Quick Sight as the source of API audit records.
+- E. Create a multi-Region CloudTrail trail that delivers management events to a protected S3 bucket.
 
 ### B20-05
 
@@ -96,8 +87,6 @@
 - C. A Config rule with no recorder.
 - D. An EventBridge archive only.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B20-06
 
 **Context:** Auditors need a timeline of how an EC2 security group was configured and whether it violated an approved rule.
@@ -111,67 +100,64 @@
 - C. Amazon Inspector.
 - D. AWS Shield.
 
-**Before moving on:** record decisive words and confidence.
-
 ### B20-07
 
-**Context:** A team investigates a security group change that caused application errors.
+**Context:** Requests traverse API Gateway, Lambda, and DynamoDB. Operators see elevated end-to-end latency but need to isolate which downstream segment is slow and correlate traces with service metrics.
 
-**Requirement:** It needs operational impact, API authorship, and the resulting configuration.
+**Requirement:** Add distributed tracing and a consolidated observability view with minimal custom correlation. **Choose TWO.**
 
-**Question:** Which mapping is correct?
-
-- A. CloudTrail for CPU, Config for logs, and CloudWatch for caller.
-- B. Config for CPU, CloudWatch for caller, and CloudTrail for compliance.
-- C. CloudWatch for impact, CloudTrail for caller, and Config for configuration.
-- D. Organizations for all three.
-
-**Before moving on:** record decisive words and confidence.
+- A. Enable AWS X-Ray tracing on supported components and propagate trace context.
+- B. Use CloudTrail data events as application latency spans.
+- C. Use AWS Config snapshots to reconstruct request-level call paths.
+- D. Use CloudWatch ServiceLens to correlate traces, metrics, and logs.
+- E. Use AWS Organizations consolidated billing as the service map.
 
 ### B20-08
 
-**Context:** A company must audit object-level GetObject and PutObject operations in a sensitive S3 bucket.
+**Context:** A regulated data lake must record `GetObject`, `PutObject`, and
+`DeleteObject` for one sensitive S3 prefix, retain the audit trail separately
+from the workload account, and avoid the cost/noise of logging object activity
+for every bucket. Management changes to the bucket must remain auditable too.
 
-**Requirement:** The events are high volume and must be selected intentionally.
+**Requirement:** Capture both control-plane and narrowly selected object-level
+activity with durable centralized retention.
 
-**Question:** What should be enabled?
+**Question:** Which design best meets the requirement?
 
-- A. A Config rule for CPU.
-- B. Only the default Event history management events.
-- C. Only EC2 detailed monitoring.
-- D. CloudTrail data events for the selected bucket.
-
-**Before moving on:** record decisive words and confidence.
+- A. Combine AWS Config history with S3 Inventory reports and treat configuration/object listings as complete API-access evidence.
+- B. Put broad S3 data events in a CloudTrail Lake event data store in the workload account, disable the organization management trail, and omit the required central S3 retention boundary.
+- C. Enable S3 server access logging into the same sensitive bucket and rely only on default CloudTrail Event history for management activity.
+- D. Use a multi-Region CloudTrail trail for management events, add narrowly scoped S3 data-event selectors for the required prefix/actions, and deliver logs to a protected central S3 destination.
 
 ### B20-09
 
-**Context:** An EventBridge target can temporarily fail, and the business cannot silently lose matched events.
+**Context:** A regulated organization needs one view of security findings, continuously collected audit evidence mapped to controls, and on-demand access to AWS compliance reports and agreements.
 
-**Requirement:** The design needs retries and a place for events that exhaust retries.
+**Requirement:** Select the purpose-built managed service for each distinct outcome. **Select THREE.**
 
-**Question:** What should be configured?
-
-- A. A retry policy and a dead-letter queue for the target.
-- B. A larger EC2 root volume.
-- C. An SCP that grants EventBridge access.
-- D. A CloudWatch dashboard only.
-
-**Before moving on:** record decisive words and confidence.
+- A. Use AWS Security Hub to aggregate and prioritize findings from supported security services.
+- B. Use Amazon Inspector to download AWS SOC reports and accept agreements.
+- C. Use AWS Audit Manager to automate evidence collection and assessments.
+- D. Use CloudWatch dashboards as the authoritative repository for compliance agreements.
+- E. Use AWS Artifact to aggregate runtime GuardDuty findings.
+- F. Use AWS Artifact to access AWS compliance documents and agreements.
 
 ### B20-10
 
-**Context:** A company wants consolidated billing and a hierarchy that groups AWS accounts for centralized governance.
+**Context:** A company is separating production, development, security, and
+log-archive workloads into AWS accounts. It needs consolidated billing,
+hierarchical policy boundaries, delegated administration for security services,
+and the ability to move accounts without redesigning their VPCs.
 
-**Requirement:** The solution must organize accounts into logical units.
+**Requirement:** Establish a scalable account-governance foundation rather
+than a resource hierarchy inside one account.
 
-**Question:** Which service and construct should be used?
+**Question:** Which design should be used?
 
-- A. CloudWatch with log groups.
-- B. AWS Organizations with organizational units.
-- C. AWS Config with conformance packs only.
-- D. Amazon VPC with subnets.
-
-**Before moving on:** record decisive words and confidence.
+- A. Keep one payer account and represent production/development with Resource Groups, tags, and separate VPCs.
+- B. Use AWS Organizations, place accounts in purpose-specific organizational units, apply guardrails such as SCPs at the appropriate level, and delegate supported services.
+- C. Keep independently billed accounts outside an organization and use an AWS Config aggregator as the governance and billing hierarchy.
+- D. Create a separate AWS Organization for each business unit and exchange cross-account roles between management accounts for every central service.
 
 ## Registro antes de corrigir
 
